@@ -1,5 +1,5 @@
 {
-  "name": "@acme/db",
+  "name": "@galileyo/db",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -25,25 +25,28 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "push": "pnpm with-env drizzle-kit push",
+    "pull": "pnpm with-env drizzle-kit pull",
+    "genm": "pnpm with-env drizzle-kit generate",
     "studio": "pnpm with-env drizzle-kit studio",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
-    "drizzle-orm": "^0.44.1",
+    "drizzle-orm": "^0.44.2",
     "drizzle-zod": "^0.8.2",
+    "mysql2": "^3.14.1",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
-    "@acme/tsconfig": "workspace:*",
+    "@galileyo/eslint-config": "workspace:*",
+    "@galileyo/prettier-config": "workspace:*",
+    "@galileyo/tsconfig": "workspace:*",
     "dotenv-cli": "^8.0.0",
-    "drizzle-kit": "^0.31.1",
+    "drizzle-kit": "^0.31.4",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@acme/prettier-config"
+  "prettier": "@galileyo/prettier-config"
 }

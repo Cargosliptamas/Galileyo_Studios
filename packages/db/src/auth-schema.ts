@@ -1,6 +1,8 @@
-import { pgTable } from "drizzle-orm/pg-core";
+import {
+  mysqlTable,
+} from "drizzle-orm/mysql-core"
 
-export const user = pgTable("user", (t) => ({
+export const user = mysqlTable("user", (t) => ({
   id: t.text().primaryKey(),
   name: t.text().notNull(),
   email: t.text().notNull().unique(),
@@ -10,7 +12,7 @@ export const user = pgTable("user", (t) => ({
   updatedAt: t.timestamp().notNull(),
 }));
 
-export const session = pgTable("session", (t) => ({
+export const session = mysqlTable("session", (t) => ({
   id: t.text().primaryKey(),
   expiresAt: t.timestamp().notNull(),
   token: t.text().notNull().unique(),
@@ -24,7 +26,7 @@ export const session = pgTable("session", (t) => ({
     .references(() => user.id, { onDelete: "cascade" }),
 }));
 
-export const account = pgTable("account", (t) => ({
+export const account = mysqlTable("account", (t) => ({
   id: t.text().primaryKey(),
   accountId: t.text().notNull(),
   providerId: t.text().notNull(),
@@ -43,7 +45,7 @@ export const account = pgTable("account", (t) => ({
   updatedAt: t.timestamp().notNull(),
 }));
 
-export const verification = pgTable("verification", (t) => ({
+export const verification = mysqlTable("verification", (t) => ({
   id: t.text().primaryKey(),
   identifier: t.text().notNull(),
   value: t.text().notNull(),
