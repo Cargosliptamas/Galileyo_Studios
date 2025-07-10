@@ -3,8 +3,8 @@ import { getSession } from "~/auth/server";
 
 import {
   HydrateClient,
-  // prefetch,
-  // trpc,
+  prefetch,
+  trpc,
 } from "~/trpc/server";
 import { Debug } from "~/components/dashboard/debug";
 import { Suspense } from "react";
@@ -14,6 +14,8 @@ export default async function DashboardPage() {
   if (!session) {
     redirect("/login");
   }
+
+  prefetch(trpc.post.all.queryOptions());
 
   return (
     <HydrateClient>
