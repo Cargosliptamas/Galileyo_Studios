@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import { getSession } from "~/auth/server";
 
 export default async function SignupPage() {

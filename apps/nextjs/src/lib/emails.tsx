@@ -1,6 +1,7 @@
-import { render } from '@react-email/components';
-import nodemailer from 'nodemailer';
-import { SendMagicLinkEmail } from '@galileyo/emails/emails/send-magic-link';
+import { render } from "@react-email/components";
+import nodemailer from "nodemailer";
+
+import { SendMagicLinkEmail } from "@galileyo/emails/emails/send-magic-link";
 
 // import { env } from '~/env';
 
@@ -18,7 +19,7 @@ export async function sendMagicLinkEmail({
   url: string;
 }) {
   const transporter = nodemailer.createTransport({
-    host: 'localhost',
+    host: "localhost",
     port: 1026,
     secure: false,
     // auth: {
@@ -26,13 +27,13 @@ export async function sendMagicLinkEmail({
     //   pass: 'my_password',
     // },
   });
-  
+
   const emailHtml = await render(<SendMagicLinkEmail url={url} />);
-  
+
   const options = {
-    from: 'you@example.com',
+    from: "you@example.com",
     to,
-    subject: 'Your login code for Galileo',
+    subject: "Your login code for Galileo",
     html: emailHtml,
   };
 

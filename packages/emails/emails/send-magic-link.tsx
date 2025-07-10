@@ -11,15 +11,13 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components';
+} from "@react-email/components";
 
 interface SendMagicLinkEmailProps {
   url?: string;
 }
 
-export const SendMagicLinkEmail = ({
-  url,
-}: SendMagicLinkEmailProps) => (
+export const SendMagicLinkEmail = ({ url }: SendMagicLinkEmailProps) => (
   <Html>
     <Head />
     <Body style={main}>
@@ -39,18 +37,17 @@ export const SendMagicLinkEmail = ({
           </Button>
         </Section>
         <Text style={paragraph}>
-          This link will only be valid for the next 5 minutes. If the
-          button does not work, you can copy and paste the link directly into
-          your browser.
+          This link will only be valid for the next 5 minutes. If the button
+          does not work, you can copy and paste the link directly into your
+          browser.
         </Text>
-        <Text style={paragraph}>
-          {url}
-        </Text>
+        <Text style={paragraph}>{url}</Text>
         <Text style={paragraph}>
           If you did not request this login link, you can ignore this email.
         </Text>
         <Text style={paragraph}>
-          If you have any questions, please contact us at <Link href="mailto:support@galileo.com">support@galileo.com</Link>.
+          If you have any questions, please contact us at{" "}
+          <Link href="mailto:support@galileo.com">support@galileo.com</Link>.
         </Text>
         <Hr style={hr} />
         <Link href="http://localhost:3000" style={reportLink}>
@@ -62,7 +59,7 @@ export const SendMagicLinkEmail = ({
 );
 
 SendMagicLinkEmail.PreviewProps = {
-  validationCode: 'tt226-5398x',
+  validationCode: "tt226-5398x",
 } as SendMagicLinkEmailProps;
 
 export default SendMagicLinkEmail;
@@ -74,57 +71,57 @@ const logo = {
 };
 
 const main = {
-  backgroundColor: '#ffffff',
+  backgroundColor: "#ffffff",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
 
 const container = {
-  margin: '0 auto',
-  padding: '20px 0 48px',
-  maxWidth: '560px',
+  margin: "0 auto",
+  padding: "20px 0 48px",
+  maxWidth: "560px",
 };
 
 const heading = {
-  fontSize: '24px',
-  letterSpacing: '-0.5px',
-  lineHeight: '1.3',
-  fontWeight: '400',
-  color: '#484848',
-  padding: '17px 0 0',
+  fontSize: "24px",
+  letterSpacing: "-0.5px",
+  lineHeight: "1.3",
+  fontWeight: "400",
+  color: "#484848",
+  padding: "17px 0 0",
 };
 
 const paragraph = {
-  margin: '0 0 15px',
-  fontSize: '15px',
-  lineHeight: '1.4',
-  color: '#3c4149',
+  margin: "0 0 15px",
+  fontSize: "15px",
+  lineHeight: "1.4",
+  color: "#3c4149",
 };
 
 const buttonContainer = {
-  padding: '27px 0 27px',
+  padding: "27px 0 27px",
 };
 
 const button = {
-  backgroundColor: '#5e6ad2',
-  borderRadius: '3px',
-  fontWeight: '600',
-  color: '#fff',
-  fontSize: '15px',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'block',
-  padding: '11px 23px',
+  backgroundColor: "#5e6ad2",
+  borderRadius: "3px",
+  fontWeight: "600",
+  color: "#fff",
+  fontSize: "15px",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "block",
+  padding: "11px 23px",
 };
 
 const reportLink = {
-  fontSize: '14px',
-  color: '#b4becc',
+  fontSize: "14px",
+  color: "#b4becc",
 };
 
 const hr = {
-  borderColor: '#dfe1e4',
-  margin: '42px 0 26px',
+  borderColor: "#dfe1e4",
+  margin: "42px 0 26px",
 };
 
 // const code = {

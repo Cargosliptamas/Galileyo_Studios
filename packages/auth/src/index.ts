@@ -4,15 +4,18 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink, oAuthProxy } from "better-auth/plugins";
 
-import * as schema from "@galileyo/db/schema";
 import { db } from "@galileyo/db/client";
+import * as schema from "@galileyo/db/schema";
 
 export interface EmailOptions {
-  sendMagicLink: (data: {
+  sendMagicLink: (
+    data: {
       email: string;
       url: string;
       token: string;
-  }, request?: Request) => Promise<void> | void;
+    },
+    request?: Request,
+  ) => Promise<void> | void;
 }
 
 export function initAuth(options: {

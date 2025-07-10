@@ -2,8 +2,14 @@
 
 import type { User } from "better-auth";
 import Link from "next/link";
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from "@galileyo/ui/dropdown-menu";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@galileyo/ui/dropdown-menu";
 
 import { authClient } from "~/auth/client";
 
@@ -33,9 +39,7 @@ export function UserMenu({ user }: { user: User }) {
         <DropdownMenuItem>
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => signOut()}>
-          Sign Out
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

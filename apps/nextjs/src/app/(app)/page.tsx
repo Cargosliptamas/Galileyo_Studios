@@ -1,6 +1,7 @@
 // import { Suspense } from "react";
 
 import { Button } from "@galileyo/ui/button";
+
 import {
   HydrateClient,
   // prefetch,

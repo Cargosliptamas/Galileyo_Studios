@@ -1,4 +1,4 @@
-import Layout from './(app)/layout';
+import Layout from "./(app)/layout";
 
 export default function NotFound() {
   return (

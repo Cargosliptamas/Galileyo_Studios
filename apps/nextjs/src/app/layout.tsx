@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
-import { Toaster } from "@galileyo/ui/toast";
 import { cn } from "@galileyo/ui";
+import { Toaster } from "@galileyo/ui/toast";
 
 import { Providers } from "~/components/providers";
 
@@ -9,6 +9,7 @@ import "~/app/globals.css";
 
 import { env } from "~/env";
 import { fontVariables } from "~/lib/fonts";
+
 // import { ThemeToggle } from "@galileyo/ui/theme";
 
 export const metadata: Metadata = {

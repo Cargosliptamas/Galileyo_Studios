@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { getSession } from "~/auth/server"
-import { LoginForm } from "~/components/auth/login-form"
+
+import { getSession } from "~/auth/server";
+import { LoginForm } from "~/components/auth/login-form";
 
 export default async function LoginPage() {
   const session = await getSession();
@@ -9,10 +10,10 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="bg-background flex flex-col items-center justify-center gap-6 p-6 md:p-10 min-h-full">
+    <div className="flex min-h-full flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <LoginForm />
       </div>
     </div>
-  )
+  );
 }

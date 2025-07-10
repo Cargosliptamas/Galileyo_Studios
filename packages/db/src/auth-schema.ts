@@ -1,6 +1,4 @@
-import {
-  mysqlTable,
-} from "drizzle-orm/mysql-core"
+import { mysqlTable } from "drizzle-orm/mysql-core";
 
 export const user = mysqlTable("user", (t) => ({
   id: t.text().primaryKey(),

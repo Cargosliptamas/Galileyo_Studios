@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useCallback, useState } from "react"
-import { GalleryVerticalEnd } from "lucide-react"
+import { useCallback, useState } from "react";
+import { GalleryVerticalEnd } from "lucide-react";
 
-import { cn } from "@galileyo/ui"
-import { Button } from "@galileyo/ui/button"
-import { Input } from "@galileyo/ui/input"
-import { Label } from "@galileyo/ui/label"
+import { cn } from "@galileyo/ui";
+import { Button } from "@galileyo/ui/button";
+import { Input } from "@galileyo/ui/input";
+import { Label } from "@galileyo/ui/label";
 
-import { authClient } from "~/auth/client"
+import { authClient } from "~/auth/client";
 
 export function LoginForm({
   className,
@@ -16,10 +16,11 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const { data, error } = await authClient.signIn.magicLink({
+      const { data, error } = await authClient.signIn.magicLink({
         /**
          * The user email
          */
@@ -27,11 +28,13 @@ export function LoginForm({
         /**
          * A URL to redirect to after the user verifies their email (optional)
          */
-        callbackURL: "/dashboard"
-    });
+        callbackURL: "/dashboard",
+      });
 
-    console.log(data, error);
-  }, [email]);
+      console.log(data, error);
+    },
+    [email],
+  );
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -103,5 +106,5 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </div> */}
     </div>
-  )
+  );
 }

@@ -1,64 +1,106 @@
 "use client";
 
+import type { User } from "better-auth";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 // import Image from "next/image";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 import { ThemeToggle } from "@galileyo/ui/theme";
+
 import { AppIcon } from "./app-icon";
-import type { User } from "better-auth";
 import { UserMenu } from "./layout/user-menu";
 
 export function SiteHeader({ user }: { user: User | undefined }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-background sticky top-0 z-50 w-full">
+    <header className="sticky top-0 z-50 w-full bg-background">
       {/* Navigation */}
-      <nav className="relative z-50 bg-slate-950/95 backdrop-blur-sm border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+      <nav className="relative z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-2">
               <Link href="/" className="flex items-center space-x-2">
                 <AppIcon />
                 <span className="text-2xl font-bold text-white">Galileyo</span>
               </Link>
             </div>
-            
+
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/#features" className="text-slate-300 hover:text-white transition-colors">Features</Link>
-              <Link href="/#pricing" className="text-slate-300 hover:text-white transition-colors">Pricing</Link>
-              <Link href="/#support" className="text-slate-300 hover:text-white transition-colors">Support</Link>
+            <div className="hidden items-center space-x-8 md:flex">
+              <Link
+                href="/#features"
+                className="text-slate-300 transition-colors hover:text-white"
+              >
+                Features
+              </Link>
+              <Link
+                href="/#pricing"
+                className="text-slate-300 transition-colors hover:text-white"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/#support"
+                className="text-slate-300 transition-colors hover:text-white"
+              >
+                Support
+              </Link>
               {user ? (
                 <UserMenu user={user} />
               ) : (
-                <Link href="/login" className="px-4 py-2 text-slate-300 hover:text-white transition-colors">Sign In</Link>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-slate-300 transition-colors hover:text-white"
+                >
+                  Sign In
+                </Link>
               )}
 
               <ThemeToggle />
             </div>
 
             {/* Mobile menu button */}
-            <button 
-              className="md:hidden text-white"
+            <button
+              className="text-white md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden bg-slate-900 border-b border-slate-800">
-            <div className="px-4 py-4 space-y-4">
-              <a href="#features" className="block text-slate-300 hover:text-white transition-colors">Features</a>
-              <a href="#pricing" className="block text-slate-300 hover:text-white transition-colors">Pricing</a>
-              <a href="#support" className="block text-slate-300 hover:text-white transition-colors">Support</a>
-              <button className="block w-full text-left text-slate-300 hover:text-white transition-colors">Sign In</button>
-              <button className="block w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-medium transition-colors">
+          <div className="border-b border-slate-800 bg-slate-900 md:hidden">
+            <div className="space-y-4 px-4 py-4">
+              <a
+                href="#features"
+                className="block text-slate-300 transition-colors hover:text-white"
+              >
+                Features
+              </a>
+              <a
+                href="#pricing"
+                className="block text-slate-300 transition-colors hover:text-white"
+              >
+                Pricing
+              </a>
+              <a
+                href="#support"
+                className="block text-slate-300 transition-colors hover:text-white"
+              >
+                Support
+              </a>
+              <button className="block w-full text-left text-slate-300 transition-colors hover:text-white">
+                Sign In
+              </button>
+              <button className="block w-full rounded-lg bg-cyan-500 px-6 py-2 font-medium text-white transition-colors hover:bg-cyan-400">
                 Select Plan
               </button>
             </div>
