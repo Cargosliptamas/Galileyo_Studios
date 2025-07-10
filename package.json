@@ -17,6 +17,7 @@
     "db:studio": "turbo -F @galileyo/db studio",
     "dev": "turbo watch dev --continue",
     "dev:next": "turbo watch dev -F @galileyo/nextjs...",
+    "dev:emails": "turbo watch studio -F @galileyo/emails",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",

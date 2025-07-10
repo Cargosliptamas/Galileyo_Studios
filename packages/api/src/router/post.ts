@@ -1,10 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 // import { z } from "zod/v4";
 
-import { desc, eq } from "@galileyo/db";
+// import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
-import { protectedProcedure, publicProcedure } from "../trpc";
+import {
+  protectedProcedure,
+  // publicProcedure
+} from "../trpc";
 
 export const postRouter = {
   all: protectedProcedure.query(async ({ ctx }) => {

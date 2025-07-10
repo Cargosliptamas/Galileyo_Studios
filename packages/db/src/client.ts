@@ -1,4 +1,4 @@
-import { drizzle, MySql2Database } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/mysql2";
 
 import * as schema from "./schema";
 import * as relations from "./relations";

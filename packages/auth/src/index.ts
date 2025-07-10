@@ -7,10 +7,19 @@ import { magicLink, oAuthProxy } from "better-auth/plugins";
 import * as schema from "@galileyo/db/schema";
 import { db } from "@galileyo/db/client";
 
+export interface EmailOptions {
+  sendMagicLink: (data: {
+      email: string;
+      url: string;
+      token: string;
+  }, request?: Request) => Promise<void> | void;
+}
+
 export function initAuth(options: {
   baseUrl: string;
   productionUrl: string;
   secret: string | undefined;
+  emailOptions: EmailOptions;
 
   // discordClientId: string;
   // discordClientSecret: string;
@@ -50,11 +59,7 @@ export function initAuth(options: {
     plugins: [
       magicLink({
         disableSignUp: true,
-        sendMagicLink: async ({ email, token, url }) => {
-          // TODO: send email to user
-          await Promise.resolve();
-          console.log(email, token, url);
-        },
+        sendMagicLink: (data) => options.emailOptions.sendMagicLink(data),
       }),
       oAuthProxy({
         /**
