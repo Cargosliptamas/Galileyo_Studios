@@ -28,6 +28,7 @@
     "./separator": "./src/separator.tsx",
     "./sheet": "./src/sheet.tsx",
     "./skeleton": "./src/skeleton.tsx",
+    "./textarea": "./src/textarea.tsx",
     "./theme": "./src/theme.tsx",
     "./toast": "./src/toast.tsx",
     "./toggle": "./src/toggle.tsx",
