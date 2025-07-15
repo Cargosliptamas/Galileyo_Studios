@@ -59,6 +59,7 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
+    "NEXT_PUBLIC_API_URL",
     "PORT"
   ],
   "globalPassThroughEnv": [

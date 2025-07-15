@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "~/auth/server";
 import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
+import FeedCard from "~/components/feed/feed-card";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -20,6 +21,8 @@ export default async function DashboardPage() {
         <p>
           Welcome, {session.user.firstName} {session.user.lastName}
         </p>
+
+        <FeedCard />
 
         <Suspense fallback={<div>Loading...</div>}>
           <Debug />

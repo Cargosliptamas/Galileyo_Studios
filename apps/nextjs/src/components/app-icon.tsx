@@ -1,10 +1,7 @@
-import { Satellite } from "lucide-react";
+import { GalileyoIcon } from "./icons/galileyo-icon";
 
 export function AppIcon() {
   return (
-    <>
-      <Satellite className="h-8 w-8 text-cyan-400" />
-      {/* <Image src="/galileyo-icon.svg" alt="Galileyo Logo" width={32} height={32} unoptimized /> */}
-    </>
+    <GalileyoIcon />
   );
 }

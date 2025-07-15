@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "better-auth";
 import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
@@ -8,10 +7,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  // DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@galileyo/ui/dropdown-menu";
 
-import { authClient } from "~/auth/client";
+import { authClient  } from "~/auth/client";
+import type {User} from "~/auth/client";
 
 export function UserMenu({ user }: { user: User }) {
   const signOut = async () => {
@@ -33,6 +34,14 @@ export function UserMenu({ user }: { user: User }) {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        {/* <DropdownMenuLabel className="flex min-w-0 flex-col">
+          <span className="text-foreground truncate text-sm font-medium">
+            {user.name} {user.lastName}
+          </span>
+          <span className="text-muted-foreground truncate text-xs font-normal">
+            {user.email}
+          </span>
+        </DropdownMenuLabel> */}
         <DropdownMenuItem>
           <Link href="/dashboard">Dashboard</Link>
         </DropdownMenuItem>

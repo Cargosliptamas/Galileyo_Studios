@@ -57,6 +57,10 @@ export function initAuth(options: {
         },
       },
     },
+    session: {
+      additionalFields: {
+      },
+    },
     baseURL: options.baseUrl,
     secret: options.secret,
     plugins: [
