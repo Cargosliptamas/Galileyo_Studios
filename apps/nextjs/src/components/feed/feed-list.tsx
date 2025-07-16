@@ -9,6 +9,7 @@ import type { FeedItem } from "@galileyo/api";
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import CommentsModal from "./comments-modal";
 import { Loader2 } from "lucide-react";
+import FeedCardSkeleton from "./feed-card-skeleton";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";
@@ -95,17 +96,17 @@ export default function FeedList() {
                 ))}
               </Fragment>
             ))}
-            <div>
+            <div className="grid grid-cols-1 gap-4 w-full">
               <button
                 ref={ref}
                 onClick={() => fetchNextPage()}
                 disabled={!hasNextPage || isFetchingNextPage}
               >
                 {isFetchingNextPage
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  ? <FeedCardSkeleton />
                   : hasNextPage
-                    ? 'Load Newer'
-                    : 'Nothing more to load'}
+                    ? <FeedCardSkeleton />
+                    : ''}
               </button>
             </div>
             <div>

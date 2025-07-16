@@ -1,11 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
 
-import type { FeedItem } from "@galileyo/api";
-import { AlertTriangle, Bookmark, Heart, MapPin, MessageCircle, MoreHorizontal, Satellite, Share, Verified } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@galileyo/ui/avatar";
+import type { FeedItem, InfluencerItem } from "@galileyo/api";
+import { AlertTriangle, Bookmark, Heart, MapPin, MessageCircle, MoreHorizontal, Satellite, Share } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@galileyo/ui/dropdown-menu";
 import { Separator } from "@galileyo/ui/separator";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
+import { UserAvatar } from "./user-avatar";
 
 export default function FeedCard({ item }: { item: FeedItem }) {
   const { openModal } = useCommentsModal();
@@ -64,8 +65,29 @@ export default function FeedCard({ item }: { item: FeedItem }) {
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={item.image} />
+              <UserAvatar
+                name={item.title}
+                image={(item as InfluencerItem).image ?? ''}
+                isVerified={isVerified}
+                isInfluencer={isInfluencer}
+              >
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <span>{item.title}</span>
+                  <span>•</span>
+                  <span>{item.created_at}</span>
+                  {item.location && (
+                    <>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        <span>{item.location}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </UserAvatar>
+              {/* <Avatar className="w-12 h-12">
+                <AvatarImage src={(item as InfluencerItem).image ?? ''} alt={item.title} />
                 <AvatarFallback className="bg-slate-700 text-white">
                   {(item.title || '').split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
@@ -96,7 +118,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                     </>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
             
             <DropdownMenu>
@@ -121,7 +143,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
           </div>
           
           {/* Post Type Badge */}
-          {getPostTypeIcon(item.type, item.emergency_level)}
+          {getPostTypeIcon(item.type, item.emergency_level ?? undefined)}
         </CardHeader>
 
         <CardContent className="pt-0">
@@ -171,7 +193,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                 }`}
               >
                 <Heart className={`w-5 h-5 ${item.is_liked ? 'fill-current' : ''}`} />
-                <span className="text-sm font-medium">{formatNumber(item.likes)}</span>
+                <span className="text-sm font-medium">{formatNumber(/*item.likes*/ 0)}</span>
               </button>
               
               <button className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors"

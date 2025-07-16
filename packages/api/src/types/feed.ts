@@ -67,3 +67,31 @@ export interface InfluencerItem extends BaseFeedItem {
 };
 
 export type FeedItem = NotSendedYetItem | FollowerListItem | FinancialItem | InfluencerItem;
+
+export interface Comment {
+  id: number;
+  id_user: number | null;
+  message: string;
+  created_at: string;
+  user: {
+    id: number;
+    email: string;
+    full_name: string;
+    first_name: string;
+    last_name: string;
+    photo: string | null;
+    country: string | null;
+    state: string | null;
+    zip: string | null;
+    full_state: string | null;
+    friend_status: string;
+    about: string | null;
+    is_phone_visible: boolean;
+    is_address_visible: boolean;
+    is_deleted: boolean;
+  };
+  replies: number;
+  can_reply: boolean;
+  id_parent: number | null;
+  is_deleted: boolean;
+}

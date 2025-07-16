@@ -24,7 +24,11 @@ import { navigationLinks } from "./navigation-items"
 import type { User } from "~/auth/client"
 
 export default function AuthNavbar({ user }: { user: User }) {
-  const id = useId()
+  const id = useId();
+
+  const handleCreatePost = () => {
+    console.log('create post');
+  }
 
   return (
     <header className="border-b px-4 md:px-6 sticky top-0 z-50 bg-background">
@@ -115,8 +119,12 @@ export default function AuthNavbar({ user }: { user: User }) {
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
           {/* <NotificationMenu /> */}
-          {/* User menu */}
-          <Button size="sm" className="text-sm max-sm:aspect-square max-sm:p-0">
+          
+          <Button
+            size="sm"
+            className="text-sm max-sm:aspect-square max-sm:p-0"
+            onClick={handleCreatePost}
+          >
             <PlusIcon
               className="opacity-60 sm:-ms-1"
               size={16}

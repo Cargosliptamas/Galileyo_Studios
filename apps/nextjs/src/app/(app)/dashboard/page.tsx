@@ -5,6 +5,7 @@ import { getSession } from "~/auth/server";
 // import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
 import FeedList from "~/components/feed/feed-list";
+import FeedCardSkeleton from "~/components/feed/feed-card-skeleton";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -22,7 +23,15 @@ export default async function DashboardPage() {
           Welcome, {session.user.firstName} {session.user.lastName}
         </p>
 
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+          <div className="space-y-4">
+            <FeedCardSkeleton />
+            <FeedCardSkeleton />
+            <FeedCardSkeleton />
+            <FeedCardSkeleton />
+            <FeedCardSkeleton />
+          </div>
+        }>
           <FeedList />
         </Suspense>
       </main>
