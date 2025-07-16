@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { 
-  MapPin, Link as LinkIcon, Calendar, Settings, Shield, Radio, ArrowLeft,
-  User, Mail, Lock, Bell, Globe, Camera, Trash2, Save, X, Phone, Key,
-  UserRoundIcon
+  Shield, Radio, Bell, Globe, Camera, Trash2, Save, X, Phone,
+  UserRoundIcon,
+  User,
+  ArrowLeft,
+  Settings
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -13,26 +15,6 @@ import { Input } from '@galileyo/ui/input';
 import { Label } from '@galileyo/ui/label';
 import { Textarea } from '@galileyo/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
-
-interface ProfileProps {
-  currentUser: {
-    id: string;
-    name: string;
-    role: string;
-    avatar: string;
-    coverImage: string;
-    verified: boolean;
-    location: string;
-    website: string;
-    joinDate: string;
-    stats: {
-      followers: string;
-      following: string;
-      posts: string;
-    };
-    badges: string[];
-  };
-}
 
 export default function Profile() {
   const router = useRouter();
@@ -46,12 +28,12 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     name: currentUser.full_name,
     email: currentUser.email,
-    phone: currentUser.phone || '',
+    phone: currentUser.phone ?? '',
     location: '',
     language: 'English',
     website: '',
     bio: currentUser.about || '',
-    photo: currentUser.photo,
+    photo: currentUser.photo || '',
     timezone: 'America/New_York',
     emailNotifications: true,
     pushNotifications: true,
@@ -85,7 +67,7 @@ export default function Profile() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className='UserRoundIcon h-24 w-24'>
-              <AvatarImage src={currentUser.photo ?? ""} alt={currentUser.full_name} />
+              <AvatarImage src={currentUser.photo} alt={currentUser.full_name} />
               <AvatarFallback>
                 <UserRoundIcon size={16} className="opacity-60" aria-hidden="true" />
               </AvatarFallback>
@@ -462,7 +444,7 @@ export default function Profile() {
     <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/dashboard')}
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />

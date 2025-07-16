@@ -46,7 +46,7 @@ export function UserMenu({ user }: { user: User }) {
           <Link href="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/settings">Settings</Link>
+          <Link href="/profile">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>

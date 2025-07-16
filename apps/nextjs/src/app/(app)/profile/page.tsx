@@ -15,17 +15,10 @@ export default async function ProfilePage() {
 
   return (
     <HydrateClient>
-      <main className="container py-16">
-        <h1 className="text-2xl font-bold">Profile</h1>
-        <p>
-          Welcome, {session.user.firstName} {session.user.lastName}
-        </p>
-
-        <Suspense fallback={<div>Loading...</div>}>
-          <Profile />
-          {/* <Debug /> */}
-        </Suspense>
-      </main>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Profile />
+        {/* <Debug /> */}
+      </Suspense>
     </HydrateClient>
   );
 }

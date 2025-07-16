@@ -22,6 +22,8 @@ export const profileRouter = {
       },
     );
 
+    console.log(profile);
+
     const result = (await profile.json()) as {
       status: "success" | "error";
       data: {
