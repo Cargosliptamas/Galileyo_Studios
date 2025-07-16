@@ -24,16 +24,16 @@ export const SendMagicLinkEmail = ({ url }: SendMagicLinkEmailProps) => (
       <Preview>Your login code for Linear</Preview>
       <Container style={container}>
         <Img
-          src={`http://localhost:3000/static/logo-galileo.png`}
-          width="100"
-          height="100"
-          alt="Galileo"
+          src={`https://galileyo.com/assets/f79669c4/img/logo-galileyo.png`}
+          // width="100"
+          // height="100"
+          alt="Galileyo"
           style={logo}
         />
-        <Heading style={heading}>Your login link for Galileo</Heading>
+        <Heading style={heading}>Your login link for Galileyo</Heading>
         <Section style={buttonContainer}>
           <Button style={button} href={url}>
-            Login to Galileo
+            Login to Galileyo
           </Button>
         </Section>
         <Text style={paragraph}>
@@ -47,11 +47,11 @@ export const SendMagicLinkEmail = ({ url }: SendMagicLinkEmailProps) => (
         </Text>
         <Text style={paragraph}>
           If you have any questions, please contact us at{" "}
-          <Link href="mailto:support@galileo.com">support@galileo.com</Link>.
+          <Link href="mailto:support@galileyo.com">support@galileyo.com</Link>.
         </Text>
         <Hr style={hr} />
         <Link href="http://localhost:3000" style={reportLink}>
-          Galileo
+          Galileyo
         </Link>
       </Container>
     </Body>

@@ -22,3 +22,4 @@ type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 export { createTRPCContext, appRouter };
 export type { AppRouter, RouterInputs, RouterOutputs };
+export * from "./types";

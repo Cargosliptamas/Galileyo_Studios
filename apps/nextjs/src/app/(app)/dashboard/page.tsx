@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { getSession } from "~/auth/server";
-import { Debug } from "~/components/dashboard/debug";
+// import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
-import FeedCard from "~/components/feed/feed-card";
+import FeedList from "~/components/feed/feed-list";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  prefetch(trpc.post.all.queryOptions());
+  prefetch(trpc.feed.getLatestNews.infiniteQueryOptions({ limit: 10, cursor: 1 }));
 
   return (
     <HydrateClient>
@@ -22,10 +22,8 @@ export default async function DashboardPage() {
           Welcome, {session.user.firstName} {session.user.lastName}
         </p>
 
-        <FeedCard />
-
         <Suspense fallback={<div>Loading...</div>}>
-          <Debug />
+          <FeedList />
         </Suspense>
       </main>
     </HydrateClient>

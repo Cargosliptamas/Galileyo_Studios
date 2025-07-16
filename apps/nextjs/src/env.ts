@@ -17,6 +17,12 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
+    EMAIL_IS_SECURE: z.coerce.boolean().default(false),
+    EMAIL_HOST: z.string().default("localhost"),
+    EMAIL_PORT: z.coerce.number().default(1026),
+    EMAIL_USER: z.string().nullish().default(null),
+    EMAIL_PASSWORD: z.string().nullish().default(null),
+    EMAIL_FROM: z.string().default("no-reply@galileyo.com"),
   },
 
   /**
