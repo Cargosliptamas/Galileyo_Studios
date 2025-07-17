@@ -159,42 +159,42 @@ const Blog = () => {
   const regularPosts = filteredPosts.filter(post => !post.featured);
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Header */}
-      <section className="py-16 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <section className="py-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
             Galileyo Blog
           </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Stay informed with the latest insights on satellite communications, emergency preparedness, and technology updates.
           </p>
         </div>
       </section>
 
       {/* Search and Filters */}
-      <section className="py-8 bg-slate-900/50">
+      <section className="py-8 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500 dark:text-slate-400" />
               <input
                 type="text"
                 placeholder="Search articles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               />
             </div>
 
             {/* Category Filter */}
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-slate-400" />
+              <Filter className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               >
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
@@ -212,11 +212,11 @@ const Blog = () => {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">Featured Article</h2>
-              <p className="text-slate-400">Our latest and most important updates</p>
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Featured Article</h2>
+              <p className="text-slate-600 dark:text-slate-400">Our latest and most important updates</p>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden hover:border-slate-600 transition-colors">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
               <div className="aspect-video lg:aspect-square">
                 <img
                   src={featuredPost.image}
@@ -226,7 +226,7 @@ const Blog = () => {
               </div>
               <div className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 text-sm font-medium rounded-full flex items-center gap-1">
+                  <span className="px-3 py-1 bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-sm font-medium rounded-full flex items-center gap-1">
                     {getCategoryIcon(featuredPost.category)}
                     {categories.find(cat => cat.id === featuredPost.category)?.name}
                   </span>
@@ -235,21 +235,21 @@ const Blog = () => {
                   </span>
                 </div>
                 
-                <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">
+                <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-4">
                   {featuredPost.title}
                 </h3>
                 
-                <p className="text-slate-300 mb-6 leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
                   {featuredPost.excerpt}
                 </p>
                 
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4 text-sm text-slate-400">
+                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
                       {featuredPost.author}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" suppressHydrationWarning>
                       <Calendar className="w-4 h-4" />
                       {new Date(featuredPost.date).toLocaleDateString()}
                     </div>
@@ -260,7 +260,7 @@ const Blog = () => {
                   </div>
                 </div>
                 
-                <button className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+                <button className="inline-flex items-center gap-2 text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 font-medium transition-colors">
                   Read Full Article
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -275,15 +275,15 @@ const Blog = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {regularPosts.length === 0 ? (
             <div className="text-center py-12">
-              <Search className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No articles found</h3>
-              <p className="text-slate-400">Try adjusting your search terms or category filter.</p>
+              <Search className="w-16 h-16 text-slate-400 dark:text-slate-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No articles found</h3>
+              <p className="text-slate-600 dark:text-slate-400">Try adjusting your search terms or category filter.</p>
             </div>
           ) : (
             <>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Latest Articles</h2>
-                <p className="text-slate-400">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Latest Articles</h2>
+                <p className="text-slate-600 dark:text-slate-400">
                   {regularPosts.length} article{regularPosts.length !== 1 ? 's' : ''} found
                 </p>
               </div>
@@ -292,7 +292,7 @@ const Blog = () => {
                 {regularPosts.map((post) => (
                   <article
                     key={post.id}
-                    className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-slate-600 hover:transform hover:scale-105 transition-all duration-300"
+                    className="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-600 hover:transform hover:scale-105 transition-all duration-300"
                   >
                     <div className="aspect-video">
                       <img
@@ -304,21 +304,21 @@ const Blog = () => {
                     
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2 py-1 bg-slate-700 text-slate-300 text-xs font-medium rounded flex items-center gap-1">
+                        <span className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium rounded flex items-center gap-1">
                           {getCategoryIcon(post.category)}
                           {categories.find(cat => cat.id === post.category)?.name}
                         </span>
                       </div>
                       
-                      <h3 className="text-xl font-bold text-white mb-3 line-clamp-2">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2">
                         {post.title}
                       </h3>
                       
-                      <p className="text-slate-300 mb-4 line-clamp-3">
+                      <p className="text-slate-600 dark:text-slate-300 mb-4 line-clamp-3">
                         {post.excerpt}
                       </p>
                       
-                      <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
+                      <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 mb-4">
                         <div className="flex items-center gap-1">
                           <User className="w-3 h-3" />
                           {post.author}
@@ -330,10 +330,10 @@ const Blog = () => {
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400 text-sm">
+                        <span className="text-slate-500 dark:text-slate-400 text-sm" suppressHydrationWarning>
                           {new Date(post.date).toLocaleDateString()}
                         </span>
-                        <button className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+                        <button className="inline-flex items-center gap-1 text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 font-medium transition-colors">
                           Read More
                           <ArrowRight className="w-4 h-4" />
                         </button>
@@ -347,15 +347,15 @@ const Blog = () => {
 
           {/* Newsletter Signup */}
           <div className="mt-16 p-8 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Stay Updated</h3>
-            <p className="text-slate-300 mb-6">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Stay Updated</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
               Subscribe to our newsletter for the latest articles, product updates, and emergency preparedness tips.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               />
               <button className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold rounded-lg transition-colors">
                 Subscribe

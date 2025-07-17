@@ -14,9 +14,9 @@ export default function HomePage() {
 
   return (
     <HydrateClient>
-      <main className="container">
+      {/* <main className="container"> */}
         <HomePageComponent />
-      </main>
+      {/* </main> */}
     </HydrateClient>
   );
 }

@@ -69,14 +69,14 @@ const ContactUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Header */}
-      <section className="py-16 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <section className="py-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
             Get in Touch
           </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Need help with your satellite communication setup? Our expert team is here to assist you 24/7.
           </p>
         </div>
@@ -87,20 +87,20 @@ const ContactUs = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {contactMethods.map((method, index) => (
-              <div key={index} className="p-6 bg-slate-800/50 border border-slate-700 rounded-xl hover:border-slate-600 transition-colors">
-                <div className="text-cyan-400 mb-4">
+              <div key={index} className="p-6 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                <div className="text-cyan-500 dark:text-cyan-400 mb-4">
                   {method.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                   {method.title}
                 </h3>
-                <p className="text-slate-300 text-sm mb-3">
+                <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                   {method.description}
                 </p>
-                <p className="text-cyan-400 font-medium mb-1">
+                <p className="text-cyan-500 dark:text-cyan-400 font-medium mb-1">
                   {method.contact}
                 </p>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-500 dark:text-slate-400 text-sm">
                   {method.available}
                 </p>
               </div>
@@ -110,8 +110,8 @@ const ContactUs = () => {
           {/* Contact Form */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-3xl font-bold text-white mb-6">Send us a Message</h2>
-              <p className="text-slate-300 mb-8">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">Send us a Message</h2>
+              <p className="text-slate-600 dark:text-slate-300 mb-8">
                 Fill out the form below and we'll get back to you as soon as possible. For urgent matters, please use our emergency hotline.
               </p>
 
@@ -125,7 +125,7 @@ const ContactUs = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Full Name
                     </label>
                     <input
@@ -135,12 +135,12 @@ const ContactUs = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                       placeholder="John Doe"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Email Address
                     </label>
                     <input
@@ -150,14 +150,14 @@ const ContactUs = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                       placeholder="john@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Subject
                   </label>
                   <input
@@ -167,13 +167,13 @@ const ContactUs = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                     placeholder="How can we help you?"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="priority" className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="priority" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Priority Level
                   </label>
                   <select
@@ -181,7 +181,7 @@ const ContactUs = () => {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                   >
                     <option value="low">Low - General inquiry</option>
                     <option value="normal">Normal - Standard support</option>
@@ -191,7 +191,7 @@ const ContactUs = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Message
                   </label>
                   <textarea
@@ -201,7 +201,7 @@ const ContactUs = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                     placeholder="Please describe your issue or question in detail..."
                   />
                 </div>
@@ -218,14 +218,14 @@ const ContactUs = () => {
 
             {/* Contact Info */}
             <div className="lg:pl-8">
-              <h3 className="text-2xl font-bold text-white mb-6">Contact Information</h3>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Contact Information</h3>
               
               <div className="space-y-6 mb-8">
                 <div className="flex items-start gap-4">
-                  <MapPin className="w-6 h-6 text-cyan-400 mt-1" />
+                  <MapPin className="w-6 h-6 text-cyan-500 dark:text-cyan-400 mt-1" />
                   <div>
-                    <h4 className="text-white font-medium mb-1">Headquarters</h4>
-                    <p className="text-slate-300">
+                    <h4 className="text-slate-900 dark:text-white font-medium mb-1">Headquarters</h4>
+                    <p className="text-slate-600 dark:text-slate-300">
                       1234 Satellite Drive<br />
                       Houston, TX 77058<br />
                       United States
@@ -234,10 +234,10 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <Clock className="w-6 h-6 text-cyan-400 mt-1" />
+                  <Clock className="w-6 h-6 text-cyan-500 dark:text-cyan-400 mt-1" />
                   <div>
-                    <h4 className="text-white font-medium mb-1">Support Hours</h4>
-                    <p className="text-slate-300">
+                    <h4 className="text-slate-900 dark:text-white font-medium mb-1">Support Hours</h4>
+                    <p className="text-slate-600 dark:text-slate-300">
                       Emergency Support: 24/7<br />
                       General Support: Mon-Fri 9AM-6PM EST<br />
                       Technical Support: Mon-Fri 8AM-8PM EST
@@ -248,8 +248,8 @@ const ContactUs = () => {
                 <div className="flex items-start gap-4">
                   <AlertTriangle className="w-6 h-6 text-orange-400 mt-1" />
                   <div>
-                    <h4 className="text-white font-medium mb-1">Emergency Protocol</h4>
-                    <p className="text-slate-300">
+                    <h4 className="text-slate-900 dark:text-white font-medium mb-1">Emergency Protocol</h4>
+                    <p className="text-slate-600 dark:text-slate-300">
                       For life-threatening emergencies, contact local emergency services first (911). 
                       Our emergency hotline is for satellite communication emergencies and technical failures.
                     </p>
@@ -258,12 +258,12 @@ const ContactUs = () => {
               </div>
 
               {/* FAQ Link */}
-              <div className="p-6 bg-slate-800/50 border border-slate-700 rounded-xl">
-                <h4 className="text-white font-semibold mb-3">Need Quick Answers?</h4>
-                <p className="text-slate-300 mb-4">
+              <div className="p-6 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <h4 className="text-slate-900 dark:text-white font-semibold mb-3">Need Quick Answers?</h4>
+                <p className="text-slate-600 dark:text-slate-300 mb-4">
                   Check our FAQ section for instant answers to common questions about setup, billing, and troubleshooting.
                 </p>
-                <button className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+                <button className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-600 dark:hover:text-cyan-300 font-medium transition-colors">
                   View FAQ →
                 </button>
               </div>

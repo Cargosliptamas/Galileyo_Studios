@@ -18,15 +18,15 @@ export function UserAvatar({
     <div className="flex items-center gap-2">
       <Avatar className="w-12 h-12">
         <AvatarImage src={image ?? ''} alt={name} />
-        <AvatarFallback className="bg-slate-700 text-white">
+        <AvatarFallback className="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white">
           {(name).split(' ').map(n => n[0]).join('')}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-white">{name}</h3>
+          <h3 className="font-semibold text-slate-900 dark:text-white">{name}</h3>
           {isVerified && (
-            <Verified className="w-4 h-4 text-cyan-400 fill-current" />
+            <Verified className="w-4 h-4 text-cyan-500 dark:text-cyan-400 fill-current" />
           )}
           {isInfluencer && (
             <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-medium rounded">

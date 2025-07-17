@@ -22,6 +22,7 @@ import { AppIcon } from "../app-icon"
 
 import { navigationLinks } from "./navigation-items"
 import type { User } from "~/auth/client"
+import { ThemeToggle } from "@galileyo/ui/theme"
 
 export default function AuthNavbar({ user }: { user: User }) {
   const id = useId();
@@ -119,7 +120,7 @@ export default function AuthNavbar({ user }: { user: User }) {
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
           {/* <NotificationMenu /> */}
-          
+          <ThemeToggle />
           <Button
             size="sm"
             className="text-sm max-sm:aspect-square max-sm:p-0"

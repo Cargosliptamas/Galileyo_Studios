@@ -12,6 +12,7 @@ import {
   HelpCircle,
   MessageSquare
 } from 'lucide-react';
+import { fuzzySearch } from '~/lib/fuzzy-search';
 
 const FAQ = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -129,39 +130,38 @@ const FAQ = () => {
   };
 
   const filteredFAQs = faqItems.filter(item => {
-    const matchesSearch = item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.answer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = fuzzySearch(searchTerm, item.question) || fuzzySearch(searchTerm, item.answer);
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Header */}
-      <section className="py-16 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <section className="py-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Find answers to common questions about Galileyo satellite communications, setup, and features.
           </p>
         </div>
       </section>
 
       {/* Search and Filters */}
-      <section className="py-8 bg-slate-900/50">
+      <section className="py-8 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500 dark:text-slate-400" />
               <input
                 type="text"
                 placeholder="Search questions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                className="w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ const FAQ = () => {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                   activeCategory === category.id
                     ? 'bg-cyan-500 text-white'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                 }`}
               >
                 {category.icon}
@@ -191,35 +191,35 @@ const FAQ = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {filteredFAQs.length === 0 ? (
             <div className="text-center py-12">
-              <HelpCircle className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No questions found</h3>
-              <p className="text-slate-400">Try adjusting your search terms or category filter.</p>
+              <HelpCircle className="w-16 h-16 text-slate-400 dark:text-slate-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No questions found</h3>
+              <p className="text-slate-600 dark:text-slate-400">Try adjusting your search terms or category filter.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {filteredFAQs.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-hidden hover:border-slate-600 transition-colors"
+                  className="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
                 >
                   <button
                     onClick={() => toggleItem(item.id)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-800/70 transition-colors"
+                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-100/70 dark:hover:bg-slate-800/70 transition-colors"
                   >
-                    <h3 className="text-lg font-medium text-white pr-4">
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white pr-4">
                       {item.question}
                     </h3>
                     {openItems.includes(item.id) ? (
-                      <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                      <ChevronUp className="w-5 h-5 text-slate-500 dark:text-slate-400 flex-shrink-0" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                      <ChevronDown className="w-5 h-5 text-slate-500 dark:text-slate-400 flex-shrink-0" />
                     )}
                   </button>
                   
                   {openItems.includes(item.id) && (
                     <div className="px-6 pb-4">
-                      <div className="border-t border-slate-700 pt-4">
-                        <p className="text-slate-300 leading-relaxed">
+                      <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                           {item.answer}
                         </p>
                       </div>
@@ -232,15 +232,15 @@ const FAQ = () => {
 
           {/* Contact Support */}
           <div className="mt-16 p-8 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Still have questions?</h3>
-            <p className="text-slate-300 mb-6">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Still have questions?</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
               Can't find what you're looking for? Our support team is available 24/7 to help you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold rounded-lg transition-colors">
                 Contact Support
               </button>
-              <button className="px-6 py-3 border border-slate-600 hover:border-slate-500 text-white font-semibold rounded-lg transition-colors">
+              <button className="px-6 py-3 border border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors">
                 Live Chat
               </button>
             </div>

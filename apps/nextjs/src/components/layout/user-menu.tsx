@@ -42,10 +42,10 @@ export function UserMenu({ user }: { user: User }) {
             {user.email}
           </span>
         </DropdownMenuLabel> */}
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/profile">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>

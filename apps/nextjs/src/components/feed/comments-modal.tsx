@@ -53,7 +53,7 @@ function CommentComponent({
   const [isExpanded, setIsExpanded] = useState(false);
     
   return (
-    <div className={`${isReply ? 'ml-12 border-l-2 border-slate-700 pl-4' : ''}`}>
+    <div className={`${isReply ? 'ml-12 border-l-2 border-slate-200 dark:border-slate-700 pl-4' : ''}`}>
       <div className="flex gap-3 mb-4">
         {/* <Avatar className="w-10 h-10">
           <AvatarImage src={comment.user.photo ?? ''} />
@@ -86,13 +86,13 @@ function CommentComponent({
             isVerified={false}
             isInfluencer={false}
           >
-            <div className="flex items-center gap-1 text-slate-500 text-xs">
+            <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs">
               <Clock className="w-3 h-3" />
               {new Date(comment.created_at).toLocaleString()}
             </div>
           </UserAvatar>
           
-          <p className="text-slate-200 text-sm mb-3 leading-relaxed">{comment.message}</p>
+          <p className="text-sm mb-3 leading-relaxed">{comment.message}</p>
           
           <div className="flex items-center gap-4">
             {/* <button 
@@ -110,7 +110,7 @@ function CommentComponent({
             {!isReply && (
               <button 
                 onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                className="flex items-center gap-1 text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+                className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
               >
                 <Reply className="w-4 h-4" />
                 Reply
@@ -119,18 +119,18 @@ function CommentComponent({
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors">
+                <button className="p-1 ext-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
                   <MoreHorizontal className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-slate-800 border-slate-700">
-                <DropdownMenuItem className="text-slate-300 hover:bg-slate-700">
+              <DropdownMenuContent>
+                <DropdownMenuItem>
                   Follow {comment.user.full_name}
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-slate-300 hover:bg-slate-700">
+                <DropdownMenuItem>
                   Mute {comment.user.full_name}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-slate-700" />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-400 hover:bg-slate-700">
                   Report Comment
                 </DropdownMenuItem>
@@ -150,7 +150,7 @@ function CommentComponent({
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder={`Reply to ${comment.user.full_name}...`}
-                  className="w-full p-2 bg-slate-900 border border-slate-600 rounded text-white placeholder-slate-400 text-sm resize-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                  className="w-full p-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 text-sm resize-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                   rows={2}
                 />
                 <div className="flex items-center justify-between mt-2">
@@ -162,7 +162,7 @@ function CommentComponent({
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setReplyingTo(null)}
-                      className="px-3 py-1 text-slate-400 hover:text-white text-sm transition-colors"
+                      className="px-3 py-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors"
                     >
                       Cancel
                     </button>
@@ -427,9 +427,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] bg-slate-900 border-slate-700 text-white">
+      <DialogContent className="max-w-2xl max-h-[80vh] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
             Comments ({post.comment_quantity})
           </DialogTitle>
         </DialogHeader>
@@ -477,14 +477,14 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Add a comment..."
-              className="w-full p-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 resize-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 resize-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               rows={3}
               maxLength={280}
               disabled={isLoading}
             />
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-3">
-                <button className="text-slate-400 hover:text-cyan-400 transition-colors">
+                <button className="text-slate-500 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
                   <Smile className="w-5 h-5" />
                 </button>
                 <span className="text-slate-500 text-sm">
@@ -494,7 +494,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
               <button 
                 onClick={handleSubmitComment}
                 className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-                disabled={!newComment.trim()}
+                disabled={!newComment.trim() || isLoading}
               >
                 <Send className="w-4 h-4" />
                 Comment

@@ -6,9 +6,9 @@ import BlogPageComponent from "~/components/public-site/blog";
 export default function BlogPage() {
   return (
     <HydrateClient>
-      <main className="container">
+      {/* <main className="container"> */}
         <BlogPageComponent />
-      </main>
+      {/* </main> */}
     </HydrateClient>
   );
 }

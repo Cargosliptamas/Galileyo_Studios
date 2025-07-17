@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Separator } from "@galileyo/ui/separator";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { UserAvatar } from "./user-avatar";
+import { Button } from "@galileyo/ui/button";
 
 export default function FeedCard({ item }: { item: FeedItem }) {
   const { openModal } = useCommentsModal();
@@ -61,7 +62,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
 
   return (
     // <Card className="max-w-3xl mx-auto">
-    <Card className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-colors">
+    <Card className="bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
@@ -71,7 +72,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                 isVerified={isVerified}
                 isInfluencer={isInfluencer}
               >
-                <div className="flex items-center gap-2 text-sm text-slate-400">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                   <span>{item.title}</span>
                   <span>•</span>
                   <span>{item.created_at}</span>
@@ -123,19 +124,19 @@ export default function FeedCard({ item }: { item: FeedItem }) {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition-colors">
+                <Button variant="ghost" size="icon">
                   <MoreHorizontal className="w-5 h-5" />
-                </button>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-slate-800 border-slate-700">
-                <DropdownMenuItem className="text-slate-300 hover:bg-slate-700">
+              <DropdownMenuContent>
+                <DropdownMenuItem>
                   Follow {item.title}
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-slate-300 hover:bg-slate-700">
+                <DropdownMenuItem>
                   Mute {item.title}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-slate-700" />
-                <DropdownMenuItem className="text-red-400 hover:bg-slate-700">
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-500 dark:text-red-400 hover:bg-slate-700">
                   Report Post
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -148,7 +149,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
 
         <CardContent className="pt-0">
           {/* Post Content */}
-          <p className="text-slate-200 mb-4 leading-relaxed">{item.body}</p>
+          <p className="mb-4 leading-relaxed">{item.body}</p>
           
           {/* Post Image */}
           {item.images.length > 0 && (
@@ -179,7 +180,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
             </div>
           )} */}
 
-          <Separator className="my-4 bg-slate-700" />
+          <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
 
           {/* Post Actions */}
           <div className="flex items-center justify-between">
@@ -189,21 +190,21 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                 className={`flex items-center gap-2 transition-colors ${
                   item.is_liked ?? false
                     ? 'text-red-400 hover:text-red-300' 
-                    : 'text-slate-400 hover:text-red-400'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-red-400'
                 }`}
               >
                 <Heart className={`w-5 h-5 ${item.is_liked ? 'fill-current' : ''}`} />
                 <span className="text-sm font-medium">{formatNumber(/*item.likes*/ 0)}</span>
               </button>
               
-              <button className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors"
+              <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
                 onClick={() => openModal(item)}
               >
                 <MessageCircle className="w-5 h-5" />
                 <span className="text-sm font-medium">{formatNumber(item.comment_quantity)}</span>
               </button>
               
-              <button className="flex items-center gap-2 text-slate-400 hover:text-green-400 transition-colors">
+              <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-green-400 transition-colors">
                 <Share className="w-5 h-5" />
                 <span className="text-sm font-medium">{formatNumber(0)}</span>
               </button>
@@ -214,7 +215,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
               className={`p-2 rounded-full transition-colors ${
                 item.is_bookmarked ?? false
                   ? 'text-yellow-400 hover:text-yellow-300' 
-                  : 'text-slate-400 hover:text-yellow-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-yellow-400'
               }`}
             >
               <Bookmark className={`w-5 h-5 ${item.is_bookmarked ? 'fill-current' : ''}`} />
