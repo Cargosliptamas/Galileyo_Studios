@@ -1,21 +1,11 @@
 "use client";
 
-import PublicNavbar from "./layout/public-navbar";
-import AuthNavbar from "./layout/auth-navbar";
 import type { User } from "~/auth/client";
+import AuthNavbar from "./layout/auth-navbar";
+import PublicNavbar from "./layout/public-navbar";
 
 export function SiteHeader({ user }: { user: User | undefined }) {
-  return (
-    <>
-      {
-        user ? (
-          <AuthNavbar user={user} />
-        ) : (
-          <PublicNavbar />
-        )
-      }
-    </>
-  );
+  return <>{user ? <AuthNavbar user={user} /> : <PublicNavbar />}</>;
 
   // return (
   //   <header className="sticky top-0 z-50 w-full bg-background">

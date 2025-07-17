@@ -58,8 +58,7 @@ export function initAuth(options: {
       },
     },
     session: {
-      additionalFields: {
-      },
+      additionalFields: {},
     },
     baseURL: options.baseUrl,
     secret: options.secret,

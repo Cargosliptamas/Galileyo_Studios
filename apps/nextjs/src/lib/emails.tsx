@@ -2,6 +2,7 @@ import { render } from "@react-email/components";
 import nodemailer from "nodemailer";
 
 import { SendMagicLinkEmail } from "@galileyo/emails/emails/send-magic-link";
+
 import { env } from "~/env";
 
 // import { env } from '~/env';

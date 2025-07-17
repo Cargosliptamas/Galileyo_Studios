@@ -1,6 +1,6 @@
 import { authRouter } from "./router/auth";
-import { feedRouter } from "./router/feed";
 import { commentRouter } from "./router/comment";
+import { feedRouter } from "./router/feed";
 import { postRouter } from "./router/post";
 import { profileRouter } from "./router/profile";
 import { createTRPCRouter } from "./trpc";

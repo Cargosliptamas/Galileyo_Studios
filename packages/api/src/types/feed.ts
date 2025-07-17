@@ -7,7 +7,7 @@ export interface FeedItemImageType {
     height: number;
     name: string;
   }[];
-};
+}
 
 export interface BaseFeedItem {
   type: string;
@@ -17,7 +17,7 @@ export interface BaseFeedItem {
   location: string | null;
   is_liked: boolean | null;
   is_bookmarked: boolean | null;
-};
+}
 
 export interface FollowerListItem extends BaseFeedItem {
   image: string | null;
@@ -28,7 +28,7 @@ export interface FollowerListItem extends BaseFeedItem {
   reactions: unknown[];
   images: FeedItemImageType[];
   comment_quantity: number;
-};
+}
 
 export interface NotSendedYetItem extends BaseFeedItem {
   title: string;
@@ -40,7 +40,7 @@ export interface NotSendedYetItem extends BaseFeedItem {
   reactions: unknown[];
   images: FeedItemImageType[];
   comment_quantity: number;
-};
+}
 
 export interface FinancialItem extends BaseFeedItem {
   title: string;
@@ -52,7 +52,7 @@ export interface FinancialItem extends BaseFeedItem {
   reactions: unknown[];
   images: FeedItemImageType[];
   comment_quantity: number;
-};
+}
 
 export interface InfluencerItem extends BaseFeedItem {
   image: string | null;
@@ -64,9 +64,13 @@ export interface InfluencerItem extends BaseFeedItem {
   reactions: unknown[];
   images: FeedItemImageType[];
   comment_quantity: number;
-};
+}
 
-export type FeedItem = NotSendedYetItem | FollowerListItem | FinancialItem | InfluencerItem;
+export type FeedItem =
+  | NotSendedYetItem
+  | FollowerListItem
+  | FinancialItem
+  | InfluencerItem;
 
 export interface Comment {
   id: number;

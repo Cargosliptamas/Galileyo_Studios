@@ -8,6 +8,10 @@
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts",
       "api-types": "./src/types/index.ts"
+    },
+    "./schemas": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./src/types/index.ts"
     }
   },
   "license": "MIT",

@@ -2,10 +2,10 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { getSession } from "~/auth/server";
+import FeedCardSkeleton from "~/components/feed/feed-card-skeleton";
+import FeedList from "~/components/feed/feed-list";
 // import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
-import FeedList from "~/components/feed/feed-list";
-import FeedCardSkeleton from "~/components/feed/feed-card-skeleton";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -13,7 +13,9 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  prefetch(trpc.feed.getLatestNews.infiniteQueryOptions({ limit: 10, cursor: 1 }));
+  prefetch(
+    trpc.feed.getLatestNews.infiniteQueryOptions({ limit: 10, cursor: 1 }),
+  );
 
   return (
     <HydrateClient>
@@ -23,15 +25,17 @@ export default async function DashboardPage() {
           Welcome, {session.user.firstName} {session.user.lastName}
         </p>
 
-        <Suspense fallback={
-          <div className="space-y-4">
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-          </div>
-        }>
+        <Suspense
+          fallback={
+            <div className="space-y-4">
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+            </div>
+          }
+        >
           <FeedList />
         </Suspense>
       </main>

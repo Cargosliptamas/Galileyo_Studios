@@ -1,38 +1,36 @@
-"use client"
+"use client";
 
-import { useId } from "react"
-import { PlusIcon, SearchIcon } from "lucide-react"
-import Link from "next/link"
+import { useId } from "react";
+import Link from "next/link";
+import { PlusIcon, SearchIcon } from "lucide-react";
+import { toast } from "sonner";
 
-import { Button } from "@galileyo/ui/button"
-import { Input } from "@galileyo/ui/input"
+import { Button } from "@galileyo/ui/button";
+import { Input } from "@galileyo/ui/input";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@galileyo/ui/navigation-menu"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@galileyo/ui/popover"
-import { UserMenu } from "./user-menu"
-import { AppIcon } from "../app-icon"
+} from "@galileyo/ui/navigation-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
+import { ThemeToggle } from "@galileyo/ui/theme";
 
-import { navigationLinks } from "./navigation-items"
-import type { User } from "~/auth/client"
-import { ThemeToggle } from "@galileyo/ui/theme"
+import type { User } from "~/auth/client";
+import { AppIcon } from "../app-icon";
+import { navigationLinks } from "./navigation-items";
+import { UserMenu } from "./user-menu";
 
 export default function AuthNavbar({ user }: { user: User }) {
   const id = useId();
 
   const handleCreatePost = () => {
-    console.log('create post');
-  }
+    console.log("create post");
+    toast("Loading more...");
+  };
 
   return (
-    <header className="border-b px-4 md:px-6 sticky top-0 z-50 bg-background">
+    <header className="sticky top-0 z-50 border-b bg-background px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
@@ -58,15 +56,15 @@ export default function AuthNavbar({ user }: { user: User }) {
                 >
                   <path
                     d="M4 12L20 12"
-                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center -translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.8)] origin-center transition-all duration-300 group-aria-expanded:rotate-45"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
                   />
                 </svg>
               </Button>
@@ -91,7 +89,7 @@ export default function AuthNavbar({ user }: { user: User }) {
           </Popover>
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="#" className="text-primary hover:text-primary/90">
+            <Link href="/dashboard" className="text-primary hover:text-primary/90">
               <AppIcon />
             </Link>
           </div>
@@ -102,15 +100,15 @@ export default function AuthNavbar({ user }: { user: User }) {
           <div className="relative mx-auto w-full max-w-xs">
             <Input
               id={id}
-              className="peer h-8 ps-8 pe-10"
+              className="peer h-8 pe-10 ps-8"
               placeholder="Search..."
               type="search"
             />
-            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
+            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/80 peer-disabled:opacity-50">
               <SearchIcon size={16} />
             </div>
-            <div className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-2">
-              <kbd className="text-muted-foreground/70 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-2 text-muted-foreground">
+              <kbd className="inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                 ⌘K
               </kbd>
             </div>
@@ -146,7 +144,7 @@ export default function AuthNavbar({ user }: { user: User }) {
                 <NavigationMenuLink
                   asChild
                   // active={link.active}
-                  className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+                  className="py-1.5 font-medium text-muted-foreground hover:text-primary"
                 >
                   <Link href={link.href}>{link.label}</Link>
                 </NavigationMenuLink>
@@ -156,5 +154,5 @@ export default function AuthNavbar({ user }: { user: User }) {
         </NavigationMenu>
       </div>
     </header>
-  )
+  );
 }

@@ -1,24 +1,21 @@
-import Link from "next/link"
-import { Button } from "@galileyo/ui/button"
-import { ThemeToggle } from "@galileyo/ui/theme"
+import Link from "next/link";
+
+import { Button } from "@galileyo/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@galileyo/ui/navigation-menu"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@galileyo/ui/popover"
-import { AppIcon } from "../app-icon"
+} from "@galileyo/ui/navigation-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
+import { ThemeToggle } from "@galileyo/ui/theme";
 
-import { navigationLinks } from "./navigation-items"
+import { AppIcon } from "../app-icon";
+import { navigationLinks } from "./navigation-items";
 
 export default function PublicNavbar() {
   return (
-    <header className="border-b px-4 md:px-6 sticky top-0 z-50 bg-background">
+    <header className="sticky top-0 z-50 border-b bg-background px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -44,15 +41,15 @@ export default function PublicNavbar() {
                 >
                   <path
                     d="M4 12L20 12"
-                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center -translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.8)] origin-center transition-all duration-300 group-aria-expanded:rotate-45"
                   />
                   <path
                     d="M4 12H20"
-                    className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                    className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
                   />
                 </svg>
               </Button>
@@ -88,7 +85,7 @@ export default function PublicNavbar() {
                     <NavigationMenuLink
                       asChild
                       // active={link.active}
-                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+                      className="py-1.5 font-medium text-muted-foreground hover:text-primary"
                     >
                       <Link href={link.href}>{link.label}</Link>
                     </NavigationMenuLink>
@@ -110,5 +107,5 @@ export default function PublicNavbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

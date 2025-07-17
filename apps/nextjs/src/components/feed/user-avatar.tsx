@@ -1,5 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import { Verified } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 
 export function UserAvatar({
   name,
@@ -16,20 +17,25 @@ export function UserAvatar({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <Avatar className="w-12 h-12">
-        <AvatarImage src={image ?? ''} alt={name} />
-        <AvatarFallback className="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white">
-          {(name).split(' ').map(n => n[0]).join('')}
+      <Avatar className="h-12 w-12">
+        <AvatarImage src={image ?? ""} alt={name} />
+        <AvatarFallback className="bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white">
+          {name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-slate-900 dark:text-white">{name}</h3>
+        <div className="mb-1 flex items-center gap-2">
+          <h3 className="font-semibold text-slate-900 dark:text-white">
+            {name}
+          </h3>
           {isVerified && (
-            <Verified className="w-4 h-4 text-cyan-500 dark:text-cyan-400 fill-current" />
+            <Verified className="h-4 w-4 fill-current text-cyan-500 dark:text-cyan-400" />
           )}
           {isInfluencer && (
-            <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-medium rounded">
+            <span className="rounded bg-purple-500/20 px-2 py-0.5 text-xs font-medium text-purple-400">
               Influencer
             </span>
           )}

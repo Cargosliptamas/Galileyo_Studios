@@ -1,24 +1,36 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { GalleryVerticalEnd } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
 import { Input } from "@galileyo/ui/input";
 import { Label } from "@galileyo/ui/label";
+import { toast } from "@galileyo/ui/toast";
 
 import { authClient } from "~/auth/client";
+import { AppIcon } from "../app-icon";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{
+    email?: string;
+  }>({});
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
+      setIsLoading(true);
+      setErrors({});
 
       const { data, error } = await authClient.signIn.magicLink({
         /**
@@ -31,7 +43,31 @@ export function LoginForm({
         callbackURL: "/dashboard",
       });
 
-      console.log(data, error);
+      if (error) {
+        let errorMessage: string | null = null;
+
+        if (error.code === "USER_NOT_FOUND") {
+          setErrors({
+            email: "Invalid email address",
+          });
+          errorMessage = "Invalid email address";
+        }
+
+        if (error.code === "VALIDATION_ERROR") {
+          setErrors({
+            email: "Invalid email address",
+          });
+          errorMessage = "Invalid email address";
+        }
+
+        toast.error(errorMessage ?? "Something went wrong");
+      }
+
+      if (data?.status) {
+        setIsSuccess(true);
+      }
+
+      setIsLoading(false);
     },
     [email],
   );
@@ -41,38 +77,72 @@ export function LoginForm({
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
+            <div className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
+                <AppIcon />
               </div>
               <span className="sr-only">Galileyo</span>
-            </a>
+            </div>
             <h1 className="text-xl font-bold">Welcome to Galileyo</h1>
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <Link href="/sign-up" className="underline underline-offset-4">
                 Sign up
-              </a>
+              </Link>
             </div>
           </div>
           <div className="flex flex-col gap-6">
-            <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="me@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+            {isSuccess ? (
+              <Card className="animate-fade-in">
+                <CardHeader className="flex flex-col items-center gap-2">
+                  <div className="animate-bounce-in mb-2 flex h-12 w-12 items-center justify-center rounded-full">
+                    <CheckCircle2 className="size-12" />
+                  </div>
+                  <CardTitle className="text-2xl font-bold">
+                    Check your email!
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center gap-4">
+                  <p className="text-center text-base">
+                    We&apos;ve sent a magic link to{" "}
+                    <span className="inline-block rounded bg-secondary-foreground px-2 py-1 font-semibold text-secondary shadow-sm">
+                      {email}
+                    </span>
+                    .<br />
+                    Please check your inbox and follow the link to log in.
+                  </p>
+                  <p className="text-center text-sm">
+                    <span className="font-semibold">
+                      Don&apos;t forget to check your spam or junk folder!
+                    </span>
+                  </p>
+                  {/* <Button variant="outline" className="mt-2" type="button" disabled>
+                      Resend email
+                    </Button> */}
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="grid gap-3">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="me@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-500">{errors.email}</p>
+                  )}
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  Login
+                </Button>
+              </>
+            )}
           </div>
           {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">
@@ -101,10 +171,17 @@ export function LoginForm({
           </div> */}
         </div>
       </form>
-      {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div> */}
+      <div className="*:[a]:hover:text-primary *:[a]:underline *:[a]:underline-offset-4 text-balance text-center text-xs text-muted-foreground">
+        By clicking continue, you agree to our{" "}
+        <Link href="/terms-of-service" className="underline underline-offset-4">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy-policy" className="underline underline-offset-4">
+          Privacy Policy
+        </Link>
+        .
+      </div>
     </div>
   );
 }

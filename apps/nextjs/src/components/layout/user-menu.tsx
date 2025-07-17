@@ -11,8 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@galileyo/ui/dropdown-menu";
 
-import { authClient  } from "~/auth/client";
-import type {User} from "~/auth/client";
+import type { User } from "~/auth/client";
+import { authClient } from "~/auth/client";
 
 export function UserMenu({ user }: { user: User }) {
   const signOut = async () => {

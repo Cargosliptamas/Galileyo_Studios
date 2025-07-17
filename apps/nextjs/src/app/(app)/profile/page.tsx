@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import Profile from "~/components/profile/Profile";
+
 import { getSession } from "~/auth/server";
+import Profile from "~/components/profile/Profile";
 //import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
 

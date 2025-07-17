@@ -2,12 +2,12 @@
 
 // import { Button } from "@galileyo/ui/button";
 
+import HomePageComponent from "~/components/public-site/home";
 import {
   HydrateClient,
   // prefetch,
   // trpc,
 } from "~/trpc/server";
-import HomePageComponent from "~/components/public-site/home";
 
 export default function HomePage() {
   // prefetch(trpc.post.all.queryOptions());
@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <HydrateClient>
       {/* <main className="container"> */}
-        <HomePageComponent />
+      <HomePageComponent />
       {/* </main> */}
     </HydrateClient>
   );

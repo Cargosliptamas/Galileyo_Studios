@@ -1,34 +1,55 @@
 /* eslint-disable @next/next/no-img-element */
-import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
+import {
+  AlertTriangle,
+  Bookmark,
+  Heart,
+  MapPin,
+  MessageCircle,
+  MoreHorizontal,
+  Satellite,
+  Share,
+} from "lucide-react";
 
 import type { FeedItem, InfluencerItem } from "@galileyo/api";
-import { AlertTriangle, Bookmark, Heart, MapPin, MessageCircle, MoreHorizontal, Satellite, Share } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@galileyo/ui/dropdown-menu";
+import { Button } from "@galileyo/ui/button";
+import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@galileyo/ui/dropdown-menu";
 import { Separator } from "@galileyo/ui/separator";
+
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { UserAvatar } from "./user-avatar";
-import { Button } from "@galileyo/ui/button";
 
 export default function FeedCard({ item }: { item: FeedItem }) {
   const { openModal } = useCommentsModal();
   const getPostTypeIcon = (type: string, emergencyLevel?: string) => {
     switch (type) {
-      case 'emergency':
+      case "emergency":
         return (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-            emergencyLevel === 'critical' ? 'bg-red-500/20 text-red-400' :
-            emergencyLevel === 'high' ? 'bg-orange-500/20 text-orange-400' :
-            emergencyLevel === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-            'bg-blue-500/20 text-blue-400'
-          }`}>
-            <AlertTriangle className="w-3 h-3" />
+          <div
+            className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+              emergencyLevel === "critical"
+                ? "bg-red-500/20 text-red-400"
+                : emergencyLevel === "high"
+                  ? "bg-orange-500/20 text-orange-400"
+                  : emergencyLevel === "medium"
+                    ? "bg-yellow-500/20 text-yellow-400"
+                    : "bg-blue-500/20 text-blue-400"
+            }`}
+          >
+            <AlertTriangle className="h-3 w-3" />
             Emergency Alert
           </div>
         );
-      case 'satellite_update':
+      case "satellite_update":
         return (
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-400">
-            <Satellite className="w-3 h-3" />
+          <div className="flex items-center gap-1 rounded-full bg-cyan-500/20 px-2 py-1 text-xs font-medium text-cyan-400">
+            <Satellite className="h-3 w-3" />
             Network Update
           </div>
         );
@@ -38,23 +59,23 @@ export default function FeedCard({ item }: { item: FeedItem }) {
   };
 
   const handleLike = () => {
-    console.log('handleLike');
+    console.log("handleLike");
   };
 
   const handleBookmark = () => {
-    console.log('handleBookmark');
+    console.log("handleBookmark");
   };
 
-  const isInfluencer = item.type === 'influencer';
-  const isVerified = item.type !== 'aaa';
+  const isInfluencer = item.type === "influencer";
+  const isVerified = item.type !== "aaa";
 
   const formatNumber = (num: number | null | undefined) => {
     if (num === null || num === undefined) {
-      return '0';
+      return "0";
     }
 
     if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
+      return (num / 1000).toFixed(1) + "k";
     }
 
     return num.toString();
@@ -62,32 +83,32 @@ export default function FeedCard({ item }: { item: FeedItem }) {
 
   return (
     // <Card className="max-w-3xl mx-auto">
-    <Card className="bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3">
-              <UserAvatar
-                name={item.title}
-                image={(item as InfluencerItem).image ?? ''}
-                isVerified={isVerified}
-                isInfluencer={isInfluencer}
-              >
-                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                  <span>{item.title}</span>
-                  <span>•</span>
-                  <span>{item.created_at}</span>
-                  {item.location && (
-                    <>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{item.location}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </UserAvatar>
-              {/* <Avatar className="w-12 h-12">
+    <Card className="border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-3">
+            <UserAvatar
+              name={item.title}
+              image={(item as InfluencerItem).image ?? ""}
+              isVerified={isVerified}
+              isInfluencer={isInfluencer}
+            >
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <span>{item.title}</span>
+                <span>•</span>
+                <span>{item.created_at}</span>
+                {item.location && (
+                  <>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>{item.location}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </UserAvatar>
+            {/* <Avatar className="w-12 h-12">
                 <AvatarImage src={(item as InfluencerItem).image ?? ''} alt={item.title} />
                 <AvatarFallback className="bg-slate-700 text-white">
                   {(item.title || '').split(' ').map(n => n[0]).join('')}
@@ -120,50 +141,46 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                   )}
                 </div>
               </div> */}
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="w-5 h-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  Follow {item.title}
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  Mute {item.title}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-500 dark:text-red-400 hover:bg-slate-700">
-                  Report Post
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
-          
-          {/* Post Type Badge */}
-          {getPostTypeIcon(item.type, item.emergency_level ?? undefined)}
-        </CardHeader>
 
-        <CardContent className="pt-0">
-          {/* Post Content */}
-          <p className="mb-4 leading-relaxed">{item.body}</p>
-          
-          {/* Post Image */}
-          {item.images.length > 0 && (
-            <div className="mb-4 rounded-lg overflow-hidden">
-              <img 
-                src={item.images[0]?.sizes[0]?.url ?? ''} 
-                alt="Post content" 
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Follow {item.title}</DropdownMenuItem>
+              <DropdownMenuItem>Mute {item.title}</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-red-500 hover:bg-slate-700 dark:text-red-400">
+                Report Post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          {/* Satellite Info */}
-          {/* {post.satelliteInfo && (
+        {/* Post Type Badge */}
+        {getPostTypeIcon(item.type, item.emergency_level ?? undefined)}
+      </CardHeader>
+
+      <CardContent className="pt-0">
+        {/* Post Content */}
+        <p className="mb-4 leading-relaxed">{item.body}</p>
+
+        {/* Post Image */}
+        {item.images.length > 0 && (
+          <div className="mb-4 overflow-hidden rounded-lg max-w-md mx-auto">
+            <img
+              src={item.images[0]?.sizes[0]?.url ?? ""}
+              alt="Post content"
+              className="h-auto w-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* Satellite Info */}
+        {/* {post.satelliteInfo && (
             <div className="mb-4 p-3 bg-slate-900/50 border border-slate-600 rounded-lg">
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
@@ -180,48 +197,57 @@ export default function FeedCard({ item }: { item: FeedItem }) {
             </div>
           )} */}
 
-          <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
+        <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
 
-          {/* Post Actions */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <button 
-                onClick={() => handleLike()}
-                className={`flex items-center gap-2 transition-colors ${
-                  item.is_liked ?? false
-                    ? 'text-red-400 hover:text-red-300' 
-                    : 'text-slate-500 dark:text-slate-400 hover:text-red-400'
-                }`}
-              >
-                <Heart className={`w-5 h-5 ${item.is_liked ? 'fill-current' : ''}`} />
-                <span className="text-sm font-medium">{formatNumber(/*item.likes*/ 0)}</span>
-              </button>
-              
-              <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
-                onClick={() => openModal(item)}
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span className="text-sm font-medium">{formatNumber(item.comment_quantity)}</span>
-              </button>
-              
-              <button className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-green-400 transition-colors">
-                <Share className="w-5 h-5" />
-                <span className="text-sm font-medium">{formatNumber(0)}</span>
-              </button>
-            </div>
-            
-            <button 
-              onClick={() => handleBookmark()}
-              className={`p-2 rounded-full transition-colors ${
-                item.is_bookmarked ?? false
-                  ? 'text-yellow-400 hover:text-yellow-300' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-yellow-400'
+        {/* Post Actions */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => handleLike()}
+              className={`flex items-center gap-2 transition-colors ${
+                (item.is_liked ?? false)
+                  ? "text-red-400 hover:text-red-300"
+                  : "text-slate-500 hover:text-red-400 dark:text-slate-400"
               }`}
             >
-              <Bookmark className={`w-5 h-5 ${item.is_bookmarked ? 'fill-current' : ''}`} />
+              <Heart
+                className={`h-5 w-5 ${item.is_liked ? "fill-current" : ""}`}
+              />
+              <span className="text-sm font-medium">
+                {formatNumber(/*item.likes*/ 0)}
+              </span>
+            </button>
+
+            <button
+              className="flex items-center gap-2 text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400"
+              onClick={() => openModal(item)}
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">
+                {formatNumber(item.comment_quantity)}
+              </span>
+            </button>
+
+            <button className="flex items-center gap-2 text-slate-500 transition-colors hover:text-green-400 dark:text-slate-400">
+              <Share className="h-5 w-5" />
+              <span className="text-sm font-medium">{formatNumber(0)}</span>
             </button>
           </div>
-        </CardContent>
+
+          <button
+            onClick={() => handleBookmark()}
+            className={`rounded-full p-2 transition-colors ${
+              (item.is_bookmarked ?? false)
+                ? "text-yellow-400 hover:text-yellow-300"
+                : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+            }`}
+          >
+            <Bookmark
+              className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+            />
+          </button>
+        </div>
+      </CardContent>
     </Card>
   );
 }
