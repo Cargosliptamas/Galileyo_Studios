@@ -59,7 +59,12 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "NEXT_PUBLIC_API_URL",
+    "EMAIL_IS_SECURE",
+    "EMAIL_HOST",
+    "EMAIL_PORT",
+    "EMAIL_USER",
+    "EMAIL_PASSWORD",
+    "EMAIL_FROM",
     "PORT"
   ],
   "globalPassThroughEnv": [
