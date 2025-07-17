@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
-import type { FeedItem } from "../types/feed";
+import type { FeedItem, FinancialItemBackend } from "../types/feed";
 import {
   protectedProcedure,
   // publicProcedure
@@ -17,23 +17,26 @@ export const feedRouter = {
       z.object({
         limit: z.number().optional().default(10),
         cursor: z.number().optional().default(1),
+        type: z.enum(["subscriptions", "explore"]),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const feed = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/news/by-influencers`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${ctx.session.session.token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            page: input.cursor,
-            page_size: input.limit,
-          }),
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/news/last`;
+      if (input.type === "explore") {
+        url = `${process.env.NEXT_PUBLIC_API_URL}/news/by-influencers`;
+      }
+
+      const feed = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          page: input.cursor,
+          page_size: input.limit,
+        }),
+      });
 
       const result = (await feed.json()) as {
         status: "success" | "error";
@@ -52,6 +55,21 @@ export const feedRouter = {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 
-      return result.data;
+      return {
+        ...result.data,
+        list: result.data.list.map((item) => {
+          if (item.type === "financial") {
+            const financialItem = item as FinancialItemBackend;
+
+            return {
+              ...item,
+              percent: Number(financialItem.percent.replace("%", "")),
+              price: Number(financialItem.price),
+            };
+          }
+
+          return item;
+        }),
+      };
     }),
 } satisfies TRPCRouterRecord;

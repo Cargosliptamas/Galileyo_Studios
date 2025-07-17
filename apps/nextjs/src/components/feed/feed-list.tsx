@@ -1,18 +1,21 @@
 "use client";
 
+import type { QueryFunction } from "@tanstack/react-query";
+import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
 import { Fragment, useEffect, useState } from "react";
-import type { QueryFunction} from "@tanstack/react-query";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { Sparkles, Users } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useInView } from "react-intersection-observer";
 
-import type { FeedItem, InfluencerItem } from "@galileyo/api";
+import type { FeedItem, InfluencerItem } from "@galileyo/api/schemas";
+import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import { useTRPC } from "~/trpc/react";
 import CommentsModal from "./comments-modal";
 import FeedCard from "./feed-card";
 import FeedCardSkeleton from "./feed-card-skeleton";
-import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";
@@ -27,50 +30,54 @@ function getUniqueId(item: FeedItem) {
 const MockedFeeds: InfluencerItem[] = [
   {
     id: 2,
-    title: 'Emergency Alert System',
-    image: 'https://images.pexels.com/photos/355952/pexels-photo-355952.jpeg?auto=compress&cs=tinysrgb&w=100',
-    subtitle: 'Severe storm system approaching Pacific Northwest. Cellular towers may experience disruptions. Satellite communication remains fully operational. Stay safe and stay connected.',
-    url: 'https://www.google.com',
+    title: "Emergency Alert System",
+    image:
+      "https://images.pexels.com/photos/355952/pexels-photo-355952.jpeg?auto=compress&cs=tinysrgb&w=100",
+    subtitle:
+      "Severe storm system approaching Pacific Northwest. Cellular towers may experience disruptions. Satellite communication remains fully operational. Stay safe and stay connected.",
+    url: "https://www.google.com",
     id_subscription: 1,
-    body: 'WEATHER ALERT: Severe storm system approaching Pacific Northwest. Cellular towers may experience disruptions. Satellite communication remains fully operational. Stay safe and stay connected.',
-    created_at: '4 hours ago',
+    body: "WEATHER ALERT: Severe storm system approaching Pacific Northwest. Cellular towers may experience disruptions. Satellite communication remains fully operational. Stay safe and stay connected.",
+    created_at: "4 hours ago",
     reactions: [],
     images: [
       {
         id: 1,
         sizes: [
           {
-            type: 'normal',
-            url: 'https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=800',
+            type: "normal",
+            url: "https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=800",
             width: 800,
             height: 600,
-            name: 'normal',
-          }
+            name: "normal",
+          },
         ],
       },
     ],
     comment_quantity: 0,
-    type: 'emergency',
-    emergency_level: 'high',
-    location: 'Global HQ',
+    type: "emergency",
+    emergency_level: "high",
+    location: "Global HQ",
     is_liked: false,
     is_bookmarked: true,
   },
   {
     id: 4,
-    title: 'Galileyo Network',
-    image: 'https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=100',
-    subtitle: 'Successfully deployed 12 new satellites to improve coverage over South America and Africa. Signal strength increased by 35% in these regions. The future of global connectivity is here! 🛰️',
-    url: 'https://www.google.com',
+    title: "Galileyo Network",
+    image:
+      "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=100",
+    subtitle:
+      "Successfully deployed 12 new satellites to improve coverage over South America and Africa. Signal strength increased by 35% in these regions. The future of global connectivity is here! 🛰️",
+    url: "https://www.google.com",
     id_subscription: 1,
-    body: 'NETWORK UPDATE: Successfully deployed 12 new satellites to improve coverage over South America and Africa. Signal strength increased by 35% in these regions. The future of global connectivity is here! 🛰️',
-    created_at: '8 hours ago',
+    body: "NETWORK UPDATE: Successfully deployed 12 new satellites to improve coverage over South America and Africa. Signal strength increased by 35% in these regions. The future of global connectivity is here! 🛰️",
+    created_at: "8 hours ago",
     reactions: [],
     images: [],
     comment_quantity: 0,
-    type: 'satellite_update',
-    emergency_level: 'high',
-    location: 'Global HQ',
+    type: "satellite_update",
+    emergency_level: "high",
+    location: "Global HQ",
     is_liked: false,
     is_bookmarked: true,
   },
@@ -78,13 +85,17 @@ const MockedFeeds: InfluencerItem[] = [
 
 export default function FeedList() {
   const trpc = useTRPC();
+  const [tabState, setTabState] = useQueryState("tab");
+
   const { ref, inView } = useInView();
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState<FeedItem | null>(null);
+  const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
 
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
-    limit: 10,
+    limit: 100,
     cursor: 1,
+    type: activeTab === "subscriptions" ? "subscriptions" : "explore",
   });
 
   const {
@@ -100,18 +111,28 @@ export default function FeedList() {
     isFetchingNextPage,
   } = useSuspenseInfiniteQuery({
     queryKey: queryOptions.queryKey,
-    queryFn: queryOptions.queryFn as QueryFunction<{
-      list: FeedItem[];
-      page: number;
-      page_size: number;
-    }, TRPCQueryKey, number | null>,
-    getPreviousPageParam: (firstPage) => {
-      // console.log('previousPage', firstPage);
-      return firstPage.page - 1;
+    queryFn: queryOptions.queryFn as QueryFunction<
+      {
+        list: FeedItem[];
+        page: number;
+        page_size: number;
+      },
+      TRPCQueryKey,
+      number | null
+    >,
+    getPreviousPageParam: (firstPage, allPages, firstPageParam) => {
+      if (firstPage.list.length === 0) {
+        return null;
+      }
+
+      return firstPageParam - 1;
     },
-    getNextPageParam: (lastPage) => {
-      // console.log('nextPage', lastPage);
-      return lastPage.page + 1;
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage.list.length === 0) {
+        return null;
+      }
+
+      return lastPageParam + 1;
     },
     initialPageParam: 1,
   });
@@ -122,6 +143,11 @@ export default function FeedList() {
     setIsOpen(true);
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    void setTabState(tab);
+  };
+
   useEffect(() => {
     if (inView) {
       void fetchNextPage();
@@ -130,10 +156,34 @@ export default function FeedList() {
 
   return (
     <CommentsModalContext.Provider value={{ handleOpenCommentsModal }}>
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="mb-4 w-full"
+      >
+        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-slate-200 bg-white/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
+          <TabsTrigger
+            value="subscriptions"
+            className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
+          >
+            <Users className="mr-2 h-4 w-4" />
+            Subscriptions
+          </TabsTrigger>
+          <TabsTrigger
+            value="explore"
+            className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            Explore
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="space-y-4">
-        {MockedFeeds.map((item) => (
-          <FeedCard key={getUniqueId(item)} item={item} />
-        ))}
+        {activeTab === "explore" &&
+          MockedFeeds.map((item) => (
+            <FeedCard key={getUniqueId(item)} item={item} isMocked={true} />
+          ))}
         {status === "error" ? (
           <span>Error: {error?.message}</span>
         ) : (

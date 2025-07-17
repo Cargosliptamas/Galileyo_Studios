@@ -12,7 +12,7 @@ import {
   Smile,
 } from "lucide-react";
 
-import type { Comment as CommentType, FeedItem } from "@galileyo/api";
+import type { Comment as CommentType, FeedItem } from "@galileyo/api/schemas";
 // import { Card, CardContent } from '@galileyo/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import {

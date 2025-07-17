@@ -1,3 +1,5 @@
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
 import { ThemeProvider } from "@galileyo/ui/theme";
 
 import { TRPCReactProvider } from "~/trpc/react";
@@ -12,7 +14,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableColorScheme
     >
-      <TRPCReactProvider>{children}</TRPCReactProvider>
+      <TRPCReactProvider>
+        <NuqsAdapter>{children}</NuqsAdapter>
+      </TRPCReactProvider>
     </ThemeProvider>
   );
 }

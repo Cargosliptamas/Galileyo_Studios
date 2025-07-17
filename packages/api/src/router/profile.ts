@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
 import { protectedProcedure, publicProcedure } from "../trpc";
-import { SignupSchema } from "../types/profile";
+import { ProfileGeneralSchema, SignupSchema } from "../types/profile";
 
 export const profileRouter = {
   getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -19,8 +19,6 @@ export const profileRouter = {
         },
       },
     );
-
-    console.log(profile);
 
     const result = (await profile.json()) as {
       status: "success" | "error";
@@ -92,8 +90,6 @@ export const profileRouter = {
       };
     };
 
-    console.log(result);
-
     if (result.status !== "success") {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -103,4 +99,40 @@ export const profileRouter = {
 
     return result.data;
   }),
+  updateProfile: protectedProcedure
+    .input(ProfileGeneralSchema)
+    .mutation(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/update-profile`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${ctx.session.session.token}`,
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          id: string;
+          email: string;
+        };
+        error: {
+          message: string;
+          code: string | number | null;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: result.error.message,
+        });
+      }
+
+      return result.data;
+    }),
 } satisfies TRPCRouterRecord;

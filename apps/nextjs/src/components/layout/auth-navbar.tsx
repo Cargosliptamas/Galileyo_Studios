@@ -89,7 +89,10 @@ export default function AuthNavbar({ user }: { user: User }) {
           </Popover>
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/dashboard" className="text-primary hover:text-primary/90">
+            <Link
+              href="/dashboard"
+              className="text-primary hover:text-primary/90"
+            >
               <AppIcon />
             </Link>
           </div>

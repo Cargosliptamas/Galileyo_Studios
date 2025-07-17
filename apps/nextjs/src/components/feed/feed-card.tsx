@@ -1,16 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
+import { useMemo } from "react";
 import {
   AlertTriangle,
   Bookmark,
+  // Globe,
+  // Shield,
   Heart,
   MapPin,
   MessageCircle,
   MoreHorizontal,
   Satellite,
   Share,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 
-import type { FeedItem, InfluencerItem } from "@galileyo/api";
+import type {
+  FeedItem,
+  FinancialItem,
+  InfluencerItem,
+} from "@galileyo/api/schemas";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
 import {
@@ -25,7 +34,25 @@ import { Separator } from "@galileyo/ui/separator";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { UserAvatar } from "./user-avatar";
 
-export default function FeedCard({ item }: { item: FeedItem }) {
+function formatPrice(price: string | number | null | undefined) {
+  const priceNumber =
+    typeof price === "string" ? parseFloat(price) : (price ?? 0);
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(priceNumber);
+}
+
+export default function FeedCard({
+  item,
+  isMocked = false,
+}: {
+  item: FeedItem;
+  isMocked?: boolean;
+}) {
   const { openModal } = useCommentsModal();
   const getPostTypeIcon = (type: string, emergencyLevel?: string) => {
     switch (type) {
@@ -58,6 +85,18 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     }
   };
 
+  const getUserAvatarIcon = (item: FeedItem) => {
+    switch (item.type) {
+      case "influencer":
+        return (item as InfluencerItem).image ?? null;
+      case "financial":
+        // TODO: add financial avatar icon
+        return null;
+      default:
+        return null;
+    }
+  };
+
   const handleLike = () => {
     console.log("handleLike");
   };
@@ -66,8 +105,14 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     console.log("handleBookmark");
   };
 
+  const hasActions = useMemo(() => {
+    return item.type !== "financial" && item.type !== "not_sended_yet";
+  }, [item]);
+
   const isInfluencer = item.type === "influencer";
-  const isVerified = item.type !== "aaa";
+  const isVerified = ["influencer", "financial", "not_sended_yet"].includes(
+    item.type,
+  );
 
   const formatNumber = (num: number | null | undefined) => {
     if (num === null || num === undefined) {
@@ -89,7 +134,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
           <div className="flex items-start gap-3">
             <UserAvatar
               name={item.title}
-              image={(item as InfluencerItem).image ?? ""}
+              image={getUserAvatarIcon(item)}
               isVerified={isVerified}
               isInfluencer={isInfluencer}
             >
@@ -108,39 +153,6 @@ export default function FeedCard({ item }: { item: FeedItem }) {
                 )}
               </div>
             </UserAvatar>
-            {/* <Avatar className="w-12 h-12">
-                <AvatarImage src={(item as InfluencerItem).image ?? ''} alt={item.title} />
-                <AvatarFallback className="bg-slate-700 text-white">
-                  {(item.title || '').split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-white">{item.title}</h3>
-                  {isVerified && (
-                    <Verified className="w-4 h-4 text-cyan-400 fill-current" />
-                  )}
-                  {isInfluencer && (
-                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-medium rounded">
-                      Influencer
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                  <span>{item.title}</span>
-                  <span>•</span>
-                  <span>{item.created_at}</span>
-                  {item.location && (
-                    <>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{item.location}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div> */}
           </div>
 
           <DropdownMenu>
@@ -166,11 +178,13 @@ export default function FeedCard({ item }: { item: FeedItem }) {
 
       <CardContent className="pt-0">
         {/* Post Content */}
-        <p className="mb-4 leading-relaxed">{item.body}</p>
+        {item.type !== "financial" && (
+          <p className="mb-4 leading-relaxed">{item.body}</p>
+        )}
 
         {/* Post Image */}
         {item.images.length > 0 && (
-          <div className="mb-4 overflow-hidden rounded-lg max-w-md mx-auto">
+          <div className="mx-auto mb-4 max-w-md overflow-hidden rounded-lg">
             <img
               src={item.images[0]?.sizes[0]?.url ?? ""}
               alt="Post content"
@@ -180,73 +194,112 @@ export default function FeedCard({ item }: { item: FeedItem }) {
         )}
 
         {/* Satellite Info */}
-        {/* {post.satelliteInfo && (
-            <div className="mb-4 p-3 bg-slate-900/50 border border-slate-600 rounded-lg">
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-cyan-400" />
-                  <span className="text-slate-300">Coverage: </span>
-                  <span className="text-cyan-400 font-medium">{post.satelliteInfo.coverage}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-400" />
-                  <span className="text-slate-300">Signal: </span>
-                  <span className="text-green-400 font-medium">{post.satelliteInfo.signal}</span>
-                </div>
+        {/* {1 == 1 && (
+          <div className="mb-4 p-3 bg-slate-900/50 border border-slate-600 rounded-lg">
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-cyan-400" />
+                <span className="text-slate-300">Coverage: </span>
+                <span className="text-cyan-400 font-medium">{100}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-green-400" />
+                <span className="text-slate-300">Signal: </span>
+                <span className="text-green-400 font-medium">{32}</span>
               </div>
             </div>
-          )} */}
+          </div>
+        )} */}
 
-        <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
-
-        {/* Post Actions */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => handleLike()}
-              className={`flex items-center gap-2 transition-colors ${
-                (item.is_liked ?? false)
-                  ? "text-red-400 hover:text-red-300"
-                  : "text-slate-500 hover:text-red-400 dark:text-slate-400"
+        {item.type === "financial" && (
+          <div className="">
+            <div className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">
+              {formatPrice((item as unknown as FinancialItem).price)}
+            </div>
+            <div
+              className={`flex items-center gap-1 text-sm font-medium ${
+                (item as unknown as FinancialItem).percent >= 0
+                  ? "text-green-400"
+                  : "text-red-400"
               }`}
             >
-              <Heart
-                className={`h-5 w-5 ${item.is_liked ? "fill-current" : ""}`}
-              />
-              <span className="text-sm font-medium">
-                {formatNumber(/*item.likes*/ 0)}
+              {(item as unknown as FinancialItem).percent >= 0 ? (
+                <TrendingUp className="h-4 w-4" />
+              ) : (
+                <TrendingDown className="h-4 w-4" />
+              )}
+              <span>
+                {(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
+                {(item as unknown as FinancialItem).percent.toFixed(2)}
               </span>
-            </button>
-
-            <button
-              className="flex items-center gap-2 text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400"
-              onClick={() => openModal(item)}
-            >
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-sm font-medium">
-                {formatNumber(item.comment_quantity)}
+              <span>
+                ({(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
+                {(item as unknown as FinancialItem).percent.toFixed(2)}%)
               </span>
-            </button>
-
-            <button className="flex items-center gap-2 text-slate-500 transition-colors hover:text-green-400 dark:text-slate-400">
-              <Share className="h-5 w-5" />
-              <span className="text-sm font-medium">{formatNumber(0)}</span>
-            </button>
+            </div>
           </div>
+        )}
 
-          <button
-            onClick={() => handleBookmark()}
-            className={`rounded-full p-2 transition-colors ${
-              (item.is_bookmarked ?? false)
-                ? "text-yellow-400 hover:text-yellow-300"
-                : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
-            }`}
-          >
-            <Bookmark
-              className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
-            />
-          </button>
-        </div>
+        {hasActions && (
+          <>
+            <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
+
+            {/* Post Actions */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={() => handleLike()}
+                  disabled={isMocked}
+                  className={`flex items-center gap-2 transition-colors ${
+                    (item.is_liked ?? false)
+                      ? "text-red-400 hover:text-red-300"
+                      : "text-slate-500 hover:text-red-400 dark:text-slate-400"
+                  }`}
+                >
+                  <Heart
+                    className={`h-5 w-5 ${item.is_liked ? "fill-current" : ""}`}
+                  />
+                  <span className="text-sm font-medium">
+                    {formatNumber(/*item.likes*/ 0)}
+                  </span>
+                </button>
+
+                <button
+                  className="flex items-center gap-2 text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400"
+                  onClick={() => openModal(item)}
+                  disabled={isMocked}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {formatNumber(item.comment_quantity)}
+                  </span>
+                </button>
+
+                <button
+                  className="flex items-center gap-2 text-slate-500 transition-colors hover:text-green-400 dark:text-slate-400"
+                  disabled={isMocked}
+                >
+                  <Share className="h-5 w-5" />
+                  <span className="text-sm font-medium">{formatNumber(0)}</span>
+                </button>
+              </div>
+
+              <button
+                onClick={() => handleBookmark()}
+                disabled={isMocked}
+                className={`rounded-full p-2 transition-colors ${
+                  (item.is_bookmarked ?? false)
+                    ? "text-yellow-400 hover:text-yellow-300"
+                    : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+                }`}
+              >
+                <Bookmark
+                  className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+                />
+              </button>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

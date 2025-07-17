@@ -1,12 +1,11 @@
 import { createContext, useContext } from "react";
 
-import type { FeedItem } from "@galileyo/api";
+import type { FeedItem } from "@galileyo/api/schemas";
 
 export interface CommentsModalContextType {
   handleOpenCommentsModal: (post: FeedItem) => void;
 }
 
- 
 export const CommentsModalContext = createContext<CommentsModalContextType>(
   null as unknown as CommentsModalContextType,
 );

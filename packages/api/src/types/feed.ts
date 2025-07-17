@@ -45,6 +45,18 @@ export interface NotSendedYetItem extends BaseFeedItem {
 export interface FinancialItem extends BaseFeedItem {
   title: string;
   body: string;
+  percent: number;
+  price: number;
+  url: string | null;
+  id_subscription: number | null;
+  reactions: unknown[];
+  images: FeedItemImageType[];
+  comment_quantity: number;
+}
+
+export interface FinancialItemBackend extends BaseFeedItem {
+  title: string;
+  body: string;
   percent: string;
   price: string;
   url: string | null;
@@ -69,7 +81,7 @@ export interface InfluencerItem extends BaseFeedItem {
 export type FeedItem =
   | NotSendedYetItem
   | FollowerListItem
-  | FinancialItem
+  | FinancialItemBackend
   | InfluencerItem;
 
 export interface Comment {

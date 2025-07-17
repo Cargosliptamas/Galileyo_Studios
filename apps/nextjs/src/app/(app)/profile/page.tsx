@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { getSession } from "~/auth/server";
-import Profile from "~/components/profile/Profile";
+import { Profile } from "~/components/profile/profile";
+import { ProfileSkeleton } from "~/components/profile/profile-skeleton";
 //import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
 
@@ -16,7 +17,7 @@ export default async function ProfilePage() {
 
   return (
     <HydrateClient>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<ProfileSkeleton />}>
         <Profile />
         {/* <Debug /> */}
       </Suspense>

@@ -7,23 +7,30 @@ import FeedList from "~/components/feed/feed-list";
 // import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+
   const session = await getSession();
   if (!session) {
     redirect("/login");
   }
 
   prefetch(
-    trpc.feed.getLatestNews.infiniteQueryOptions({ limit: 10, cursor: 1 }),
+    trpc.feed.getLatestNews.infiniteQueryOptions({
+      limit: 100,
+      cursor: 1,
+      type: (tab as "subscriptions" | "explore" | undefined) ?? "subscriptions",
+    }),
   );
 
   return (
     <HydrateClient>
-      <main className="container py-16">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p>
-          Welcome, {session.user.firstName} {session.user.lastName}
-        </p>
+      <main className="container py-4">
+        <h1 className="mb-4 text-2xl font-bold">Feed</h1>
 
         <Suspense
           fallback={

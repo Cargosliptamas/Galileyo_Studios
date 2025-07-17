@@ -28,16 +28,12 @@ export const SignupSchema = z
       .min(1, { message: "Password confirmation is required" }),
     country: z.string().min(1, { message: "Country is required" }),
     state: z.string().optional(),
-    accept_terms: z
-      .boolean()
-      .refine((value) => value, {
-        message: "You must accept the terms and conditions",
-      }),
-    after_eighteen: z
-      .boolean()
-      .refine((value) => value, {
-        message: "You must be at least 18 years old",
-      }),
+    accept_terms: z.boolean().refine((value) => value, {
+      message: "You must accept the terms and conditions",
+    }),
+    after_eighteen: z.boolean().refine((value) => value, {
+      message: "You must be at least 18 years old",
+    }),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",
@@ -45,3 +41,14 @@ export const SignupSchema = z
   });
 
 export type SignupInput = z.infer<typeof SignupSchema>;
+
+export const ProfileGeneralSchema = z.object({
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  email: z.email(),
+  country: z.string().min(1),
+  state: z.string().nullish(),
+  // phone: z.string().min(1),
+  about: z.string(),
+  zip: z.string(),
+});
