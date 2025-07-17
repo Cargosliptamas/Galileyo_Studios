@@ -95,7 +95,7 @@ export default function FeedList() {
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
     limit: 100,
     cursor: 1,
-    type: activeTab === "subscriptions" ? "subscriptions" : "explore",
+    type: activeTab === "subscriptions" ? "subscriptions" : "discover",
   });
 
   const {
@@ -170,17 +170,17 @@ export default function FeedList() {
             Subscriptions
           </TabsTrigger>
           <TabsTrigger
-            value="explore"
+            value="discover"
             className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25"
           >
             <Sparkles className="mr-2 h-4 w-4" />
-            Explore
+            Discover
           </TabsTrigger>
         </TabsList>
       </Tabs>
 
       <div className="space-y-4">
-        {activeTab === "explore" &&
+        {activeTab === "discover" &&
           MockedFeeds.map((item) => (
             <FeedCard key={getUniqueId(item)} item={item} isMocked={true} />
           ))}

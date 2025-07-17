@@ -17,12 +17,12 @@ export const feedRouter = {
       z.object({
         limit: z.number().optional().default(10),
         cursor: z.number().optional().default(1),
-        type: z.enum(["subscriptions", "explore"]),
+        type: z.enum(["subscriptions", "discover"]),
       }),
     )
     .query(async ({ ctx, input }) => {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/news/last`;
-      if (input.type === "explore") {
+      if (input.type === "discover") {
         url = `${process.env.NEXT_PUBLIC_API_URL}/news/by-influencers`;
       }
 
