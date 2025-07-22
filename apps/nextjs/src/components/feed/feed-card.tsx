@@ -128,7 +128,7 @@ export default function FeedCard({
 
   return (
     // <Card className="max-w-3xl mx-auto">
-    <Card className="border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
+    <Card className="border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 transition-all duration-300 transform hover:scale-[1.01]">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
@@ -137,6 +137,7 @@ export default function FeedCard({
               image={getUserAvatarIcon(item)}
               isVerified={isVerified}
               isInfluencer={isInfluencer}
+              href={isMocked ? undefined : `/profile/${item.id}`}
             >
               <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span>{item.title}</span>

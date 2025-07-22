@@ -220,6 +220,9 @@ importers:
       '@react-email/components':
         specifier: 'catalog:'
         version: 0.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@remixicon/react':
+        specifier: ^4.6.0
+        version: 4.6.0(react@19.0.0)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.6
         version: 0.13.6(arktype@2.1.20)(typescript@5.8.3)(valibot@1.0.0-beta.15(typescript@5.8.3))(zod@4.0.2)
@@ -3526,6 +3529,11 @@ packages:
 
   '@react-navigation/routers@7.4.0':
     resolution: {integrity: sha512-th5THnuWKJlmr7GGHiicy979di11ycDWub9iIXbEDvQwmwmsRzppmVbfs2nD8bC/MgyMgqWu/gxfys+HqN+kcw==}
+
+  '@remixicon/react@4.6.0':
+    resolution: {integrity: sha512-bY56maEgT5IYUSRotqy9h03IAKJC85vlKtWFg2FKzfs8JPrkdBAYSa9dxoUSKFwGzup8Ux6vjShs9Aec3jvr2w==}
+    peerDependencies:
+      react: '>=18.2.0'
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -11656,6 +11664,10 @@ snapshots:
   '@react-navigation/routers@7.4.0':
     dependencies:
       nanoid: 3.3.11
+
+  '@remixicon/react@4.6.0(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
 
   '@rtsao/scc@1.1.0': {}
 

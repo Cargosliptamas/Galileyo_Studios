@@ -138,8 +138,7 @@ export default function AuthNavbar({ user }: { user: User }) {
         </div>
       </div>
       {/* Bottom navigation */}
-      <div className="border-t py-2 max-md:hidden">
-        {/* Navigation menu */}
+      {/* <div className="border-t py-2 max-md:hidden">
         <NavigationMenu>
           <NavigationMenuList className="gap-2">
             {navigationLinks.map((link, index) => (
@@ -155,7 +154,7 @@ export default function AuthNavbar({ user }: { user: User }) {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-      </div>
+      </div> */}
     </header>
   );
 }

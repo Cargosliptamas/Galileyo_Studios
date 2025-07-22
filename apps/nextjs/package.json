@@ -21,6 +21,7 @@
     "@galileyo/ui": "workspace:*",
     "@galileyo/validators": "workspace:*",
     "@react-email/components": "catalog:",
+    "@remixicon/react": "^4.6.0",
     "@t3-oss/env-nextjs": "^0.13.6",
     "@tanstack/react-query": "catalog:",
     "@trpc/client": "catalog:",
