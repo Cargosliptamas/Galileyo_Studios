@@ -10,7 +10,7 @@ export default async function AppLayout({
   const session = await getSession();
 
   return (
-    <div className="relative z-10 flex min-h-svh flex-col bg-background dark:bg-slate-950">
+    <div className="relative z-10 flex min-h-svh flex-col bg-background ">
       <SiteHeader user={session?.user} />
       <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter />

@@ -437,17 +437,17 @@ export default function HomePage() {
                 }`}
               >
                 {plan.popular && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
+                  <div 
+                    // initial={{ opacity: 0, y: -10 }}
+                    // animate={{ opacity: 1, y: 0 }}
+                    // transition={{ duration: 0.6, delay: 0.5 }}
                     className="absolute -top-4 left-1/2 transform -translate-x-1/2"
                   >
                     <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                       <Star className="w-4 h-4 fill-current" />
                       Most Popular
                     </div>
-                  </motion.div>
+                  </div>
                 )}
 
                 <div className="text-center mb-8">

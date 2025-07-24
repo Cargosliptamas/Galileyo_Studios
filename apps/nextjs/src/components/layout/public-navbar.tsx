@@ -98,7 +98,7 @@ export default function PublicNavbar() {
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex">
+            <Link href="/" className="flex w-20">
               <AppIcon />
             </Link>
             {/* Navigation menu */}

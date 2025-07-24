@@ -91,7 +91,7 @@ export default function AuthNavbar({ user }: { user: User }) {
           <div className="flex items-center">
             <Link
               href="/dashboard"
-              className="text-primary hover:text-primary/90"
+              className="text-primary hover:text-primary/90 w-20"
             >
               <AppIcon />
             </Link>
