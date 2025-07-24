@@ -1,6 +1,10 @@
-import Link from "next/link";
+"use client";
 
-import { Button } from "@galileyo/ui/button";
+import Link from "next/link";
+import { useState } from "react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react"
+
+import { Button, buttonVariants } from "@galileyo/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -8,14 +12,26 @@ import {
   NavigationMenuList,
 } from "@galileyo/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
-import { ThemeToggle } from "@galileyo/ui/theme";
 
 import { AppIcon } from "../app-icon";
 import { navigationLinks } from "./navigation-items";
+import { cn } from "@galileyo/ui";
+import { ThemeToggle } from "@galileyo/ui/theme";
 
 export default function PublicNavbar() {
+  const { scrollY } = useScroll();
+  const [isAnimationActive, setIsAnimationActive] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    if (latest > 100) {
+      setIsAnimationActive(true);
+    } else {
+      setIsAnimationActive(false);
+    }
+  });
+
   return (
-    <header className="sticky top-0 z-50 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 transition-colors px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -68,6 +84,14 @@ export default function PublicNavbar() {
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      asChild
+                      className="py-1.5"
+                    >
+                      <Link href="/login">Sign In</Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
@@ -91,18 +115,43 @@ export default function PublicNavbar() {
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    asChild
+                  >
+                    <ThemeToggle />
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button asChild variant="ghost" size="sm" className="text-sm">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1 },
+            }}
+            initial="hidden"
+            // transition={{
+            //   delay: 0.5,
+            // }}
+            animate={isAnimationActive ? 'visible' : 'hidden'}
+          >
+            <Link
+              className={cn(
+                buttonVariants({ variant: "primary" }),
+                isAnimationActive ? "" : "cursor-default"
+              )}
+              href="/sign-up"
+            >
+              Get Started
+            </Link>
+          </motion.div>
+          
+          <Button asChild variant="ghost">
             <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild size="sm" className="text-sm">
-            <Link href="/sign-up">Get Started</Link>
           </Button>
         </div>
       </div>

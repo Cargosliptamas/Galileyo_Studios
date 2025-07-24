@@ -28,6 +28,7 @@
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
     "lucide-react": "^0.525.0",
+    "motion": "^12.23.9",
     "next": "^15.3.3",
     "nodemailer": "^7.0.5",
     "nuqs": "^2.4.3",
