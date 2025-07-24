@@ -155,7 +155,7 @@ export default function HomePage() {
               {/* CTA Buttons */}
               <div className="mb-12 flex flex-col gap-4 sm:flex-row">
                 <Link
-                  href="/pricing"
+                  href="/sign-up"
                   className="transform rounded-lg bg-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
                 >
                   Get Started
