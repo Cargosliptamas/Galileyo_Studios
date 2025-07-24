@@ -2,11 +2,15 @@ import Link from "next/link";
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container prose lg:max-w-screen-lg text-slate-900 dark:text-slate-100">
-      <h1 className="text-center text-slate-900 dark:text-slate-100">TERMS OF USE AGREEMENT</h1>
+    <div className="container prose text-slate-900 dark:text-slate-100 lg:max-w-screen-lg">
+      <h1 className="text-center text-slate-900 dark:text-slate-100">
+        TERMS OF USE AGREEMENT
+      </h1>
 
       <h3 className="text-slate-900 dark:text-slate-100">GALILEYO</h3>
-      <h3 className="text-slate-900 dark:text-slate-100">IMPORTANT: READ CAREFULLY</h3>
+      <h3 className="text-slate-900 dark:text-slate-100">
+        IMPORTANT: READ CAREFULLY
+      </h3>
 
       <p>
         This Terms of Use Agreement (the “<b>Agreement</b>" or “<b>Terms</b>”)

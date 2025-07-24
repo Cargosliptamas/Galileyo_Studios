@@ -1,5 +1,7 @@
-'use client';
+"use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import {
   Bell,
   Check,
@@ -9,32 +11,34 @@ import {
   Shield,
   Star,
 } from "lucide-react";
-import Link from "next/link";
+import { motion } from "motion/react";
+
 import { PhoneMockup } from "../phone-mockup";
-import { motion } from 'motion/react';
-import Image from "next/image";
 
 const features = [
   {
-    icon: <Globe className="w-8 h-8" />,
+    icon: <Globe className="h-8 w-8" />,
     title: "Worldwide Coverage",
-    description: "Access information anywhere through our satellite network"
+    description: "Access information anywhere through our satellite network",
   },
   {
-    icon: <Lock className="w-8 h-8" />,
+    icon: <Lock className="h-8 w-8" />,
     title: "Uncensored Content",
-    description: "Share and receive unfiltered information without restrictions"
+    description:
+      "Share and receive unfiltered information without restrictions",
   },
   {
-    icon: <Shield className="w-8 h-8" />,
+    icon: <Shield className="h-8 w-8" />,
     title: "Private Groups",
-    description: "Create secure groups to share critical information with trusted members"
+    description:
+      "Create secure groups to share critical information with trusted members",
   },
   {
-    icon: <Bell className="w-8 h-8" />,
+    icon: <Bell className="h-8 w-8" />,
     title: "Real-Time Alerts",
-    description: "Receive instant notifications about emergencies and critical updates"
-  }
+    description:
+      "Receive instant notifications about emergencies and critical updates",
+  },
 ];
 
 const pricingPlans = [
@@ -52,7 +56,7 @@ const pricingPlans = [
     ],
     cta: "Create Account",
     popular: false,
-    highlight: false
+    highlight: false,
   },
   {
     name: "Galileyo PREMIUM",
@@ -65,11 +69,11 @@ const pricingPlans = [
       "Premium-only Communities",
       "Custom Username in URL",
       "See Who Viewed Your Profile",
-      "Premium Customer Support"
+      "Premium Customer Support",
     ],
     cta: "Join NOW",
     popular: true,
-    highlight: true
+    highlight: true,
   },
   {
     name: "Starlink Mini Bundle",
@@ -81,31 +85,31 @@ const pricingPlans = [
       "Mini Transport Case",
       "Goal Zero Sherpa 100PD Power Bank",
       "Goal Zero Nomad 5 Solar Panel",
-      "Starlink USB-C to DC Power Cord"
+      "Starlink USB-C to DC Power Cord",
     ],
     cta: "Select Plan",
     popular: false,
-    highlight: false
-  }
+    highlight: false,
+  },
 ];
 
 const satelliteFeatures = [
   {
     title: "200+ Countries Covered",
-    description: "Global satellite network coverage"
+    description: "Global satellite network coverage",
   },
   {
     title: "Works with Bivy Stick, Starlink, and More",
-    description: "Compatible with leading satellite providers"
+    description: "Compatible with leading satellite providers",
   },
   {
     title: "End-to-End Encryption",
-    description: "Military-grade security for all communications"
+    description: "Military-grade security for all communications",
   },
   {
     title: "99.9% Global Uptime",
-    description: "Reliable connectivity when you need it most"
-  }
+    description: "Reliable connectivity when you need it most",
+  },
 ];
 
 export default function HomePage() {
@@ -134,8 +138,8 @@ export default function HomePage() {
             {/* Left Column - Text Content */}
             <div className="">
               {/* Badge */}
-              <div className="inline-flex items-center px-4 py-2 bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-full text-sm font-medium mb-6">
-                <Shield className="w-4 h-4 mr-2 text-green-400" />
+              <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/90">
+                <Shield className="mr-2 h-4 w-4 text-green-400" />
                 Trusted by 5000+ users worldwide
               </div>
 
@@ -149,7 +153,8 @@ export default function HomePage() {
 
               {/* Supporting Tagline */}
               <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
-                Break the Chains & Stand alongside hundreds of uncensored truth seekers who refuse to be silenced!
+                Break the Chains & Stand alongside hundreds of uncensored truth
+                seekers who refuse to be silenced!
               </p>
 
               {/* CTA Buttons */}
@@ -279,67 +284,72 @@ export default function HomePage() {
                 <div className="relative h-full w-full overflow-hidden break-words rounded-[32px] bg-gray-800"></div>
               </div> */}
 
-              <motion.div 
+              <motion.div
                 className="relative"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <PhoneMockup>
-                  <Image src="/nexus_phone.jpg" alt="App" width={300} height={600} />
+                  <Image
+                    src="/nexus_phone.jpg"
+                    alt="App"
+                    width={300}
+                    height={600}
+                  />
                 </PhoneMockup>
                 {/* Animated Text Boxes */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 1.2 }}
-                  className="absolute -left-32 top-16 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-xl max-w-xs"
+                  className="absolute -left-32 top-16 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
-                    <span className="text-slate-900 dark:text-white font-medium text-sm">
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500"></div>
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Be the first one to know
                     </span>
                   </div>
                   {/* Arrow pointing to phone */}
-                  <div className="absolute -right-2 top-1/2 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-l-8 border-l-white/95 dark:border-l-slate-800/95 border-t-4 border-t-transparent border-b-4 border-b-transparent"></div>
+                  <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
+                    <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
                   </div>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 1.6 }}
-                  className="absolute -right-40 top-64 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-xl max-w-xs"
+                  className="absolute -right-40 top-64 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-slate-900 dark:text-white font-medium text-sm">
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Support Free & Uncensored Speech
                     </span>
                   </div>
                   {/* Arrow pointing to phone */}
-                  <div className="absolute -left-2 top-1/2 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-r-8 border-r-white/95 dark:border-r-slate-800/95 border-t-4 border-t-transparent border-b-4 border-b-transparent"></div>
+                  <div className="absolute -left-2 top-1/2 -translate-y-1/2 transform">
+                    <div className="h-0 w-0 border-b-4 border-r-8 border-t-4 border-b-transparent border-r-white/95 border-t-transparent dark:border-r-slate-800/95"></div>
                   </div>
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 2.0 }}
-                  className="absolute -left-36 bottom-32 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-xl max-w-xs"
+                  className="absolute -left-36 bottom-32 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-                    <span className="text-slate-900 dark:text-white font-medium text-sm">
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-purple-500"></div>
+                    <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Follow Your Favourite Influencers
                     </span>
                   </div>
                   {/* Arrow pointing to phone */}
-                  <div className="absolute -right-2 top-1/2 transform -translate-y-1/2">
-                    <div className="w-0 h-0 border-l-8 border-l-white/95 dark:border-l-slate-800/95 border-t-4 border-t-transparent border-b-4 border-b-transparent"></div>
+                  <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
+                    <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
                   </div>
                 </motion.div>
               </motion.div>
@@ -349,51 +359,57 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 lg:py-32 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.h2 
+      <section
+        id="features"
+        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6"
+              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
               Why Join Galileyo?
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="text-xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto"
+              className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
             >
-              When traditional communication breaks down, Galileyo keeps you connected. Whether it's an emergency, natural disaster, or total network outage — our platform ensures real-time, uncensored information reaches you anywhere in the world.
+              When traditional communication breaks down, Galileyo keeps you
+              connected. Whether it's an emergency, natural disaster, or total
+              network outage — our platform ensures real-time, uncensored
+              information reaches you anywhere in the world.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -2 }}
-                className="group p-8 bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl transition-all duration-200"
+                className="group rounded-xl border border-slate-200 bg-white/50 p-8 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
               >
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
-                  className="text-cyan-500 dark:text-cyan-400 mb-4 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors"
+                  className="mb-4 text-cyan-500 transition-colors group-hover:text-cyan-600 dark:text-cyan-400 dark:group-hover:text-cyan-300"
                 >
                   {feature.icon}
                 </motion.div>
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
+                <h3 className="mb-3 text-xl font-semibold text-slate-900 dark:text-white">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p className="leading-relaxed text-slate-600 dark:text-slate-300">
                   {feature.description}
                 </p>
               </motion.div>
@@ -403,84 +419,99 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 lg:py-32 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.h2 
+      <section
+        id="pricing"
+        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6"
+              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
               Simple, Transparent Pricing
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
+              className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300"
             >
               Choose the plan that best fits your needs.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
             {pricingPlans.map((plan, index) => (
-              <div 
+              <div
                 key={index}
-                className={`relative p-8 rounded-2xl border transition-all duration-300 hover:transform hover:scale-105 ${
-                  plan.highlight 
-                    ? 'bg-gradient-to-b from-cyan-500/10 to-blue-500/10 border-cyan-500/50 shadow-xl shadow-cyan-500/10' 
-                    : 'bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                  plan.highlight
+                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
                 }`}
               >
                 {plan.popular && (
-                  <div 
+                  <div
                     // initial={{ opacity: 0, y: -10 }}
                     // animate={{ opacity: 1, y: 0 }}
                     // transition={{ duration: 0.6, delay: 0.5 }}
-                    className="absolute -top-4 left-1/2 transform -translate-x-1/2"
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
                   >
-                    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-current" />
+                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                      <Star className="h-4 w-4 fill-current" />
                       Most Popular
                     </div>
                   </div>
                 )}
 
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{plan.name}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 mb-4">{plan.description}</p>
+                <div className="mb-8 text-center">
+                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                    {plan.name}
+                  </h3>
+                  <p className="mb-4 text-slate-600 dark:text-slate-300">
+                    {plan.description}
+                  </p>
                   <div className="flex items-center justify-center">
-                    <span className={`text-4xl font-bold ${plan.highlight ? 'text-cyan-500 dark:text-cyan-400' : 'text-slate-900 dark:text-white'}`}>
+                    <span
+                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                    >
                       {plan.price}
                     </span>
                     {plan.period && (
-                      <span className="text-slate-500 dark:text-slate-400 ml-1">{plan.period}</span>
+                      <span className="ml-1 text-slate-500 dark:text-slate-400">
+                        {plan.period}
+                      </span>
                     )}
                   </div>
                 </div>
 
-                <ul className="space-y-4 mb-8">
+                <ul className="mb-8 space-y-4">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.highlight ? 'text-cyan-500 dark:text-cyan-400' : 'text-green-400'}`} />
-                      <span className="text-slate-600 dark:text-slate-300">{feature}</span>
+                      <Check
+                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-green-400"}`}
+                      />
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
-                  plan.highlight
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-400 hover:to-blue-400 shadow-lg shadow-cyan-500/25'
-                    : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white'
-                }`}
+                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+                    plan.highlight
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
+                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+                  }`}
                 >
                   {plan.cta}
                 </motion.button>
@@ -491,51 +522,54 @@ export default function HomePage() {
       </section>
 
       {/* Satellite Power Section */}
-      <section className="py-20 lg:py-32 bg-slate-50/50 dark:bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.h2 
+      <section className="bg-slate-50/50 py-20 dark:bg-slate-900/50 lg:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6"
+              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
               The Power of Satellites
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="text-xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto"
+              className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
             >
-              Galileyo partners with top-tier satellite providers to give you 24/7 coverage — from the mountains to the oceans and everywhere in between. Our satellite-ready app ensures vital communication reaches you, even in the most remote places.
+              Galileyo partners with top-tier satellite providers to give you
+              24/7 coverage — from the mountains to the oceans and everywhere in
+              between. Our satellite-ready app ensures vital communication
+              reaches you, even in the most remote places.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {satelliteFeatures.map((feature, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -2 }}
-                className="text-center p-6 bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-xl transition-all duration-200"
+                className="rounded-xl border border-slate-200 bg-white/50 p-6 text-center transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
               >
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.03 }}
                   transition={{ duration: 0.2 }}
-                  className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500"
                 >
-                  <Satellite className="w-8 h-8 text-white" />
+                  <Satellite className="h-8 w-8 text-white" />
                 </motion.div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
                   {feature.description}
                 </p>
               </motion.div>
@@ -544,7 +578,7 @@ export default function HomePage() {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mt-16 rounded-2xl border p-8 text-center mx-auto max-w-3xl">
+        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
           <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
             Stay Updated
           </h3>

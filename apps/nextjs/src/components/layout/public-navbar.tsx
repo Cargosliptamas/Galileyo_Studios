@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { motion, useScroll, useMotionValueEvent } from "motion/react"
+import Link from "next/link";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
 
+import { cn } from "@galileyo/ui";
 import { Button, buttonVariants } from "@galileyo/ui/button";
 import {
   NavigationMenu,
@@ -12,11 +13,10 @@ import {
   NavigationMenuList,
 } from "@galileyo/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
+import { ThemeToggle } from "@galileyo/ui/theme";
 
 import { AppIcon } from "../app-icon";
 import { navigationLinks } from "./navigation-items";
-import { cn } from "@galileyo/ui";
-import { ThemeToggle } from "@galileyo/ui/theme";
 
 export default function PublicNavbar() {
   const { scrollY } = useScroll();
@@ -31,7 +31,7 @@ export default function PublicNavbar() {
   });
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 transition-colors px-4 md:px-6">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -85,10 +85,7 @@ export default function PublicNavbar() {
                     </NavigationMenuItem>
                   ))}
                   <NavigationMenuItem>
-                    <NavigationMenuLink
-                      asChild
-                      className="py-1.5"
-                    >
+                    <NavigationMenuLink asChild className="py-1.5">
                       <Link href="/login">Sign In</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -116,9 +113,7 @@ export default function PublicNavbar() {
                   </NavigationMenuItem>
                 ))}
                 <NavigationMenuItem>
-                  <NavigationMenuLink
-                    asChild
-                  >
+                  <NavigationMenuLink asChild>
                     <ThemeToggle />
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -137,19 +132,19 @@ export default function PublicNavbar() {
             // transition={{
             //   delay: 0.5,
             // }}
-            animate={isAnimationActive ? 'visible' : 'hidden'}
+            animate={isAnimationActive ? "visible" : "hidden"}
           >
             <Link
               className={cn(
                 buttonVariants({ variant: "primary" }),
-                isAnimationActive ? "" : "cursor-default"
+                isAnimationActive ? "" : "cursor-default",
               )}
               href="/sign-up"
             >
               Get Started
             </Link>
           </motion.div>
-          
+
           <Button asChild variant="ghost">
             <Link href="/login">Sign In</Link>
           </Button>

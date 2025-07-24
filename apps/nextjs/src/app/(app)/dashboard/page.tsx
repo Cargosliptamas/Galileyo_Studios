@@ -23,7 +23,8 @@ export default async function DashboardPage({
     trpc.feed.getLatestNews.infiniteQueryOptions({
       limit: 100,
       cursor: 1,
-      type: (tab as "subscriptions" | "discover" | undefined) ?? "subscriptions",
+      type:
+        (tab as "subscriptions" | "discover" | undefined) ?? "subscriptions",
     }),
   );
 

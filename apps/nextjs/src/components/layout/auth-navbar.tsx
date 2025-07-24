@@ -30,7 +30,7 @@ export default function AuthNavbar({ user }: { user: User }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 transition-colors px-4 md:px-6">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
@@ -91,7 +91,7 @@ export default function AuthNavbar({ user }: { user: User }) {
           <div className="flex items-center">
             <Link
               href="/dashboard"
-              className="text-primary hover:text-primary/90 w-20"
+              className="w-20 text-primary hover:text-primary/90"
             >
               <AppIcon />
             </Link>

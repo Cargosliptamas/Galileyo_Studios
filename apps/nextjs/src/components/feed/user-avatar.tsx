@@ -1,19 +1,26 @@
 "use client";
 
+import Link from "next/link";
 import { RiVerifiedBadgeFill } from "@remixicon/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
-import Link from "next/link";
 
-function NavigationComponent({ children, href }: { children: React.ReactNode, href?: string }) {
-  return (
-    href && href !== "" && !href.includes("undefined") && !href.includes("null") ? (
-      <Link href={href}>
-        <div className="relative">{children}</div>
-      </Link>
-    ) : (
-      <>{children}</>
-    )
+function NavigationComponent({
+  children,
+  href,
+}: {
+  children: React.ReactNode;
+  href?: string;
+}) {
+  return href &&
+    href !== "" &&
+    !href.includes("undefined") &&
+    !href.includes("null") ? (
+    <Link href={href}>
+      <div className="relative">{children}</div>
+    </Link>
+  ) : (
+    <>{children}</>
   );
 }
 
@@ -32,14 +39,13 @@ export function UserAvatar({
   children?: React.ReactNode;
   href?: string;
 }) {
-
   return (
     <div className="flex items-center gap-2">
       <NavigationComponent href={href}>
         <div className="relative">
           <Avatar className="h-12 w-12">
             <AvatarImage src={image ?? ""} alt={name} />
-            <AvatarFallback className="bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white select-none">
+            <AvatarFallback className="select-none bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white">
               {name
                 .split(" ")
                 .map((n) => n[0])

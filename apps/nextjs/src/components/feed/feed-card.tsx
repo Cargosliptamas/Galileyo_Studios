@@ -128,7 +128,7 @@ export default function FeedCard({
 
   return (
     // <Card className="max-w-3xl mx-auto">
-    <Card className="border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 transition-all duration-300 transform hover:scale-[1.01]">
+    <Card className="transform border-slate-200 bg-white/50 transition-all duration-300 hover:scale-[1.01] hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
