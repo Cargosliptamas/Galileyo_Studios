@@ -5,10 +5,10 @@ import { useTheme } from "next-themes";
 
 // import { GalileyoIcon } from "./icons/galileyo-icon";
 
-export function AppIcon() {
+export function AppIcon({ useDark }: { useDark?: boolean }) {
   const { theme } = useTheme();
 
-  if (theme === "light") {
+  if (theme === "light" && !useDark) {
     return (
       <Image
         src="/galileyo_new_logo_light.png"

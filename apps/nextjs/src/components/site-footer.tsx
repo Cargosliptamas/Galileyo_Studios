@@ -1,6 +1,8 @@
 // import Image from "next/image";
 import Link from "next/link";
 
+import { ThemeToggle } from "@galileyo/ui/theme";
+
 import { AppIcon } from "./app-icon";
 
 export function SiteFooter() {
@@ -122,8 +124,9 @@ export function SiteFooter() {
 
         {/* Bottom Bar */}
         <div className="flex flex-col items-center justify-between border-t border-slate-200 pt-8 dark:border-slate-800 sm:flex-row">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             © {new Date().getFullYear()} Galileyo. All rights reserved.
+            <ThemeToggle />
           </p>
           <div className="mt-4 flex items-center gap-4 sm:mt-0">
             <div className="flex items-center gap-1">

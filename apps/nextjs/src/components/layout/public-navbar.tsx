@@ -13,7 +13,6 @@ import {
   NavigationMenuList,
 } from "@galileyo/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
-import { ThemeToggle } from "@galileyo/ui/theme";
 
 import { AppIcon } from "../app-icon";
 import { navigationLinks } from "./navigation-items";
@@ -31,7 +30,7 @@ export default function PublicNavbar() {
   });
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -95,8 +94,8 @@ export default function PublicNavbar() {
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex w-20">
-              <AppIcon />
+            <Link href="/" className="flex w-20" suppressHydrationWarning>
+              <AppIcon useDark={true} />
             </Link>
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
@@ -112,11 +111,6 @@ export default function PublicNavbar() {
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <ThemeToggle />
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -145,7 +139,7 @@ export default function PublicNavbar() {
             </Link>
           </motion.div>
 
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" className="text-white">
             <Link href="/login">Sign In</Link>
           </Button>
         </div>

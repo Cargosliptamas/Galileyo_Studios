@@ -47,16 +47,19 @@ export function PhoneMessageBubble({ children }: { children: ReactNode }) {
 //   );
 // }
 
-export function PhoneMockup({ children }: { children: ReactNode | ReactNode[] }) {
+export function PhoneMockup({
+  children,
+}: {
+  children: ReactNode | ReactNode[];
+}) {
   return (
     <div className="flex items-center justify-center">
       {/* iPhone 15 Container */}
-      <div className="relative w-72 h-[600px] rounded-[45px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-8 border-zinc-900">
+      <div className="relative h-[600px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1)]">
         {/* Dynamic Island */}
-        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-[90px] h-[22px] bg-black rounded-full z-20">
-        </div>
+        <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[90px] -translate-x-1/2 transform rounded-full bg-black"></div>
 
-        <div className="absolute -inset-[1px] border-[3px] border-zinc-700 border-opacity-40 rounded-[37px] pointer-events-none dark:bg-zinc-900">
+        <div className="pointer-events-none absolute -inset-[1px] rounded-[37px] border-[3px] border-zinc-700 border-opacity-40 dark:bg-zinc-900">
           <div className="flex h-full flex-col">
             <div className="flex select-none items-center justify-between px-3 py-2 text-center">
               <div className="text-sm">12:41</div>
@@ -70,22 +73,22 @@ export function PhoneMockup({ children }: { children: ReactNode | ReactNode[] })
         </div>
 
         {/* Screen Content */}
-        <div className="relative w-full h-full rounded-[37px] overflow-hidden flex bg-zinc-900/10 py-10">
+        <div className="relative flex h-full w-full overflow-hidden rounded-[37px] bg-zinc-900/10 py-10">
           {children}
         </div>
 
         {/* Left Side Buttons */}
         {/* Silent Switch */}
-        <div className="absolute left-[-12px] top-20 w-[6px] h-8 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div className="absolute left-[-12px] top-20 h-8 w-[6px] rounded-l-md bg-zinc-900 shadow-md"></div>
 
         {/* Volume Up */}
-        <div className="absolute left-[-12px] top-36 w-[6px] h-12 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div className="absolute left-[-12px] top-36 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md"></div>
 
         {/* Volume Down */}
-        <div className="absolute left-[-12px] top-52 w-[6px] h-12 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div className="absolute left-[-12px] top-52 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md"></div>
 
         {/* Right Side Button (Power) */}
-        <div className="absolute right-[-12px] top-36 w-[6px] h-16 bg-zinc-900 rounded-r-md shadow-md"></div>
+        <div className="absolute right-[-12px] top-36 h-16 w-[6px] rounded-r-md bg-zinc-900 shadow-md"></div>
       </div>
     </div>
   );
