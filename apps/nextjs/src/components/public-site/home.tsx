@@ -19,6 +19,7 @@ import * as motion from "motion/react-client";
 
 import { PhoneMockup } from "../phone-mockup";
 import { HomeBackground } from "./home-backround";
+import { CyclingAnimatedList } from "../ui/animated-list";
 
 const features = [
   {
@@ -696,7 +697,7 @@ export default function HomePage() {
                 </div>
 
                 {/* News Categories */}
-                <div className="mb-6 grid grid-cols-2 gap-4">
+                {/* <div className="mb-6 grid grid-cols-2 gap-4">
                   <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
@@ -753,8 +754,66 @@ export default function HomePage() {
                       All-clear notifications and recovery progress updates
                     </p>
                   </div>
-                </div>
+                </div> */}
 
+                <CyclingAnimatedList delay={3000}>
+                  <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <div>
+                          <AlertTriangle className="h-4 w-4 text-red-400" />
+                        </div>
+                        <span className="text-sm font-medium text-red-400">
+                          Critical Alerts
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        Life-threatening emergencies requiring immediate action
+                      </p>
+                    </div>
+
+                    <div className="cursor-pointer rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <div>
+                          <Zap className="h-4 w-4 text-orange-400" />
+                        </div>
+                        <span className="text-sm font-medium text-orange-400">
+                          Infrastructure
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        Power, water, transportation, and communication updates
+                      </p>
+                    </div>
+
+                    <div className="cursor-pointer rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <div>
+                          <Users className="h-4 w-4 text-blue-400" />
+                        </div>
+                        <span className="text-sm font-medium text-blue-400">
+                          Community
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        Shelter locations, volunteer opportunities, aid
+                        distribution
+                      </p>
+                    </div>
+
+                    <div className="cursor-pointer rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <div>
+                          <CheckCircle className="h-4 w-4 text-green-400" />
+                        </div>
+                        <span className="text-sm font-medium text-green-400">
+                          Recovery
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        All-clear notifications and recovery progress updates
+                      </p>
+                    </div>
+                </CyclingAnimatedList>
                 {/* <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
                   <div className="flex items-center gap-2">
                     <div>
