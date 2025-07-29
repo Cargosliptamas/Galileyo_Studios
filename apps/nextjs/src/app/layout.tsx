@@ -18,7 +18,15 @@ export const metadata: Metadata = {
       ? "https://turbo.t3.gg"
       : "http://localhost:3000",
   ),
-  title: "Galileyo",
+  title: "Galileyo | Speak Freely — Unleash Your Voice",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Galileyo | Speak Freely — Unleash Your Voice",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   // description: "Simple monorepo with shared backend for web & mobile apps",
   // openGraph: {
   //   title: "Create T3 Turbo",

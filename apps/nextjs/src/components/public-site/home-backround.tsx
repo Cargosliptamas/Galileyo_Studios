@@ -1,6 +1,7 @@
-'use client'
+"use client";
 
 import { useTheme } from "next-themes";
+
 import { Particles } from "../particles";
 import { ShootingStars } from "../shooting-stars";
 
@@ -19,5 +20,5 @@ export function HomeBackground() {
       />
       <ShootingStars />
     </>
-  )
+  );
 }

@@ -68,6 +68,7 @@ import { Textarea } from "@galileyo/ui/textarea";
 import { toast } from "@galileyo/ui/toast";
 
 import { useTRPC } from "~/trpc/react";
+import { usePushNotification } from "../layout/push-notification-provider";
 
 interface Device {
   id: number;
@@ -84,6 +85,8 @@ interface Device {
 
 export function Profile() {
   const trpc = useTRPC();
+  const { subscription, subscribeToPush, unsubscribeFromPush } =
+    usePushNotification();
 
   const { data: currentUser } = useSuspenseQuery(
     trpc.profile.getProfile.queryOptions(),
@@ -136,7 +139,6 @@ export function Profile() {
   // Notification Settings State
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
-    pushNotifications: true,
     smsNotifications: false,
     emergencyAlerts: true,
     networkUpdates: true,
@@ -678,13 +680,18 @@ export function Profile() {
                     </div>
                     <div className="relative inline-flex cursor-pointer items-center">
                       <Switch
-                        checked={notificationSettings.pushNotifications}
-                        onCheckedChange={(checked) =>
-                          setNotificationSettings({
-                            ...notificationSettings,
-                            pushNotifications: checked,
-                          })
-                        }
+                        checked={subscription ? true : false}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            void subscribeToPush();
+                          } else {
+                            void unsubscribeFromPush();
+                          }
+                          // setNotificationSettings({
+                          //   ...notificationSettings,
+                          //   pushNotifications: checked,
+                          // });
+                        }}
                       />
                     </div>
                   </div>

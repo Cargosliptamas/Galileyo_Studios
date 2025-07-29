@@ -42,7 +42,7 @@
     "@galileyo/eslint-config": "workspace:*",
     "@galileyo/prettier-config": "workspace:*",
     "@galileyo/tsconfig": "workspace:*",
-    "dotenv-cli": "^8.0.0",
+    "dotenv-cli": "^9.0.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "catalog:",
     "prettier": "catalog:",

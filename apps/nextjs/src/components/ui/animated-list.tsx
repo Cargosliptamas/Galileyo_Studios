@@ -1,14 +1,11 @@
 "use client";
 
-import { cn } from "@galileyo/ui";
-import { AnimatePresence, motion } from "motion/react";
 import type { Transition } from "motion/react";
 import type { ComponentPropsWithoutRef } from "react";
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+
+import { cn } from "@galileyo/ui";
 
 export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   const animations = {
@@ -25,16 +22,20 @@ export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function CyclingAnimatedListItem({ children }: { children: React.ReactNode }) {
+export function CyclingAnimatedListItem({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const animations = {
     initial: { scale: 0.8, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
     exit: { scale: 0.8, opacity: 0 },
-    transition: { 
-      type: "spring", 
-      stiffness: 200, 
+    transition: {
+      type: "spring",
+      stiffness: 200,
       damping: 30,
-      duration: 0.8 
+      duration: 0.8,
     } as Transition,
   };
 
@@ -50,14 +51,21 @@ export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
   delay?: number;
 }
 
-export interface CyclingAnimatedListProps extends ComponentPropsWithoutRef<"div"> {
+export interface CyclingAnimatedListProps
+  extends ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode;
   delay?: number;
   autoPlay?: boolean;
 }
 
 export const CyclingAnimatedList = React.memo(
-  ({ children, className, delay = 4000, autoPlay = true, ...props }: CyclingAnimatedListProps) => {
+  ({
+    children,
+    className,
+    delay = 4000,
+    autoPlay = true,
+    ...props
+  }: CyclingAnimatedListProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
@@ -79,10 +87,7 @@ export const CyclingAnimatedList = React.memo(
     }, [currentIndex, childrenArray]);
 
     return (
-      <div
-        className={cn(`flex flex-col items-center`, className)}
-        {...props}
-      >
+      <div className={cn(`flex flex-col items-center`, className)} {...props}>
         <AnimatePresence mode="wait">
           <CyclingAnimatedListItem key={currentIndex}>
             {currentItem}

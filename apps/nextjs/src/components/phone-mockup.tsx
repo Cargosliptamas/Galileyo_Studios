@@ -62,7 +62,7 @@ export function PhoneMockup({
         <div className="pointer-events-none absolute -inset-[1px] rounded-[37px] border-[3px] border-zinc-700 border-opacity-40 dark:bg-zinc-900">
           <div className="flex h-full flex-col">
             <div className="flex select-none items-center justify-between px-3 py-2 text-center">
-              <div className="text-sm">12:41</div>
+              <div className="text-sm">10:41</div>
               <div className="grid grid-cols-3 gap-1">
                 <Signal className="h-4 w-4" />
                 <RiWifiFill className="h-4 w-4" />

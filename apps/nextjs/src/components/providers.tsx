@@ -3,6 +3,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@galileyo/ui/theme";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { PushNotificationProvider } from "./layout/push-notification-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <TRPCReactProvider>
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <NuqsAdapter>
+          <PushNotificationProvider>{children}</PushNotificationProvider>
+        </NuqsAdapter>
       </TRPCReactProvider>
     </ThemeProvider>
   );
