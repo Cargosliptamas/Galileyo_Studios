@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -18,12 +15,10 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { motion } from "motion/react";
-import { useTheme } from "next-themes";
+import * as motion from "motion/react-client";
 
-import { Particles } from "../particles";
 import { PhoneMockup } from "../phone-mockup";
-import { ShootingStars } from "../shooting-stars";
+import { HomeBackground } from "./home-backround";
 
 const features = [
   {
@@ -408,9 +403,8 @@ const mockAlerts = [
 ];
 
 export default function HomePage() {
-  const { resolvedTheme } = useTheme();
-  const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
-  const [color, setColor] = useState("#ffffff");
+  // const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
+  const currentAlertIndex = 0;
 
   // Get one alert from each category
   const wildfireAlerts = mockAlerts.filter(
@@ -564,16 +558,16 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentAlertIndex((prev) => prev + 1);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentAlertIndex((prev) => prev + 1);
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  useEffect(() => {
-    setColor(resolvedTheme === "dark" ? "#ffffff" : "#000000");
-  }, [resolvedTheme]);
+  // useEffect(() => {
+  //   setColor(resolvedTheme === "dark" ? "#ffffff" : "#000000");
+  // }, [resolvedTheme]);
 
   return (
     <>
@@ -594,14 +588,7 @@ export default function HomePage() {
             }}
           ></div>
         </div> */}
-        <Particles
-          className="absolute inset-0 z-0"
-          quantity={100}
-          ease={80}
-          color={color}
-          refresh
-        />
-        <ShootingStars />
+        <HomeBackground />
 
         <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -768,7 +755,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
+                {/* <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
                   <div className="flex items-center gap-2">
                     <div>
                       <Satellite className="h-4 w-4 text-cyan-500" />
@@ -784,7 +771,7 @@ export default function HomePage() {
                     <li>• Integration with local emergency services</li>
                     <li>• Historical emergency data and patterns</li>
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
 
