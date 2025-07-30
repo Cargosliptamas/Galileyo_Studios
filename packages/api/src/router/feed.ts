@@ -11,6 +11,20 @@ import {
   // publicProcedure
 } from "../trpc";
 
+function mapFeedItem(item: FeedItem): FeedItem {
+  const itemMap = { ...item };
+
+  if (Array.isArray(item.reactions)) {
+    itemMap.reactions = item.reactions.map((reaction) => ({
+      id: String(reaction.id),
+      cnt: Number(reaction.cnt),
+      selected: reaction.selected,
+    }));
+  }
+
+  return itemMap as FeedItem;
+}
+
 export const feedRouter = {
   getLatestNews: protectedProcedure
     .input(
@@ -56,19 +70,7 @@ export const feedRouter = {
           ...feedJson,
           data: {
             ...feedJson.data,
-            list: feedJson.data.list.map((item: FeedItem) => {
-              const itemMap = { ...item };
-
-              if (Array.isArray(item.reactions)) {
-                itemMap.reactions = item.reactions.map((reaction) => ({
-                  id: String(reaction.id),
-                  cnt: Number(reaction.cnt),
-                  selected: reaction.selected,
-                }));
-              }
-
-              return itemMap as FeedItem;
-            }),
+            list: feedJson.data.list.map(mapFeedItem),
           },
         };
       }
@@ -106,5 +108,77 @@ export const feedRouter = {
           return item;
         }),
       };
+    }),
+  setReaction: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        reaction: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, reaction } = input;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/set-reaction`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_news: id,
+            id_reaction: reaction,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: FeedItem;
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return mapFeedItem(responseJson.data);
+    }),
+  removeReaction: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        reaction: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, reaction } = input;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/remove-reaction`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_news: id,
+            id_reaction: reaction,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: FeedItem;
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return mapFeedItem(responseJson.data);
     }),
 } satisfies TRPCRouterRecord;

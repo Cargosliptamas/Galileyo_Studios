@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Bookmark,
@@ -36,8 +37,10 @@ import {
   HoverCardTrigger,
 } from "@galileyo/ui/hover-card";
 import { Separator } from "@galileyo/ui/separator";
+import { toast } from "@galileyo/ui/toast";
 
 import { useCommentsModal } from "~/hooks/use-comments-modal";
+import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
 
 function formatPrice(price: string | number | null | undefined) {
@@ -52,6 +55,15 @@ function formatPrice(price: string | number | null | undefined) {
   }).format(priceNumber);
 }
 
+const reactionOptions = [
+  { type: "like" as const, emoji: "👍", label: "Like", id: "1" },
+  { type: "dislike" as const, emoji: "👎", label: "Dislike", id: "2" },
+  { type: "laugh" as const, emoji: "🤣", label: "Laugh", id: "3" },
+  { type: "love" as const, emoji: "❤️", label: "Love", id: "4" },
+  { type: "fire" as const, emoji: "🔥", label: "Fire", id: "5" },
+  { type: "disgust" as const, emoji: "🤢", label: "Disgust", id: "6" },
+];
+
 export default function FeedCard({
   item,
   isMocked = false,
@@ -59,16 +71,31 @@ export default function FeedCard({
   item: FeedItem;
   isMocked?: boolean;
 }) {
+  const trpc = useTRPC();
   const { openModal } = useCommentsModal();
 
-  const reactionOptions = [
-    { type: "like" as const, emoji: "👍", label: "Like", id: "1" },
-    { type: "dislike" as const, emoji: "👎", label: "Dislike", id: "2" },
-    { type: "laugh" as const, emoji: "🤣", label: "Laugh", id: "3" },
-    { type: "love" as const, emoji: "❤️", label: "Love", id: "4" },
-    { type: "fire" as const, emoji: "🔥", label: "Fire", id: "5" },
-    { type: "disgust" as const, emoji: "🤢", label: "Disgust", id: "6" },
-  ];
+  const queryClient = useQueryClient();
+  const setReaction = useMutation(
+    trpc.feed.setReaction.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+      onError: (err) => {
+        toast.error(err.message || "Failed to set reaction");
+      },
+    }),
+  );
+
+  const removeReaction = useMutation(
+    trpc.feed.removeReaction.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+      onError: (err) => {
+        toast.error(err.message || "Failed to remove reaction");
+      },
+    }),
+  );
 
   const userReaction = useMemo(() => {
     return item.reactions.find((reaction) => reaction.selected);
@@ -121,9 +148,28 @@ export default function FeedCard({
     console.log("handleBookmark");
   };
 
-  const handleReactionClick = (reactionType: string) => {
-    console.log("handleReactionClick", reactionType);
-  };
+  const handleReactionClick = useCallback(
+    (reactionType: string) => {
+      const selectedReaction = userReaction?.id
+        ? reactionOptions.find((r) => r.id === userReaction.id)
+        : null;
+
+      if (selectedReaction?.type === reactionType) {
+        // TODO: remove reaction
+        removeReaction.mutate({
+          id: String(item.id),
+          reaction: selectedReaction.id,
+        });
+      } else {
+        setReaction.mutate({
+          id: String(item.id),
+          reaction:
+            reactionOptions.find((r) => r.type === reactionType)?.id ?? "",
+        });
+      }
+    },
+    [userReaction?.id, item.id, setReaction, removeReaction],
+  );
 
   const hasActions = useMemo(() => {
     return item.type !== "financial" && item.type !== "not_sended_yet";
@@ -270,7 +316,7 @@ export default function FeedCard({
             <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
 
             {/* Post Actions */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-baseline justify-between">
               <div className="flex items-baseline gap-6">
                 {/* <button
                   onClick={() => handleLike()}
@@ -397,10 +443,12 @@ export default function FeedCard({
                 </button>
               </div>
 
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => handleBookmark()}
                 disabled={isMocked}
-                className={`rounded-full p-2 transition-colors ${
+                className={`p-2 transition-colors ${
                   (item.is_bookmarked ?? false)
                     ? "text-yellow-400 hover:text-yellow-300"
                     : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
@@ -409,7 +457,7 @@ export default function FeedCard({
                 <Bookmark
                   className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
                 />
-              </button>
+              </Button>
             </div>
           </>
         )}
