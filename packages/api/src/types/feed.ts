@@ -1,3 +1,9 @@
+export interface ReactionType {
+  id: string;
+  cnt: number;
+  selected: boolean;
+}
+
 export interface FeedItemImageType {
   id: number;
   sizes: {
@@ -15,6 +21,7 @@ export interface BaseFeedItem {
   emergency_level: string | null;
   created_at: string | null;
   location: string | null;
+  // TODO: remove this
   is_liked: boolean | null;
   is_bookmarked: boolean | null;
 }
@@ -25,7 +32,7 @@ export interface FollowerListItem extends BaseFeedItem {
   title: string;
   body: string;
   url: string | null;
-  reactions: unknown[];
+  reactions: ReactionType[];
   images: FeedItemImageType[];
   comment_quantity: number;
 }
@@ -37,7 +44,7 @@ export interface NotSendedYetItem extends BaseFeedItem {
   url: string | null;
   id_subscription: number | null;
   image: string | null;
-  reactions: unknown[];
+  reactions: ReactionType[];
   images: FeedItemImageType[];
   comment_quantity: number;
 }
@@ -49,7 +56,7 @@ export interface FinancialItem extends BaseFeedItem {
   price: number;
   url: string | null;
   id_subscription: number | null;
-  reactions: unknown[];
+  reactions: ReactionType[];
   images: FeedItemImageType[];
   comment_quantity: number;
 }
@@ -61,7 +68,7 @@ export interface FinancialItemBackend extends BaseFeedItem {
   price: string;
   url: string | null;
   id_subscription: number | null;
-  reactions: unknown[];
+  reactions: ReactionType[];
   images: FeedItemImageType[];
   comment_quantity: number;
 }
@@ -73,7 +80,7 @@ export interface InfluencerItem extends BaseFeedItem {
   body: string;
   url: string | null;
   id_subscription: number | null;
-  reactions: unknown[];
+  reactions: ReactionType[];
   images: FeedItemImageType[];
   comment_quantity: number;
 }

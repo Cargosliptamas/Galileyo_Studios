@@ -33,6 +33,8 @@ import { Separator } from "@galileyo/ui/separator";
 
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { UserAvatar } from "./user-avatar";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@galileyo/ui/hover-card";
+import { cn } from "@galileyo/ui";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -54,6 +56,20 @@ export default function FeedCard({
   isMocked?: boolean;
 }) {
   const { openModal } = useCommentsModal();
+
+  const reactionOptions = [
+    { type: 'like' as const, emoji: '👍', label: 'Like', id: '1', },
+    { type: 'dislike' as const, emoji: '👎', label: 'Dislike', id: '2', },
+    { type: 'laugh' as const, emoji: '🤣', label: 'Laugh', id: '3', },
+    { type: 'love' as const, emoji: '❤️', label: 'Love', id: '4', },
+    { type: 'fire' as const, emoji: '🔥', label: 'Fire', id: '5', },
+    { type: 'disgust' as const, emoji: '🤢', label: 'Disgust', id: '6', }
+  ];
+
+  const userReaction = useMemo(() => {
+    return item.reactions.find((reaction) => reaction.selected);
+  }, [item.reactions]);
+
   const getPostTypeIcon = (type: string, emergencyLevel?: string) => {
     switch (type) {
       case "emergency":
@@ -97,12 +113,12 @@ export default function FeedCard({
     }
   };
 
-  const handleLike = () => {
-    console.log("handleLike");
-  };
-
   const handleBookmark = () => {
     console.log("handleBookmark");
+  };
+
+  const handleReactionClick = (reactionType: string) => {
+    console.log("handleReactionClick", reactionType);
   };
 
   const hasActions = useMemo(() => {
@@ -113,6 +129,10 @@ export default function FeedCard({
   const isVerified = ["influencer", "financial", "not_sended_yet"].includes(
     item.type,
   );
+
+  const getTotalReactions = () => {
+    return item.reactions.reduce((acc, reaction) => acc + reaction.cnt, 0);
+  };
 
   const formatNumber = (num: number | null | undefined) => {
     if (num === null || num === undefined) {
@@ -247,8 +267,8 @@ export default function FeedCard({
 
             {/* Post Actions */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <button
+              <div className="flex items-baseline gap-6">
+                {/* <button
                   onClick={() => handleLike()}
                   disabled={isMocked}
                   className={`flex items-center gap-2 transition-colors ${
@@ -261,9 +281,71 @@ export default function FeedCard({
                     className={`h-5 w-5 ${item.is_liked ? "fill-current" : ""}`}
                   />
                   <span className="text-sm font-medium">
-                    {formatNumber(/*item.likes*/ 0)}
+                    {formatNumber(0)}
                   </span>
-                </button>
+                </button> */}
+                <div className="flex flex-col items-center gap-2">
+                  <HoverCard openDelay={300}>
+                    <HoverCardTrigger asChild>
+                      <div className="flex flex-col items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(
+                            "flex items-center gap-2 text-slate-500 hover:text-slate-400 dark:text-slate-400 dark:hover:text-slate-300",
+                            userReaction ? "" : ""
+                          )}
+                        >
+                          {/* <Heart className="h-5 w-5" /> */}
+                          {userReaction ? (
+                            <span className="text-lg">{reactionOptions.find((r) => r.id === userReaction.id)?.emoji}</span>
+                          ) : (
+                            <Heart className="w-5 h-5" />
+                          )}
+                          <span className="text-sm font-medium">{formatNumber(getTotalReactions())}</span>
+                        </Button>
+                        {item.reactions.length > 0 && (
+                          <div className="flex items-center gap-1 mt-1">
+                            {item.reactions.slice(0, 3).map((reaction) => (
+                              <div key={reaction.id} className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                                <span>{reactionOptions.find((r) => r.id === reaction.id)?.emoji}</span>
+                                <span>{formatNumber(reaction.cnt)}</span>
+                              </div>
+                            ))}
+                            {item.reactions.length > 3 && (
+                              <span className="text-xs text-slate-500 dark:text-slate-400">+{item.reactions.length - 3} more</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="bg-white dark:bg-slate-900 w-full"
+                      side="top"
+                      align="start"
+                    >
+                      <div className="flex items-center gap-2">
+                        {reactionOptions.map((reaction) => (
+                          <Button variant="ghost" size="icon" key={reaction.type} onClick={() => handleReactionClick(reaction.type)} aria-label={reaction.label}>
+                            {reaction.emoji}
+                          </Button>
+                        ))}
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                  {/* {item.reactions.length > 0 && (
+                    <div className="flex items-center gap-1 mt-1">
+                      {item.reactions.slice(0, 3).map((reaction) => (
+                        <div key={reaction.id} className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                          <span>{reactionOptions.find((r) => r.id === reaction.id)?.emoji}</span>
+                          <span>{formatNumber(reaction.cnt ?? 0)}</span>
+                        </div>
+                      ))}
+                      {item.reactions.length > 3 && (
+                        <span className="text-xs text-slate-500 dark:text-slate-400">+{item.reactions.length - 3} more</span>
+                      )}
+                    </div>
+                  )} */}
+                </div>
 
                 <button
                   className="flex items-center gap-2 text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400"

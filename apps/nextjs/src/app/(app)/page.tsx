@@ -2,6 +2,8 @@
 
 // import { Button } from "@galileyo/ui/button";
 
+import { redirect } from "next/navigation";
+import { getSession } from "~/auth/server";
 import HomePageComponent from "~/components/public-site/home";
 import {
   HydrateClient,
@@ -9,8 +11,13 @@ import {
   // trpc,
 } from "~/trpc/server";
 
-export default function HomePage() {
+export default async function HomePage() {
   // prefetch(trpc.post.all.queryOptions());
+  const session = await getSession();
+
+  if (session) {
+    return redirect("/dashboard");
+  }
 
   return (
     <HydrateClient>

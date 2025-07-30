@@ -38,7 +38,42 @@ export const feedRouter = {
         }),
       });
 
-      const result = (await feed.json()) as {
+      let feedJson = await feed.json() as {
+        status: "success" | "error";
+        data: {
+          more_than_id: number | null;
+          less_than_id: number | null;
+          is_test_count: number | null;
+          list: FeedItem[];
+          count: number;
+          page: number;
+          page_size: number;
+        };
+      }
+
+      if (feedJson.status === "success") {
+        feedJson = {
+          ...feedJson,
+          data: {
+            ...feedJson.data,
+            list: feedJson.data.list.map((item: FeedItem) => {
+              const itemMap = {...item};
+
+              if (Array.isArray(item.reactions)) {
+                itemMap.reactions = item.reactions.map((reaction) => ({
+                  id: String(reaction.id),
+                  cnt: Number(reaction.cnt),
+                  selected: reaction.selected,
+                }));
+              }
+
+              return itemMap as FeedItem;
+            }),
+          },
+        };
+      }
+
+      const result = feedJson as {
         status: "success" | "error";
         data: {
           more_than_id: number | null;
