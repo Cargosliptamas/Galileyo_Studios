@@ -38,7 +38,7 @@ export const feedRouter = {
         }),
       });
 
-      let feedJson = await feed.json() as {
+      let feedJson = (await feed.json()) as {
         status: "success" | "error";
         data: {
           more_than_id: number | null;
@@ -49,7 +49,7 @@ export const feedRouter = {
           page: number;
           page_size: number;
         };
-      }
+      };
 
       if (feedJson.status === "success") {
         feedJson = {
@@ -57,7 +57,7 @@ export const feedRouter = {
           data: {
             ...feedJson.data,
             list: feedJson.data.list.map((item: FeedItem) => {
-              const itemMap = {...item};
+              const itemMap = { ...item };
 
               if (Array.isArray(item.reactions)) {
                 itemMap.reactions = item.reactions.map((reaction) => ({
