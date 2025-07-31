@@ -17,6 +17,7 @@ import { useTRPC } from "~/trpc/react";
 import CommentsModal from "./comments-modal";
 import FeedCard from "./feed-card";
 import FeedCardSkeleton from "./feed-card-skeleton";
+import { FEED_LIMIT } from "~/constants/feed";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";
@@ -111,8 +112,6 @@ const MockedFeeds: InfluencerItem[] = [
   },
 ];
 
-const LIMIT = 100;
-
 export default function FeedList() {
   const trpc = useTRPC();
   const [tabState, setTabState] = useQueryState("tab");
@@ -124,7 +123,7 @@ export default function FeedList() {
   const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
 
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
-    limit: LIMIT,
+    limit: FEED_LIMIT,
     cursor: 1,
     type: activeTab === "subscriptions" ? "subscriptions" : "discover",
   });
@@ -224,7 +223,7 @@ export default function FeedList() {
               key={getUniqueId(item)}
               item={item}
               isMocked={true}
-              limit={LIMIT}
+              limit={FEED_LIMIT}
               type="discover"
             />
           ))}
@@ -250,7 +249,7 @@ export default function FeedList() {
                   <FeedCard
                     key={getUniqueId(item)}
                     item={item}
-                    limit={LIMIT}
+                    limit={FEED_LIMIT}
                     type={activeTab}
                   />
                 ))}

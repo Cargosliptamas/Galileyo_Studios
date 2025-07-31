@@ -6,6 +6,7 @@ import FeedCardSkeleton from "~/components/feed/feed-card-skeleton";
 import FeedList from "~/components/feed/feed-list";
 // import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
+import { FEED_LIMIT } from "~/constants/feed";
 
 export default async function DashboardPage({
   searchParams,
@@ -21,7 +22,7 @@ export default async function DashboardPage({
 
   prefetch(
     trpc.feed.getLatestNews.infiniteQueryOptions({
-      limit: 100,
+      limit: FEED_LIMIT,
       cursor: 1,
       type:
         (tab as "subscriptions" | "discover" | undefined) ?? "subscriptions",
