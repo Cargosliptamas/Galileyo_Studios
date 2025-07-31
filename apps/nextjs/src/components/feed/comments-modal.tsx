@@ -229,6 +229,40 @@ function CommentComponent({
   );
 }
 
+function CommentComponentSkeleton({ isReply = false }: { isReply?: boolean }) {
+  return (
+    <div
+      className={`${isReply ? "ml-12 border-l-2 border-slate-200 pl-4 dark:border-slate-700" : ""}`}
+    >
+      <div className="mb-4 flex gap-3">
+        <div className="flex-1">
+          {/* User Avatar and Info Skeleton */}
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-8 w-8 animate-pulse rounded-full bg-slate-300 dark:bg-slate-600" />
+            <div className="flex-1 space-y-1">
+              <div className="h-4 w-24 animate-pulse rounded bg-slate-300 dark:bg-slate-600" />
+              <div className="h-3 w-32 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            </div>
+          </div>
+
+          {/* Comment Text Skeleton */}
+          <div className="mb-3 space-y-2">
+            <div className="h-4 w-full animate-pulse rounded bg-slate-300 dark:bg-slate-600" />
+            <div className="h-4 w-3/4 animate-pulse rounded bg-slate-300 dark:bg-slate-600" />
+            <div className="h-4 w-1/2 animate-pulse rounded bg-slate-300 dark:bg-slate-600" />
+          </div>
+
+          {/* Action Buttons Skeleton */}
+          <div className="flex items-center gap-4">
+            <div className="h-4 w-12 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            <div className="h-4 w-8 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface CommentsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -458,19 +492,24 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
 
         {/* Comments List */}
         <div className="max-h-96 flex-1 space-y-6 overflow-y-auto">
-          {comments?.pages.map((page) =>
-            page.list.map((comment) => (
-              <CommentComponent
-                key={comment.id}
-                comment={comment}
-                setReplyingTo={setReplyingTo}
-                replyingTo={replyingTo}
-                replyText={replyText}
-                setReplyText={setReplyText}
-                handleSubmitReply={handleSubmitReply}
-              />
-            )),
-          )}
+          {isLoading
+            ? // Show skeleton loading state
+              Array.from({ length: 3 }).map((_, index) => (
+                <CommentComponentSkeleton key={index} />
+              ))
+            : comments?.pages.map((page) =>
+                page.list.map((comment) => (
+                  <CommentComponent
+                    key={comment.id}
+                    comment={comment}
+                    setReplyingTo={setReplyingTo}
+                    replyingTo={replyingTo}
+                    replyText={replyText}
+                    setReplyText={setReplyText}
+                    handleSubmitReply={handleSubmitReply}
+                  />
+                )),
+              )}
         </div>
 
         <Separator className="bg-slate-700" />

@@ -1,7 +1,5 @@
 import HomePageComponent from "~/components/public-site/home";
-import {
-  HydrateClient,
-} from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 
 export default function HomePage() {
   return (

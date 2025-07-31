@@ -9,6 +9,7 @@ import { useQueryState } from "nuqs";
 import { useInView } from "react-intersection-observer";
 
 import type { FeedItem, InfluencerItem } from "@galileyo/api/schemas";
+import { Button } from "@galileyo/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
@@ -39,7 +40,18 @@ const MockedFeeds: InfluencerItem[] = [
     id_subscription: 1,
     body: "WEATHER ALERT: Severe storm system approaching Pacific Northwest. Cellular towers may experience disruptions. Satellite communication remains fully operational. Stay safe and stay connected.",
     created_at: "4 hours ago",
-    reactions: [],
+    reactions: [
+      {
+        id: "1",
+        cnt: 1200,
+        selected: true,
+      },
+      {
+        id: "2",
+        cnt: 100,
+        selected: false,
+      },
+    ],
     images: [
       {
         id: 1,
@@ -72,7 +84,23 @@ const MockedFeeds: InfluencerItem[] = [
     id_subscription: 1,
     body: "NETWORK UPDATE: Successfully deployed 12 new satellites to improve coverage over South America and Africa. Signal strength increased by 35% in these regions. The future of global connectivity is here! 🛰️",
     created_at: "8 hours ago",
-    reactions: [],
+    reactions: [
+      {
+        id: "1",
+        cnt: 425,
+        selected: false,
+      },
+      {
+        id: "2",
+        cnt: 132,
+        selected: false,
+      },
+      {
+        id: "5",
+        cnt: 3240,
+        selected: true,
+      },
+    ],
     images: [],
     comment_quantity: 0,
     type: "satellite_update",
@@ -83,17 +111,20 @@ const MockedFeeds: InfluencerItem[] = [
   },
 ];
 
+const LIMIT = 100;
+
 export default function FeedList() {
   const trpc = useTRPC();
   const [tabState, setTabState] = useQueryState("tab");
 
   const { ref, inView } = useInView();
+  const [showMockedFeeds, setShowMockedFeeds] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState<FeedItem | null>(null);
   const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
 
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
-    limit: 100,
+    limit: LIMIT,
     cursor: 1,
     type: activeTab === "subscriptions" ? "subscriptions" : "discover",
   });
@@ -138,7 +169,6 @@ export default function FeedList() {
   });
 
   const handleOpenCommentsModal = (post: FeedItem) => {
-    console.log("handleOpenCommentsModal", post);
     setPost(post);
     setIsOpen(true);
   };
@@ -180,9 +210,23 @@ export default function FeedList() {
       </Tabs>
 
       <div className="space-y-4">
+        <Button
+          onClick={() => setShowMockedFeeds(!showMockedFeeds)}
+          variant="outline"
+          className="w-full bg-white dark:bg-slate-900"
+        >
+          {showMockedFeeds ? "Hide Mocked Feeds" : "Show Mocked Feeds"}
+        </Button>
         {activeTab === "discover" &&
+          showMockedFeeds &&
           MockedFeeds.map((item) => (
-            <FeedCard key={getUniqueId(item)} item={item} isMocked={true} />
+            <FeedCard
+              key={getUniqueId(item)}
+              item={item}
+              isMocked={true}
+              limit={LIMIT}
+              type="discover"
+            />
           ))}
         {status === "error" ? (
           <span>Error: {error?.message}</span>
@@ -203,7 +247,12 @@ export default function FeedList() {
             {data.pages.map((page) => (
               <Fragment key={page.page}>
                 {page.list.map((item) => (
-                  <FeedCard key={getUniqueId(item)} item={item} />
+                  <FeedCard
+                    key={getUniqueId(item)}
+                    item={item}
+                    limit={LIMIT}
+                    type={activeTab}
+                  />
                 ))}
               </Fragment>
             ))}

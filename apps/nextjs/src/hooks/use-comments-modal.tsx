@@ -22,7 +22,6 @@ export function useCommentsModal() {
 
   const openModal = (post: FeedItem) => {
     // setIsOpen(true, post);
-    console.log("openModal", post);
     context.handleOpenCommentsModal(post);
   };
 

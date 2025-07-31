@@ -3,7 +3,8 @@
 import { useId } from "react";
 import Link from "next/link";
 import { PlusIcon, SearchIcon } from "lucide-react";
-import { toast } from "sonner";
+
+// import { toast } from "sonner";
 
 import { Button } from "@galileyo/ui/button";
 import { Input } from "@galileyo/ui/input";
@@ -26,7 +27,7 @@ export default function AuthNavbar({ user }: { user: User }) {
 
   const handleCreatePost = () => {
     console.log("create post");
-    toast("Loading more...");
+    // toast("Loading more...");
   };
 
   return (

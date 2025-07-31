@@ -1,3 +1,4 @@
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { ThemeProvider } from "@galileyo/ui/theme";
@@ -16,6 +17,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <TRPCReactProvider>
+        <ReactQueryDevtools />
         <NuqsAdapter>
           <PushNotificationProvider>{children}</PushNotificationProvider>
         </NuqsAdapter>

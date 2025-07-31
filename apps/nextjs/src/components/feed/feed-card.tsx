@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import type { InfiniteData } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -66,33 +67,176 @@ const reactionOptions = [
 
 export default function FeedCard({
   item,
+  limit,
+  type,
   isMocked = false,
 }: {
   item: FeedItem;
+  limit: number;
+  type: string;
   isMocked?: boolean;
 }) {
   const trpc = useTRPC();
+
   const { openModal } = useCommentsModal();
 
   const queryClient = useQueryClient();
+
   const setReaction = useMutation(
     trpc.feed.setReaction.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      onMutate: (data) => {
+        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+          limit,
+          type: type as "subscriptions" | "discover",
+        });
+
+        const previousData = queryClient.getQueryData(queryKey);
+
+        queryClient.setQueryData<
+          InfiniteData<{
+            list: FeedItem[];
+          }>
+        >(queryKey, (old) => {
+          const mapped = {
+            ...old,
+            pageParams: old?.pageParams ?? [],
+            pages:
+              old?.pages.map((page) => ({
+                ...page,
+                list: page.list.map((item) => {
+                  if (item.id !== Number(data.id)) {
+                    return item;
+                  }
+
+                  const hasNewReaction = item.reactions.find(
+                    (reaction) => reaction.id === data.reaction,
+                  );
+
+                  const mappedReactions = item.reactions.map((reaction) => {
+                    if (reaction.id === data.reaction) {
+                      return {
+                        ...reaction,
+                        cnt: reaction.cnt + 1,
+                        selected: true,
+                      };
+                    }
+
+                    if (reaction.selected) {
+                      return {
+                        ...reaction,
+                        cnt: reaction.cnt - 1,
+                        selected: false,
+                      };
+                    }
+
+                    return {
+                      ...reaction,
+                    };
+                  });
+
+                  if (!hasNewReaction) {
+                    mappedReactions.push({
+                      id: data.reaction,
+                      cnt: 1,
+                      selected: true,
+                    });
+                  }
+
+                  return {
+                    ...item,
+                    reactions: mappedReactions.filter(
+                      (reaction) => reaction.cnt > 0,
+                    ),
+                  };
+                }),
+              })) ?? [],
+          };
+
+          return mapped;
+        });
+
+        return { previousData };
       },
-      onError: (err) => {
-        toast.error(err.message || "Failed to set reaction");
+      onError: (err, data, context) => {
+        console.log("error", err);
+        toast.error("Failed to set reaction");
+
+        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+          limit: 100,
+          type: type as "subscriptions" | "discover",
+        });
+
+        queryClient.setQueryData(queryKey, context?.previousData);
       },
     }),
   );
 
   const removeReaction = useMutation(
     trpc.feed.removeReaction.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      // onSuccess: async () => {
+      //   await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      // },
+      onMutate: (data) => {
+        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+          limit,
+          type: type as "subscriptions" | "discover",
+        });
+
+        const previousData = queryClient.getQueryData(queryKey);
+
+        queryClient.setQueryData<
+          InfiniteData<{
+            list: FeedItem[];
+          }>
+        >(queryKey, (old) => {
+          const mapped = {
+            ...old,
+            pageParams: old?.pageParams ?? [],
+            pages:
+              old?.pages.map((page) => ({
+                ...page,
+                list: page.list.map((item) => {
+                  if (item.id !== Number(data.id)) {
+                    return item;
+                  }
+
+                  const mappedReactions = item.reactions.map((reaction) => {
+                    if (reaction.id === data.reaction) {
+                      return {
+                        ...reaction,
+                        cnt: reaction.cnt - 1,
+                        selected: false,
+                      };
+                    }
+
+                    return reaction;
+                  });
+
+                  return {
+                    ...item,
+                    reactions: mappedReactions.filter(
+                      (reaction) => reaction.cnt > 0,
+                    ),
+                  };
+                }),
+              })) ?? [],
+          };
+
+          return mapped;
+        });
+
+        return { previousData };
       },
-      onError: (err) => {
-        toast.error(err.message || "Failed to remove reaction");
+      onError: (err, data, context) => {
+        console.log("error", err);
+        toast.error("Failed to remove reaction");
+
+        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+          limit: 100,
+          type: type as "subscriptions" | "discover",
+        });
+
+        queryClient.setQueryData(queryKey, context?.previousData);
       },
     }),
   );
@@ -100,6 +244,30 @@ export default function FeedCard({
   const userReaction = useMemo(() => {
     return item.reactions.find((reaction) => reaction.selected);
   }, [item.reactions]);
+
+  const pendingReaction = useMemo(() => {
+    if (
+      setReaction.variables?.id === String(item.id) &&
+      setReaction.isPending
+    ) {
+      return setReaction.variables.reaction;
+    }
+
+    if (
+      removeReaction.variables?.id === String(item.id) &&
+      removeReaction.isPending
+    ) {
+      return removeReaction.variables.reaction;
+    }
+
+    return null;
+  }, [
+    setReaction.variables,
+    removeReaction.variables,
+    item.id,
+    setReaction.isPending,
+    removeReaction.isPending,
+  ]);
 
   const getPostTypeIcon = (type: string, emergencyLevel?: string) => {
     switch (type) {
@@ -316,115 +484,119 @@ export default function FeedCard({
             <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
 
             {/* Post Actions */}
-            <div className="flex items-baseline justify-between">
-              <div className="flex items-baseline gap-6">
-                {/* <button
-                  onClick={() => handleLike()}
-                  disabled={isMocked}
-                  className={`flex items-center gap-2 transition-colors ${
-                    (item.is_liked ?? false)
-                      ? "text-red-400 hover:text-red-300"
-                      : "text-slate-500 hover:text-red-400 dark:text-slate-400"
-                  }`}
-                >
-                  <Heart
-                    className={`h-5 w-5 ${item.is_liked ? "fill-current" : ""}`}
-                  />
-                  <span className="text-sm font-medium">
-                    {formatNumber(0)}
-                  </span>
-                </button> */}
-                <div className="flex flex-col items-center gap-2">
-                  <HoverCard openDelay={300}>
-                    <HoverCardTrigger asChild>
-                      <div className="flex flex-col items-center gap-2">
+            <div className="grid grid-cols-3 items-baseline justify-between">
+              <div className="col-span-3 flex">
+                {item.reactions.length > 0 && (
+                  <div className="mt-1 flex items-center gap-1">
+                    {item.reactions.map((reaction) => (
+                      <div
+                        key={reaction.id}
+                        className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
+                      >
+                        <span>
+                          {
+                            reactionOptions.find((r) => r.id === reaction.id)
+                              ?.emoji
+                          }
+                        </span>
+                        <span>{formatNumber(reaction.cnt)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="col-span-2 flex items-center gap-6">
+                <HoverCard openDelay={300}>
+                  <HoverCardTrigger asChild>
+                    {/* <div className="flex flex-col items-center gap-2"> */}
+                    <Button
+                      disabled={isMocked}
+                      variant="ghost"
+                      // size="icon"
+                      className={cn(
+                        "flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400",
+                        // pendingReaction ? "animate-pulse" : "",
+                      )}
+                      onClick={() => {
+                        if (pendingReaction) {
+                          handleReactionClick(pendingReaction);
+                          return;
+                        }
+
+                        const reaction = reactionOptions.find(
+                          (r) => r.id === userReaction?.id,
+                        );
+
+                        if (reaction) {
+                          handleReactionClick(reaction.type);
+                        } else {
+                          handleReactionClick("love");
+                        }
+                      }}
+                    >
+                      {/* <Heart className="h-5 w-5" /> */}
+                      {userReaction || pendingReaction ? (
+                        <div className="flex max-h-5 max-w-5 items-center gap-1 text-xl">
+                          {
+                            reactionOptions.find(
+                              (r) =>
+                                r.id === (pendingReaction ?? userReaction?.id),
+                            )?.emoji
+                          }
+                        </div>
+                      ) : (
+                        <Heart className="h-5 w-5" />
+                      )}
+                      <div className="text-sm font-medium">
+                        {formatNumber(getTotalReactions())}
+                      </div>
+                    </Button>
+                    {/* {item.reactions.length > 0 && (
+                        <div className="mt-1 flex items-center gap-1">
+                          {item.reactions.map((reaction) => (
+                            <div
+                              key={reaction.id}
+                              className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
+                            >
+                              <span>
+                                {
+                                  reactionOptions.find(
+                                    (r) => r.id === reaction.id,
+                                  )?.emoji
+                                }
+                              </span>
+                              <span>{formatNumber(reaction.cnt)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )} */}
+                    {/* </div> */}
+                  </HoverCardTrigger>
+                  <HoverCardContent
+                    className="w-full bg-white dark:bg-slate-900"
+                    side="top"
+                    align="start"
+                  >
+                    <div className="flex items-center gap-2">
+                      {reactionOptions.map((reaction) => (
                         <Button
+                          disabled={isMocked}
                           variant="ghost"
                           size="icon"
-                          className={cn(
-                            "flex items-center gap-2 text-slate-500 hover:text-slate-400 dark:text-slate-400 dark:hover:text-slate-300",
-                            userReaction ? "" : "",
-                          )}
+                          key={reaction.type}
+                          onClick={() => handleReactionClick(reaction.type)}
+                          aria-label={reaction.label}
                         >
-                          {/* <Heart className="h-5 w-5" /> */}
-                          {userReaction ? (
-                            <span className="text-lg">
-                              {
-                                reactionOptions.find(
-                                  (r) => r.id === userReaction.id,
-                                )?.emoji
-                              }
-                            </span>
-                          ) : (
-                            <Heart className="h-5 w-5" />
-                          )}
-                          <span className="text-sm font-medium">
-                            {formatNumber(getTotalReactions())}
-                          </span>
+                          {reaction.emoji}
                         </Button>
-                        {item.reactions.length > 0 && (
-                          <div className="mt-1 flex items-center gap-1">
-                            {item.reactions.slice(0, 3).map((reaction) => (
-                              <div
-                                key={reaction.id}
-                                className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
-                              >
-                                <span>
-                                  {
-                                    reactionOptions.find(
-                                      (r) => r.id === reaction.id,
-                                    )?.emoji
-                                  }
-                                </span>
-                                <span>{formatNumber(reaction.cnt)}</span>
-                              </div>
-                            ))}
-                            {item.reactions.length > 3 && (
-                              <span className="text-xs text-slate-500 dark:text-slate-400">
-                                +{item.reactions.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </HoverCardTrigger>
-                    <HoverCardContent
-                      className="w-full bg-white dark:bg-slate-900"
-                      side="top"
-                      align="start"
-                    >
-                      <div className="flex items-center gap-2">
-                        {reactionOptions.map((reaction) => (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            key={reaction.type}
-                            onClick={() => handleReactionClick(reaction.type)}
-                            aria-label={reaction.label}
-                          >
-                            {reaction.emoji}
-                          </Button>
-                        ))}
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                  {/* {item.reactions.length > 0 && (
-                    <div className="flex items-center gap-1 mt-1">
-                      {item.reactions.slice(0, 3).map((reaction) => (
-                        <div key={reaction.id} className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                          <span>{reactionOptions.find((r) => r.id === reaction.id)?.emoji}</span>
-                          <span>{formatNumber(reaction.cnt ?? 0)}</span>
-                        </div>
                       ))}
-                      {item.reactions.length > 3 && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">+{item.reactions.length - 3} more</span>
-                      )}
                     </div>
-                  )} */}
-                </div>
+                  </HoverCardContent>
+                </HoverCard>
 
-                <button
-                  className="flex items-center gap-2 text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400"
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
                   onClick={() => openModal(item)}
                   disabled={isMocked}
                 >
@@ -432,32 +604,35 @@ export default function FeedCard({
                   <span className="text-sm font-medium">
                     {formatNumber(item.comment_quantity)}
                   </span>
-                </button>
+                </Button>
 
-                <button
-                  className="flex items-center gap-2 text-slate-500 transition-colors hover:text-green-400 dark:text-slate-400"
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
                   disabled={isMocked}
                 >
                   <Share className="h-5 w-5" />
                   <span className="text-sm font-medium">{formatNumber(0)}</span>
-                </button>
+                </Button>
               </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleBookmark()}
-                disabled={isMocked}
-                className={`p-2 transition-colors ${
-                  (item.is_bookmarked ?? false)
-                    ? "text-yellow-400 hover:text-yellow-300"
-                    : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
-                }`}
-              >
-                <Bookmark
-                  className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
-                />
-              </Button>
+              <div className="flex items-end justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleBookmark()}
+                  disabled={isMocked}
+                  className={`p-2 transition-colors ${
+                    (item.is_bookmarked ?? false)
+                      ? "text-yellow-400 hover:text-yellow-300"
+                      : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+                  }`}
+                >
+                  <Bookmark
+                    className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+                  />
+                </Button>
+              </div>
             </div>
           </>
         )}
