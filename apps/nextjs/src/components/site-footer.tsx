@@ -1,11 +1,15 @@
 // import Image from "next/image";
 import Link from "next/link";
 
+import { Button } from "@galileyo/ui/button";
 import { ThemeToggle } from "@galileyo/ui/theme";
 
+import { getStatus } from "~/trpc/server";
 import { AppIcon } from "./app-icon";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const status = await getStatus();
+
   return (
     <footer className="border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -129,12 +133,20 @@ export function SiteFooter() {
             <ThemeToggle />
           </p>
           <div className="mt-4 flex items-center gap-4 sm:mt-0">
-            <div className="flex items-center gap-1">
-              <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-              <span className="text-sm text-green-400">
-                All systems operational
-              </span>
-            </div>
+            <Button variant="ghost" className="flex items-center gap-1" asChild>
+              <Link href={status.url} target="_blank">
+                <div
+                  className={`h-2 w-2 animate-pulse rounded-full ${status.status === "UP" ? "bg-green-400" : status.status === "HASISSUES" ? "bg-yellow-400" : "bg-red-400"}`}
+                ></div>
+                <span className="text-sm text-green-400">
+                  {status.status === "UP"
+                    ? "All systems operational"
+                    : status.status === "HASISSUES"
+                      ? "Some systems are experiencing issues"
+                      : "Some systems are under maintenance"}
+                </span>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
