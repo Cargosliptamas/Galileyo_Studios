@@ -12,12 +12,12 @@ import type { FeedItem, InfluencerItem } from "@galileyo/api/schemas";
 import { Button } from "@galileyo/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
+import { FEED_LIMIT } from "~/constants/feed";
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import { useTRPC } from "~/trpc/react";
 import CommentsModal from "./comments-modal";
 import FeedCard from "./feed-card";
 import FeedCardSkeleton from "./feed-card-skeleton";
-import { FEED_LIMIT } from "~/constants/feed";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";

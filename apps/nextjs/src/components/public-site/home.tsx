@@ -28,7 +28,8 @@ const features = [
   {
     icon: <Globe className="h-8 w-8" />,
     title: "Be the First to Know",
-    description: "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
+    description:
+      "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
   },
   {
     icon: <Lock className="h-8 w-8" />,
@@ -123,7 +124,8 @@ const satelliteFeatures = [
   },
   {
     title: "Reliable Connectivity",
-    description: "Multiple sources for uptime, including APIs, AI, and human insights",
+    description:
+      "Multiple sources for uptime, including APIs, AI, and human insights",
   },
 ];
 
@@ -614,7 +616,7 @@ export default function HomePage() {
 
               {/* Main Headline */}
               <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 dark:text-white lg:text-6xl">
-                  Who Has Your Back? —{" "}
+                Who Has Your Back? —{" "}
                 <span className="bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent dark:from-cyan-400 dark:to-blue-400">
                   We Do.
                 </span>
@@ -622,7 +624,8 @@ export default function HomePage() {
 
               {/* Supporting Tagline */}
               <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
-                Stay protected with the only social emergency app designed to keep you and your loved ones safe when disaster strikes.
+                Stay protected with the only social emergency app designed to
+                keep you and your loved ones safe when disaster strikes.
               </p>
 
               {/* CTA Buttons */}
@@ -673,7 +676,6 @@ export default function HomePage() {
                   <span>And much more...</span>
                 </div>
               </div>
-
 
               {/* Emergency Preview Section */}
               <div className="mt-16">
@@ -871,7 +873,7 @@ export default function HomePage() {
             {/* Right Column - Satellite Illustration */}
             <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-1">
               {/* Mobile Taglines */}
-                  {/*<div className="">
+              {/*<div className="">
                     <div className="">
                       <p className="">
                         Connect your smartphone to any satellite device — and if you don’t have one, we’ll give you one for free!
@@ -1082,7 +1084,10 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
             >
-              Because your safety and connection matter most. In a world where disasters can strike without warning, staying informed is your lifeline. Galileyo unites communities, empowering you to protect what matters and stay connected when it counts.
+              Because your safety and connection matter most. In a world where
+              disasters can strike without warning, staying informed is your
+              lifeline. Galileyo unites communities, empowering you to protect
+              what matters and stay connected when it counts.
             </motion.p>
           </div>
 
@@ -1104,7 +1109,7 @@ export default function HomePage() {
                 >
                   {feature.icon}
                 </motion.div>
-                <h3 className="mb-3 text-l font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-l mb-3 font-semibold text-slate-900 dark:text-white">
                   {feature.title}
                 </h3>
                 <p className="leading-relaxed text-slate-600 dark:text-slate-300">
@@ -1120,12 +1125,13 @@ export default function HomePage() {
       <section className="lg:py-0">
         <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
           <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
-            Your safety is a story worth sharing. 
+            Your safety is a story worth sharing.
           </h3>
           <p className="mb-6 text-slate-600 dark:text-slate-300">
-            Join Galileyo and be part of a movement where everyone looks out for each other.
+            Join Galileyo and be part of a movement where everyone looks out for
+            each other.
           </p>
-          <div className="mx-auto flex max-w-mdi flex-col gap-4 sm:flex-row">
+          <div className="max-w-mdi mx-auto flex flex-col gap-4 sm:flex-row">
             <input
               type="email"
               placeholder="Enter your email"
@@ -1136,11 +1142,10 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-
       </section>
 
       {/* Next-Generation Emergency Features Section */}
-      <section className="lg:py-32 py-20">
+      <section className="py-20 lg:py-32">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-400">
@@ -1151,7 +1156,9 @@ export default function HomePage() {
               Emergency Support When You Need It Most
             </h2>
             <p className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300">
-              Harnessing the power of AI and satellite technology to deliver swift, life-saving assistance — because every second counts in a crisis.
+              Harnessing the power of AI and satellite technology to deliver
+              swift, life-saving assistance — because every second counts in a
+              crisis.
             </p>
           </div>
 
@@ -1380,7 +1387,14 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
             >
-              Galileyo collaborates with leading satellite providers to ensure you stay connected—whether you're in the mountains, at sea, or anywhere in between. Our satellite-ready app guarantees vital communication reaches you, even in the most remote locations. Beyond technology, a global network of trusted influencers, experts, and community voices help shape the flow of information, providing you with reliable, accurate updates when it matters most.
+              Galileyo collaborates with leading satellite providers to ensure
+              you stay connected—whether you're in the mountains, at sea, or
+              anywhere in between. Our satellite-ready app guarantees vital
+              communication reaches you, even in the most remote locations.
+              Beyond technology, a global network of trusted influencers,
+              experts, and community voices help shape the flow of information,
+              providing you with reliable, accurate updates when it matters
+              most.
             </motion.p>
           </div>
 
@@ -1413,110 +1427,106 @@ export default function HomePage() {
           </div>
         </div>
 
-
         {/* Pricing Section */}
-      <section
-        id="pricing"
-        className="bg-white dark:bg-slate-950"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
-            >
-              Honest Pricing, No Hidden Fees
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
-            >
-              Discover our honest, transparent pricing—so you can choose with confidence and avoid any surprises.
-            </motion.p>
-          </div>
-
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
-                  plan.highlight
-                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
-                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
-                }`}
+        <section id="pricing" className="bg-white dark:bg-slate-950">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-16 text-center">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
               >
-                {plan.popular && (
-                  <div
-                    // initial={{ opacity: 0, y: -10 }}
-                    // animate={{ opacity: 1, y: 0 }}
-                    // transition={{ duration: 0.6, delay: 0.5 }}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                  >
-                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                      <Star className="h-4 w-4 fill-current" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
+                Honest Pricing, No Hidden Fees
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
+              >
+                Discover our honest, transparent pricing—so you can choose with
+                confidence and avoid any surprises.
+              </motion.p>
+            </div>
 
-                <div className="mb-8 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    {plan.name}
-                  </h3>
-                  <p className="mb-4 text-slate-600 dark:text-slate-300">
-                    {plan.description}
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span
-                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
-                    >
-                      {plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className="ml-1 text-slate-500 dark:text-slate-400">
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <ul className="mb-8 space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check
-                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
-                      />
-                      <span className="text-slate-600 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+              {pricingPlans.map((plan, index) => (
+                <div
+                  key={index}
+                  className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
                     plan.highlight
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
-                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+                      ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                      : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
                   }`}
                 >
-                  {plan.cta}
-                </motion.button>
-              </div>
-            ))}
+                  {plan.popular && (
+                    <div
+                      // initial={{ opacity: 0, y: -10 }}
+                      // animate={{ opacity: 1, y: 0 }}
+                      // transition={{ duration: 0.6, delay: 0.5 }}
+                      className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
+                    >
+                      <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                        <Star className="h-4 w-4 fill-current" />
+                        Most Popular
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-8 text-center">
+                    <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                      {plan.name}
+                    </h3>
+                    <p className="mb-4 text-slate-600 dark:text-slate-300">
+                      {plan.description}
+                    </p>
+                    <div className="flex items-center justify-center">
+                      <span
+                        className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                      >
+                        {plan.price}
+                      </span>
+                      {plan.period && (
+                        <span className="ml-1 text-slate-500 dark:text-slate-400">
+                          {plan.period}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <ul className="mb-8 space-y-4">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start gap-3">
+                        <Check
+                          className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
+                        />
+                        <span className="text-slate-600 dark:text-slate-300">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+                      plan.highlight
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
+                        : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+                    }`}
+                  >
+                    {plan.cta}
+                  </motion.button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-            
+        </section>
 
         {/* Newsletter Signup */}
         <div className="mx-auto mt-16 max-w-5xl rounded-2xl border p-8 text-center">
@@ -1524,9 +1534,11 @@ export default function HomePage() {
             Still on the fence?
           </h3>
           <p className="mb-6 text-slate-600 dark:text-slate-300">
-            Subscribe to our mailing list for the latest updates, helpful tips, and exclusive insights—delivered straight to your inbox. 
+            Subscribe to our mailing list for the latest updates, helpful tips,
+            and exclusive insights—delivered straight to your inbox.
             <br />
-            (Please note, this is for regular updates only and does not include emergency notifications.)
+            (Please note, this is for regular updates only and does not include
+            emergency notifications.)
           </p>
           <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
             <input
