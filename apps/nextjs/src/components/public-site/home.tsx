@@ -13,6 +13,7 @@ import {
   Star,
   TrendingUp,
   Users,
+  Wallet,
   Zap,
 } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -26,26 +27,32 @@ import { HomeBackground } from "./home-backround";
 const features = [
   {
     icon: <Globe className="h-8 w-8" />,
-    title: "Worldwide Coverage",
-    description: "Access information anywhere through our satellite network",
+    title: "Be the First to Know",
+    description: "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
   },
   {
     icon: <Lock className="h-8 w-8" />,
-    title: "Uncensored Content",
+    title: "Stay Connected",
     description:
-      "Share and receive unfiltered information without restrictions",
+      "Share updates, messages, and location info seamlessly, keeping everyone safe and informed.",
   },
   {
     icon: <Shield className="h-8 w-8" />,
-    title: "Private Groups",
+    title: "Join a Caring Community",
     description:
-      "Create secure groups to share critical information with trusted members",
+      "Connect with neighbors, influencers, and trusted sources to share vital information during crises.",
   },
   {
     icon: <Bell className="h-8 w-8" />,
-    title: "Real-Time Alerts",
+    title: "Connect Anywhere",
     description:
-      "Receive instant notifications about emergencies and critical updates",
+      "Use our satellite app to stay safe in remote areas — and if you don’t have a satellite device, we’ll give you one for free!",
+  },
+  {
+    icon: <Wallet className="h-8 w-8" />,
+    title: "Earn Rewards",
+    description:
+      "Get discounts and coins just for staying engaged and helping others.",
   },
 ];
 
@@ -62,7 +69,7 @@ const pricingPlans = [
       "Access To Web and IOS/Android Apps",
       "Active support",
     ],
-    cta: "Create Account",
+    cta: "Get Started with Basic",
     popular: false,
     highlight: false,
   },
@@ -79,7 +86,7 @@ const pricingPlans = [
       "See Who Viewed Your Profile",
       "Premium Customer Support",
     ],
-    cta: "Join NOW",
+    cta: "Choose Standard",
     popular: true,
     highlight: true,
   },
@@ -95,7 +102,7 @@ const pricingPlans = [
       "Goal Zero Nomad 5 Solar Panel",
       "Starlink USB-C to DC Power Cord",
     ],
-    cta: "Select Plan",
+    cta: "Upgrade to Premium",
     popular: false,
     highlight: false,
   },
@@ -103,20 +110,20 @@ const pricingPlans = [
 
 const satelliteFeatures = [
   {
-    title: "200+ Countries Covered",
-    description: "Global satellite network coverage",
+    title: "Global Coverage",
+    description: "200+ countries covered",
   },
   {
-    title: "Works with Bivy Stick, Starlink, and More",
-    description: "Compatible with leading satellite providers",
+    title: "Compatible Devices",
+    description: "Works with top satellite devices",
   },
   {
-    title: "End-to-End Encryption",
-    description: "Military-grade security for all communications",
+    title: "Secure Communications",
+    description: "Military-grade security",
   },
   {
-    title: "99.9% Global Uptime",
-    description: "Reliable connectivity when you need it most",
+    title: "Reliable Connectivity",
+    description: "Multiple sources for uptime, including APIs, AI, and human insights",
   },
 ];
 
@@ -607,16 +614,15 @@ export default function HomePage() {
 
               {/* Main Headline */}
               <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 dark:text-white lg:text-6xl">
-                Speak Freely —{" "}
+                  Who Has Your Back? —{" "}
                 <span className="bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent dark:from-cyan-400 dark:to-blue-400">
-                  Unleash Your Voice
+                  We Do.
                 </span>
               </h1>
 
               {/* Supporting Tagline */}
               <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
-                Break the Chains & Stand alongside hundreds of uncensored truth
-                seekers who refuse to be silenced!
+                Stay protected with the only social emergency app designed to keep you and your loved ones safe when disaster strikes.
               </p>
 
               {/* CTA Buttons */}
@@ -630,20 +636,44 @@ export default function HomePage() {
               </div>
 
               {/* Trust Indicators */}
+              <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
+                Get instant alerts for:
+              </p>
               <div className="flex flex-wrap gap-6 text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-green-400" />
-                  <span>99.9% Uptime</span>
+                  <Globe className="h-5 w-5 text-blue-400" />
+                  <span>Breaking news</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Globe className="h-5 w-5 text-blue-400" />
-                  <span>200+ Countries</span>
+                  <span>Influencer updates</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-purple-400" />
-                  <span>Military-Grade Encryption</span>
+                  <Globe className="h-5 w-5 text-blue-400" />
+                  <span>Local emergencies</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-green-400" />
+                  <span>Power outages</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-green-400" />
+                  <span>Cyber hack warnings</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-green-400" />
+                  <span>Private messaging</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-purple-400" />
+                  <span>Family location tracking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-purple-400" />
+                  <span>And much more...</span>
                 </div>
               </div>
+
 
               {/* Emergency Preview Section */}
               <div className="mt-16">
@@ -840,6 +870,22 @@ export default function HomePage() {
 
             {/* Right Column - Satellite Illustration */}
             <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-1">
+              {/* Mobile Taglines */}
+                  {/*<div className="">
+                    <div className="">
+                      <p className="">
+                        Connect your smartphone to any satellite device — and if you don’t have one, we’ll give you one for free!
+                      </p>
+                      <p className="">
+                        Always stay in the know.
+                      </p>
+                      <p className="">
+                        Earn discounts and coins just by clicking and staying engaged.
+                      </p>
+                    </div>
+                  
+                  </div> */}
+
               {/* <div className="relative w-full max-w-lg">
                 <div className="relative z-10 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-2xl dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
                   <div className="mb-6 text-center">
@@ -1016,7 +1062,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section
         id="features"
-        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
+        className="bg-white py-20 dark:bg-slate-950 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
@@ -1036,14 +1082,11 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
             >
-              When traditional communication breaks down, Galileyo keeps you
-              connected. Whether it's an emergency, natural disaster, or total
-              network outage — our platform ensures real-time, uncensored
-              information reaches you anywhere in the world.
+              Because your safety and connection matter most. In a world where disasters can strike without warning, staying informed is your lifeline. Galileyo unites communities, empowering you to protect what matters and stay connected when it counts.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -1052,7 +1095,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -2 }}
-                className="group rounded-xl border border-slate-200 bg-slate-50 p-8 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+                className="group rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
               >
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -1061,7 +1104,7 @@ export default function HomePage() {
                 >
                   {feature.icon}
                 </motion.div>
-                <h3 className="mb-3 text-xl font-semibold text-slate-900 dark:text-white">
+                <h3 className="mb-3 text-l font-semibold text-slate-900 dark:text-white">
                   {feature.title}
                 </h3>
                 <p className="leading-relaxed text-slate-600 dark:text-slate-300">
@@ -1073,110 +1116,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section
-        id="pricing"
-        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
-            >
-              Simple, Transparent Pricing
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300"
-            >
-              Choose the plan that best fits your needs.
-            </motion.p>
-          </div>
-
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
-                  plan.highlight
-                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
-                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
-                }`}
-              >
-                {plan.popular && (
-                  <div
-                    // initial={{ opacity: 0, y: -10 }}
-                    // animate={{ opacity: 1, y: 0 }}
-                    // transition={{ duration: 0.6, delay: 0.5 }}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                  >
-                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                      <Star className="h-4 w-4 fill-current" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-
-                <div className="mb-8 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    {plan.name}
-                  </h3>
-                  <p className="mb-4 text-slate-600 dark:text-slate-300">
-                    {plan.description}
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span
-                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
-                    >
-                      {plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className="ml-1 text-slate-500 dark:text-slate-400">
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <ul className="mb-8 space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check
-                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-green-400"}`}
-                      />
-                      <span className="text-slate-600 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
-                    plan.highlight
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
-                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
-                  }`}
-                >
-                  {plan.cta}
-                </motion.button>
-              </div>
-            ))}
+      {/* Newsletter Signup */}
+      <section className="lg:py-0">
+        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
+          <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
+            Your safety is a story worth sharing. 
+          </h3>
+          <p className="mb-6 text-slate-600 dark:text-slate-300">
+            Join Galileyo and be part of a movement where everyone looks out for each other.
+          </p>
+          <div className="mx-auto flex max-w-mdi flex-col gap-4 sm:flex-row">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+            />
+            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+              Join Now — Protect Your Community
+            </button>
           </div>
         </div>
+
       </section>
 
-      <section className="lg:py-32">
+      {/* Next-Generation Emergency Features Section */}
+      <section className="lg:py-32 py-20">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-400">
@@ -1184,11 +1148,10 @@ export default function HomePage() {
               <span className="font-medium">Coming Soon</span>
             </div>
             <h2 className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl">
-              Next-Generation Emergency Features
+              Emergency Support When You Need It Most
             </h2>
             <p className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300">
-              Advanced emergency response capabilities powered by AI and
-              real-time satellite data.
+              Harnessing the power of AI and satellite technology to deliver swift, life-saving assistance — because every second counts in a crisis.
             </p>
           </div>
 
@@ -1408,19 +1371,16 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
-              The Power of Satellites
+              Connect to the Global Network of Information
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
+              className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
             >
-              Galileyo partners with top-tier satellite providers to give you
-              24/7 coverage — from the mountains to the oceans and everywhere in
-              between. Our satellite-ready app ensures vital communication
-              reaches you, even in the most remote places.
+              Galileyo collaborates with leading satellite providers to ensure you stay connected—whether you're in the mountains, at sea, or anywhere in between. Our satellite-ready app guarantees vital communication reaches you, even in the most remote locations. Beyond technology, a global network of trusted influencers, experts, and community voices help shape the flow of information, providing you with reliable, accurate updates when it matters most.
             </motion.p>
           </div>
 
@@ -1453,14 +1413,120 @@ export default function HomePage() {
           </div>
         </div>
 
+
+        {/* Pricing Section */}
+      <section
+        id="pricing"
+        className="bg-white dark:bg-slate-950"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
+            >
+              Honest Pricing, No Hidden Fees
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
+            >
+              Discover our honest, transparent pricing—so you can choose with confidence and avoid any surprises.
+            </motion.p>
+          </div>
+
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+            {pricingPlans.map((plan, index) => (
+              <div
+                key={index}
+                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                  plan.highlight
+                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                }`}
+              >
+                {plan.popular && (
+                  <div
+                    // initial={{ opacity: 0, y: -10 }}
+                    // animate={{ opacity: 1, y: 0 }}
+                    // transition={{ duration: 0.6, delay: 0.5 }}
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
+                  >
+                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                      <Star className="h-4 w-4 fill-current" />
+                      Most Popular
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-8 text-center">
+                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                    {plan.name}
+                  </h3>
+                  <p className="mb-4 text-slate-600 dark:text-slate-300">
+                    {plan.description}
+                  </p>
+                  <div className="flex items-center justify-center">
+                    <span
+                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                    >
+                      {plan.price}
+                    </span>
+                    {plan.period && (
+                      <span className="ml-1 text-slate-500 dark:text-slate-400">
+                        {plan.period}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <ul className="mb-8 space-y-4">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start gap-3">
+                      <Check
+                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
+                      />
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+                    plan.highlight
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
+                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+                  }`}
+                >
+                  {plan.cta}
+                </motion.button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+            
+
         {/* Newsletter Signup */}
-        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
+        <div className="mx-auto mt-16 max-w-5xl rounded-2xl border p-8 text-center">
           <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
-            Stay Updated
+            Still on the fence?
           </h3>
           <p className="mb-6 text-slate-600 dark:text-slate-300">
-            Subscribe to our newsletter for the latest articles, product
-            updates, and emergency preparedness tips.
+            Subscribe to our mailing list for the latest updates, helpful tips, and exclusive insights—delivered straight to your inbox. 
+            <br />
+            (Please note, this is for regular updates only and does not include emergency notifications.)
           </p>
           <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
             <input
