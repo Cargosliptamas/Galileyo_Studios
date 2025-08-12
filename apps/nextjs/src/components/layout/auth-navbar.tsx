@@ -32,7 +32,7 @@ export default function AuthNavbar({ user }: { user: User }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
-      <div className="flex h-16 items-center justify-between gap-4">
+      <div className="flex mx-auto max-w-7xl h-16 items-center justify-between gap-4 px-4 py-8 sm:px-6 lg:px-8*">
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
           {/* Mobile menu trigger */}

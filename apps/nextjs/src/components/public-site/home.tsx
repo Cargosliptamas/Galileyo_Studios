@@ -607,7 +607,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Left Column - Text Content */}
-            <div className="lg:order-2">
+            <div className="lg:order-1">
               {/* Badge */}
               <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/90">
                 <Shield className="mr-2 h-4 w-4 text-green-400" />
@@ -630,16 +630,19 @@ export default function HomePage() {
 
               {/* CTA Buttons */}
               <div className="mb-12 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/sign-up"
-                  className="transform rounded-lg bg-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
-                >
-                  Get Started
-                </Link>
-              </div>
+                  <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+              />
+              <button className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+                <Satellite className="h-4 w-4 text-white" />
+                Get Started
+              </button>
+            </div>
 
               {/* Trust Indicators */}
-              <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
+              {/*<p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
                 Get instant alerts for:
               </p>
               <div className="flex flex-wrap gap-6 text-slate-500 dark:text-slate-400">
@@ -675,21 +678,20 @@ export default function HomePage() {
                   <Globe className="h-5 w-5 text-purple-400" />
                   <span>And much more...</span>
                 </div>
-              </div>
+              </div>*/}
 
               {/* Emergency Preview Section */}
               <div className="mt-16">
                 <div className="mb-6">
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-600">
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-[#4a85ed] px-4 py-2 text-white-700">
                     <Zap className="h-4 w-4" />
                     <span className="font-medium">Emergency Alerts</span>
                   </div>
                   <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    Real-Time Emergency Response
+                    Get Lifesaving Alerts Instantly
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Get instant alerts for wildfires, severe weather,
-                    earthquakes, and infrastructure emergencies.
+                    Instant, location-aware alerts for disasters, cyber breaches and emergencies.
                   </p>
                 </div>
 
@@ -792,7 +794,7 @@ export default function HomePage() {
                   </div>
                 </div> */}
 
-                <CyclingAnimatedList delay={4000}>
+                {/*<CyclingAnimatedList delay={4000}>
                   <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
@@ -849,7 +851,8 @@ export default function HomePage() {
                       All-clear notifications and recovery progress updates
                     </p>
                   </div>
-                </CyclingAnimatedList>
+                </CyclingAnimatedList>*/}
+
                 {/* <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
                   <div className="flex items-center gap-2">
                     <div>
@@ -871,7 +874,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Column - Satellite Illustration */}
-            <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-1">
+            <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-2">
               {/* Mobile Taglines */}
               {/*<div className="">
                     <div className="">
@@ -1011,7 +1014,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Be the first one to know
+                      Speak Freely & Stay Informed
                     </span>
                   </div>
                   {/* Arrow pointing to phone */}

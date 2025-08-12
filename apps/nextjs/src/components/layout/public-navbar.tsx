@@ -31,9 +31,9 @@ export default function PublicNavbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
-      <div className="flex h-16 items-center justify-between gap-4">
+      <div className="flex mx-auto max-w-7xl h-16 items-center justify-between gap-4 px-4 py-8 sm:px-6 lg:px-8*">
         {/* Left side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Mobile menu trigger */}
           <Popover>
             <PopoverTrigger asChild>
@@ -97,6 +97,12 @@ export default function PublicNavbar() {
             <Link href="/" className="flex w-20" suppressHydrationWarning>
               <AppIcon useDark={true} />
             </Link>
+            
+          </div>
+        </div>
+        {/* Center side */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
@@ -116,7 +122,11 @@ export default function PublicNavbar() {
           </div>
         </div>
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" className="text-white">
+            <Link href="/login">Sign In</Link>
+          </Button>
+
           <motion.div
             variants={{
               hidden: { opacity: 0 },
@@ -138,10 +148,6 @@ export default function PublicNavbar() {
               Get Started
             </Link>
           </motion.div>
-
-          <Button asChild variant="ghost" className="text-white">
-            <Link href="/login">Sign In</Link>
-          </Button>
         </div>
       </div>
     </header>
