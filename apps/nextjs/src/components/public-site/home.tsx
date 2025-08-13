@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import {
   AlertTriangle,
   Bell,
@@ -19,7 +19,7 @@ import {
 import * as motion from "motion/react-client";
 
 import { PhoneMockup } from "../phone-mockup";
-import { CyclingAnimatedList } from "../ui/animated-list";
+// import { CyclingAnimatedList } from "../ui/animated-list";
 import { HomeBackground } from "./home-backround";
 
 // import { InstallPrompt } from "../layout/install-prompt";
