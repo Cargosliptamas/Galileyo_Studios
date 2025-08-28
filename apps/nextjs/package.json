@@ -36,11 +36,13 @@
     "nuqs": "^2.4.3",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
+    "react-dropzone": "^14.2.3",
     "react-intersection-observer": "^9.16.0",
     "serwist": "preview",
     "superjson": "2.2.2",
     "web-push": "^3.6.7",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@galileyo/eslint-config": "workspace:*",

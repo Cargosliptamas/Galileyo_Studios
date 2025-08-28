@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   ChevronDown,
   ChevronUp,
-  // Verified,
   Clock,
-  // Heart,
   MoreHorizontal,
   Reply,
   Send,
@@ -29,7 +32,9 @@ import {
   DropdownMenuTrigger,
 } from "@galileyo/ui/dropdown-menu";
 import { Separator } from "@galileyo/ui/separator";
+import { toast } from "@galileyo/ui/toast";
 
+import { authClient } from "~/auth/client";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
 
@@ -53,6 +58,18 @@ function CommentComponent({
   handleSubmitReply: (parentId: number) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const trpc = useTRPC();
+
+  const { data: replies, isLoading: isRepliesLoading } = useQuery({
+    ...trpc.comment.getRepliesForComment.queryOptions({
+      id: comment.id,
+      limit: 100,
+      cursor: 1,
+    }),
+    enabled: isExpanded,
+  });
+
+  const { data: session } = authClient.useSession();
 
   return (
     <div
@@ -148,9 +165,9 @@ function CommentComponent({
           {replyingTo === comment.id && (
             <div className="mt-3 flex gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=100" />
+                <AvatarImage src={session?.user.image ?? ""} />
                 <AvatarFallback className="bg-slate-700 text-white">
-                  You
+                  {session?.user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -212,14 +229,22 @@ function CommentComponent({
                 Hide replies
               </button>
               <div className="space-y-4">
-                {/* {comment.replies.map((reply) => (
-                  <CommentComponent 
-                    key={reply.id} 
-                    comment={reply} 
-                    isReply={true} 
-                    parentId={comment.id} 
+                {isRepliesLoading &&
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <CommentComponentSkeleton key={index} />
+                  ))}
+                {replies?.list.map((reply: CommentType) => (
+                  <CommentComponent
+                    key={reply.id}
+                    comment={reply}
+                    isReply={true}
+                    setReplyingTo={setReplyingTo}
+                    replyingTo={replyingTo}
+                    replyText={replyText}
+                    setReplyText={setReplyText}
+                    handleSubmitReply={handleSubmitReply}
                   />
-                ))} */}
+                ))}
               </div>
             </>
           )}
@@ -277,134 +302,8 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyText, setReplyText] = useState("");
-  // const [comments, setComments] = useState<Comment[]>([
-  //   {
-  //     id: 1,
-  //     author: {
-  //       name: 'Emergency Response Team',
-  //       username: '@emergency_response',
-  //       avatar: 'https://images.pexels.com/photos/355952/pexels-photo-355952.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //       verified: true,
-  //       isInfluencer: false
-  //     },
-  //     content: 'Thank you for this critical update. Our teams are coordinating response efforts in the affected areas. Stay safe everyone! 🚨',
-  //     timestamp: '2 hours ago',
-  //     likes: 156,
-  //     isLiked: true,
-  //     replies: [
-  //       {
-  //         id: 11,
-  //         author: {
-  //           name: 'Local Coordinator',
-  //           username: '@local_coord',
-  //           avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //           verified: false,
-  //           isInfluencer: false
-  //         },
-  //         content: 'We have 3 shelters open and fully operational via satellite communication. Coordinates shared privately.',
-  //         timestamp: '1 hour ago',
-  //         likes: 23,
-  //         isLiked: false,
-  //         replies: []
-  //       }
-  //     ],
-  //     isExpanded: true
-  //   },
-  //   {
-  //     id: 2,
-  //     author: {
-  //       name: 'Tech Analyst',
-  //       username: '@tech_analyst_pro',
-  //       avatar: 'https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //       verified: true,
-  //       isInfluencer: true
-  //     },
-  //     content: 'The satellite network redundancy is impressive. Even with terrestrial infrastructure down, we maintain 99.9% uptime. This is the future of emergency communications.',
-  //     timestamp: '3 hours ago',
-  //     likes: 89,
-  //     isLiked: false,
-  //     replies: [
-  //       {
-  //         id: 21,
-  //         author: {
-  //           name: 'Network Engineer',
-  //           username: '@net_engineer',
-  //           avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //           verified: false,
-  //           isInfluencer: false
-  //         },
-  //         content: 'The mesh topology with automatic failover is what makes this possible. Great engineering!',
-  //         timestamp: '2 hours ago',
-  //         likes: 34,
-  //         isLiked: true,
-  //         replies: []
-  //       },
-  //       {
-  //         id: 22,
-  //         author: {
-  //           name: 'Satellite Ops',
-  //           username: '@sat_ops_official',
-  //           avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //           verified: true,
-  //           isInfluencer: false
-  //         },
-  //         content: 'Thanks for the recognition! Our team works 24/7 to maintain these standards. 🛰️',
-  //         timestamp: '1 hour ago',
-  //         likes: 67,
-  //         isLiked: false,
-  //         replies: []
-  //       }
-  //     ],
-  //     isExpanded: false
-  //   },
-  //   {
-  //     id: 3,
-  //     author: {
-  //       name: 'Field Reporter',
-  //       username: '@field_reporter_live',
-  //       avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //       verified: true,
-  //       isInfluencer: true
-  //     },
-  //     content: 'Currently reporting from the affected zone. Galileyo is the only communication method working here. Absolutely essential for coordination and safety updates.',
-  //     timestamp: '4 hours ago',
-  //     likes: 234,
-  //     isLiked: true,
-  //     replies: []
-  //   },
-  //   {
-  //     id: 4,
-  //     author: {
-  //       name: 'Community Volunteer',
-  //       username: '@volunteer_help',
-  //       avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //       verified: false,
-  //       isInfluencer: false
-  //     },
-  //     content: 'Setting up a community aid station. Using Galileyo to coordinate supply drops and medical assistance. Technology serving humanity! 💪',
-  //     timestamp: '5 hours ago',
-  //     likes: 78,
-  //     isLiked: false,
-  //     replies: [
-  //       {
-  //         id: 41,
-  //         author: {
-  //           name: 'Medical Team',
-  //           username: '@medical_response',
-  //           avatar: 'https://images.pexels.com/photos/355952/pexels-photo-355952.jpeg?auto=compress&cs=tinysrgb&w=100',
-  //           verified: true,
-  //           isInfluencer: false
-  //         },
-  //         content: 'Medical team en route to your location. ETA 30 minutes. Thank you for the coordination!',
-  //         timestamp: '4 hours ago',
-  //         likes: 45,
-  //         isLiked: true,
-  //         replies: []
-  //       }
-  //     ],
-  //     isExpanded: false
-  //   }
-  // ]);
+
+  const { data: session } = authClient.useSession();
 
   const trpc = useTRPC();
   const { data: comments, isLoading } = useInfiniteQuery({
@@ -416,43 +315,42 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     getNextPageParam: (lastPage) => lastPage.page + 1,
   });
 
+  const queryClient = useQueryClient();
+  const createComment = useMutation(
+    trpc.comment.create.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.comment.pathFilter());
+      },
+      onError: () => {
+        toast.error("Failed to create comment");
+      },
+    }),
+  );
+
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
 
-    // const comment: Comment = {
-    //   id: Date.now(),
-    //   author: {
-    //     name: 'You',
-    //     username: '@your_username',
-    //     avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=100',
-    //     verified: false,
-    //     isInfluencer: false
-    //   },
-    //   content: newComment,
-    //   timestamp: 'now',
-    //   likes: 0,
-    //   isLiked: false,
-    //   replies: []
-    // };
+    if (post.id) {
+      createComment.mutate({
+        comment: newComment,
+        newsId: post.id,
+        parentId: null,
+      });
+    }
 
-    // setComments(prev => [comment, ...prev]);
     setNewComment("");
   };
 
   const handleSubmitReply = (parentId: number) => {
     if (!replyText.trim()) return;
 
-    // setComments(prevComments =>
-    //   prevComments.map(comment =>
-    //     comment.id === parentId
-    //       ? {
-    //           ...comment,
-    //           replies: [...comment.replies, reply],
-    //           isExpanded: true
-    //         }
-    //       : comment
-    //   )
-    // );
+    if (post.id) {
+      createComment.mutate({
+        comment: replyText,
+        newsId: post.id,
+        parentId: parentId,
+      });
+    }
 
     console.log("parentId", parentId);
 
@@ -517,9 +415,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         {/* Comment Input */}
         <div className="mb-4 flex gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=100" />
+            <AvatarImage src={session?.user.image ?? ""} />
             <AvatarFallback className="bg-slate-700 text-white">
-              You
+              {session?.user.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -544,7 +442,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
               <button
                 onClick={handleSubmitComment}
                 className="flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 font-medium text-white transition-colors hover:bg-cyan-400"
-                disabled={!newComment.trim() || isLoading}
+                disabled={
+                  !newComment.trim() || isLoading || createComment.isPending
+                }
               >
                 <Send className="h-4 w-4" />
                 Comment

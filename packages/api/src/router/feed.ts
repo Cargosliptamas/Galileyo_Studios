@@ -5,7 +5,12 @@ import { z } from "zod/v4";
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
-import type { FeedItem, FinancialItemBackend } from "../types/feed";
+import type {
+  FeedItem,
+  FinancialItemBackend,
+  InfluencerFeedType,
+  PrivateFeedType,
+} from "../types/feed";
 import {
   protectedProcedure,
   // publicProcedure
@@ -181,4 +186,129 @@ export const feedRouter = {
 
       return mapFeedItem(responseJson.data);
     }),
+  createPost: protectedProcedure
+    .input(
+      z.object({
+        content: z.string(),
+        satelliteContent: z.string().optional(),
+        media: z.array(z.any()),
+        scheduledFor: z.date().optional(),
+        isScheduled: z.boolean(),
+        profileId: z.string().nullish(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const {
+        content,
+        satelliteContent,
+        media,
+        scheduledFor,
+        isScheduled,
+        profileId,
+      } = input;
+
+      const formData = new FormData();
+      formData.append("text", content);
+      if (satelliteContent) {
+        formData.append("satellite_text", satelliteContent);
+      }
+      formData.append("subscriptions", "[]");
+      formData.append(
+        "schedule",
+        scheduledFor ? scheduledFor.toISOString() : "",
+      );
+      formData.append("timezone", "UTC");
+      formData.append("is_schedule", isScheduled ? "1" : "0");
+
+      media.forEach((file) => {
+        formData.append("files[]", file);
+      });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/all-send-form/send`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+            // "Content-Type": "multipart/form-data",
+          },
+          body: JSON.stringify({
+            text: content,
+            text_short: satelliteContent ?? null,
+            subscriptions: profileId ? [+profileId] : [],
+            schedule: scheduledFor ? scheduledFor.toISOString() : null,
+            timezone: "UTC",
+            is_schedule: isScheduled ? "1" : "0",
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: FeedItem;
+      };
+
+      console.log(responseJson);
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      // return mapFeedItem(responseJson.data);
+    }),
+  getPrivateFeeds: protectedProcedure.query(async ({ ctx }) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/private-feed/index`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+        },
+      },
+    );
+
+    const responseJson = (await response.json()) as {
+      status: "success" | "error";
+      data: {
+        list: PrivateFeedType[];
+        count: number;
+        page: number;
+        page_size: number;
+      };
+    };
+
+    if (responseJson.status !== "success") {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return responseJson.data.list;
+  }),
+  getInfluencerFeeds: protectedProcedure.query(async ({ ctx }) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/influencer/index`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+        },
+      },
+    );
+
+    const responseJson = (await response.json()) as {
+      status: "success" | "error";
+      data: {
+        list: InfluencerFeedType[];
+        count: number;
+        page: number;
+        page_size: number;
+      };
+    };
+
+    if (responseJson.status !== "success") {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return responseJson.data.list;
+  }),
 } satisfies TRPCRouterRecord;

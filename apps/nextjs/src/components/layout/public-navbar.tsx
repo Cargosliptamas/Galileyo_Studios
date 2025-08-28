@@ -31,7 +31,7 @@ export default function PublicNavbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
-      <div className="flex mx-auto max-w-7xl h-16 items-center justify-between gap-4 px-4 py-8 sm:px-6 lg:px-8*">
+      <div className="lg:px-8* mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-8 sm:px-6">
         {/* Left side */}
         <div className="flex items-center gap-3">
           {/* Mobile menu trigger */}
@@ -97,7 +97,6 @@ export default function PublicNavbar() {
             <Link href="/" className="flex w-20" suppressHydrationWarning>
               <AppIcon useDark={true} />
             </Link>
-            
           </div>
         </div>
         {/* Center side */}

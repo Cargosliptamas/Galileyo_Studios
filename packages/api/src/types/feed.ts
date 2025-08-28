@@ -118,3 +118,22 @@ export interface Comment {
   id_parent: number | null;
   is_deleted: boolean;
 }
+
+export interface PrivateFeedType {
+  id: number;
+  title: string;
+  description: string | null;
+  image: string | null;
+}
+
+export interface InfluencerFeedType {
+  id: number;
+  title: string;
+  description: string | null;
+  public_code: string | null;
+  image: string | null;
+  alias: string | null;
+  page_title: string | null;
+  page_description: string | null;
+  public_link: string;
+}
