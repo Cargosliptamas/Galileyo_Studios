@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   Bell,
@@ -19,10 +20,10 @@ import {
 } from "lucide-react";
 import * as motion from "motion/react-client";
 
+import { toast } from "@galileyo/ui/toast";
+
 import { PhoneMockup } from "../phone-mockup";
 import { HomeBackground } from "./home-backround";
-import { useRouter } from "next/navigation";
-import { toast } from "@galileyo/ui/toast";
 
 const features = [
   {
@@ -428,9 +429,12 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
     router.push(`/sign-up?email=${signupEmail}`);
   }, [signupEmail, router]);
 
-  const handleGetStartedCTA = useCallback((plan: string) => {
-    router.push(`/sign-up?plan=${plan}`);
-  }, [router]);
+  const handleGetStartedCTA = useCallback(
+    (plan: string) => {
+      router.push(`/sign-up?plan=${plan}`);
+    },
+    [router],
+  );
 
   const [i, setI] = useState(0);
 
@@ -670,7 +674,10 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                 />
-                <button className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400" onClick={handleSignupCTA}>
+                <button
+                  className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
+                  onClick={handleSignupCTA}
+                >
                   <Satellite className="h-4 w-4 text-white" />
                   Get Started
                 </button>
@@ -889,7 +896,10 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
               value={signupEmail}
               onChange={(e) => setSignupEmail(e.target.value)}
             />
-            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400" onClick={handleSignupCTA}>
+            <button
+              className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
+              onClick={handleSignupCTA}
+            >
               Join Now
             </button>
           </div>

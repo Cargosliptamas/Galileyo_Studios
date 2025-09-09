@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import { Turnstile } from "@marsidev/react-turnstile";
 import {
-  AlertTriangle,
   CheckCircle,
   Clock,
-  Headphones,
   Mail,
   MapPin,
   MessageSquare,
   Phone,
   Send,
 } from "lucide-react";
-import Link from "next/link";
-import { Turnstile } from '@marsidev/react-turnstile';
+
 import { toast } from "@galileyo/ui/toast";
+
 import { sendContactUsEmail } from "~/app/actions";
 
 const ContactUs = () => {
@@ -35,7 +35,7 @@ const ContactUs = () => {
       ...formData,
       turnstileToken: token,
     });
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +43,13 @@ const ContactUs = () => {
       toast.error("Please verify you are human");
       return;
     }
-    const { success, error } = await sendContactUsEmail(formData.name, formData.email, formData.subject, formData.message, formData.turnstileToken);
+    const { success, error } = await sendContactUsEmail(
+      formData.name,
+      formData.email,
+      formData.subject,
+      formData.message,
+      formData.turnstileToken,
+    );
     if (error) {
       toast.error(error);
       return;
@@ -262,7 +268,10 @@ const ContactUs = () => {
                   />
                 </div>
 
-                <Turnstile siteKey='0x4AAAAAAB0Qoj4qE5TxKPHk' onSuccess={handleSuccess} />
+                <Turnstile
+                  siteKey="0x4AAAAAAB0Qoj4qE5TxKPHk"
+                  onSuccess={handleSuccess}
+                />
 
                 <button
                   type="submit"
@@ -336,7 +345,10 @@ const ContactUs = () => {
                   Check our FAQ section for instant answers to common questions
                   about setup, billing, and troubleshooting.
                 </p>
-                <Link href="/faq" className="font-medium text-cyan-500 transition-colors hover:text-cyan-600 dark:text-cyan-400 dark:hover:text-cyan-300">
+                <Link
+                  href="/faq"
+                  className="font-medium text-cyan-500 transition-colors hover:text-cyan-600 dark:text-cyan-400 dark:hover:text-cyan-300"
+                >
                   View FAQ →
                 </Link>
               </div>

@@ -49,8 +49,25 @@ export async function sendNotification(message: string) {
   }
 }
 
-export async function sendContactUsEmail(name: string, email: string, subject: string, message: string, turnstileToken: string) {
+export async function sendContactUsEmail(
+  name: string,
+  email: string,
+  subject: string,
+  message: string,
+  turnstileToken: string,
+): Promise<{ success: boolean; error: string | null }> {
   // 0x4AAAAAAB0QoqBu_2OtubrO8Y1mCaPXWB4
-  
+
+  console.log(
+    "Sending contact us email",
+    name,
+    email,
+    subject,
+    message,
+    turnstileToken,
+  );
+
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   return { success: true, error: null };
 }

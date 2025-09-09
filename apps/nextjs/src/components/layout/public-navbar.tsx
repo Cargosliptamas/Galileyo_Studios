@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 
 import { cn } from "@galileyo/ui";
@@ -16,15 +17,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 
 import { AppIcon } from "../app-icon";
 import { navigationLinks } from "./navigation-items";
-import { usePathname } from "next/navigation";
 
 export default function PublicNavbar() {
   const { scrollY } = useScroll();
   const pathname = usePathname();
 
-  const isHome = useMemo(() => pathname === "/" || pathname === "/home", [pathname]);
-  
-  const [isAnimationActive, setIsAnimationActive] = useState(() => isHome ? false : true);
+  const isHome = useMemo(
+    () => pathname === "/" || pathname === "/home",
+    [pathname],
+  );
+
+  const [isAnimationActive, setIsAnimationActive] = useState(() =>
+    isHome ? false : true,
+  );
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (!isHome) {
