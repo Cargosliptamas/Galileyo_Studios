@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 
@@ -16,18 +16,36 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 
 import { AppIcon } from "../app-icon";
 import { navigationLinks } from "./navigation-items";
+import { usePathname } from "next/navigation";
 
 export default function PublicNavbar() {
   const { scrollY } = useScroll();
-  const [isAnimationActive, setIsAnimationActive] = useState(false);
+  const pathname = usePathname();
+
+  const isHome = useMemo(() => pathname === "/" || pathname === "/home", [pathname]);
+  
+  const [isAnimationActive, setIsAnimationActive] = useState(() => isHome ? false : true);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
+    if (!isHome) {
+      setIsAnimationActive(true);
+      return;
+    }
+
     if (latest > 100) {
       setIsAnimationActive(true);
     } else {
       setIsAnimationActive(false);
     }
   });
+
+  useEffect(() => {
+    if (isHome) {
+      setIsAnimationActive(false);
+    } else {
+      setIsAnimationActive(true);
+    }
+  }, [isHome]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
@@ -122,16 +140,12 @@ export default function PublicNavbar() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" className="text-white">
-            <Link href="/login">Sign In</Link>
-          </Button>
-
           <motion.div
             variants={{
               hidden: { opacity: 0 },
               visible: { opacity: 1 },
             }}
-            initial="hidden"
+            initial={isHome ? "hidden" : "visible"}
             // transition={{
             //   delay: 0.5,
             // }}
@@ -147,6 +161,10 @@ export default function PublicNavbar() {
               Get Started
             </Link>
           </motion.div>
+
+          <Button asChild variant="ghost" className="text-white">
+            <Link href="/login">Sign In</Link>
+          </Button>
         </div>
       </div>
     </header>

@@ -20,6 +20,7 @@
     "@galileyo/emails": "workspace:*",
     "@galileyo/ui": "workspace:*",
     "@galileyo/validators": "workspace:*",
+    "@marsidev/react-turnstile": "^1.3.0",
     "@react-email/components": "catalog:",
     "@remixicon/react": "^4.6.0",
     "@serwist/turbopack": "latest",

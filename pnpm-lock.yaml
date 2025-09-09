@@ -217,6 +217,9 @@ importers:
       '@galileyo/validators':
         specifier: workspace:*
         version: link:../../packages/validators
+      '@marsidev/react-turnstile':
+        specifier: ^1.3.0
+        version: 1.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-email/components':
         specifier: 'catalog:'
         version: 0.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -225,7 +228,7 @@ importers:
         version: 4.6.0(react@19.0.0)
       '@serwist/turbopack':
         specifier: latest
-        version: 10.0.0-preview.13(esbuild-wasm@0.25.8)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
+        version: 10.0.0-preview.14(esbuild-wasm@0.25.8)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
         version: 0.13.8(arktype@2.1.20)(typescript@5.8.3)(valibot@1.0.0-beta.15(typescript@5.8.3))(zod@4.0.2)
@@ -273,7 +276,7 @@ importers:
         version: 9.16.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       serwist:
         specifier: preview
-        version: 10.0.0-preview.13(typescript@5.8.3)
+        version: 10.0.0-preview.14(typescript@5.8.3)
       superjson:
         specifier: 2.2.2
         version: 2.2.2
@@ -2282,6 +2285,12 @@ packages:
   '@lottiefiles/dotlottie-web@0.42.0':
     resolution: {integrity: sha512-Zr2LCaOAoPCsdAQgeLyCSiQ1+xrAJtRCyuEYDj0qR5heUwpc+Pxbb88JyTVumcXFfKOBMOMmrlsTScLz2mrvQQ==}
 
+  '@marsidev/react-turnstile@1.3.0':
+    resolution: {integrity: sha512-VO99Nynt+j4ETfMImQCj5LgbUKZ9mWPpy3RjP/3e/3vZu+FIphjEdU6g+cq4FeDoNshSxLlRzBTKcH5JMeM1GQ==}
+    peerDependencies:
+      react: ^17.0.2 || ^18.0.0 || ^19.0
+      react-dom: ^17.0.2 || ^18.0.0 || ^19.0
+
   '@neondatabase/serverless@0.10.0':
     resolution: {integrity: sha512-+0mjRGJFL2kGyTtWo60PxIcgv0a/X/vCu4DV2iS3tL+Rl/OrFocJoN3aNajugvgBQj624aOK7LowLijoQHWIXg==}
 
@@ -3574,8 +3583,8 @@ packages:
   '@selderee/plugin-htmlparser2@0.11.0':
     resolution: {integrity: sha512-P33hHGdldxGabLFjPPpaTxVolMrzrcegejx+0GxjrIb9Zv48D8yAIA/QTDR2dFl7Uz7urX8aX6+5bCZslr+gWQ==}
 
-  '@serwist/build@10.0.0-preview.13':
-    resolution: {integrity: sha512-NGV/2SBF1GQ0ti0WfG5NKssFfeDUtH4mCdYXb93+m3DeqyO8cVRKw2VEjDZOuNOinK6+6p55ke4U8bTSkx3voA==}
+  '@serwist/build@10.0.0-preview.14':
+    resolution: {integrity: sha512-allwX1lhy+saMimkONWuCVv4D0rs1gmrmIQe1UGGlKwxPGrbr/dp03NlPfUwWZfP1a9pQY2XpoKDjlL8FuSbTg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       typescript: '>=5.0.0'
@@ -3583,8 +3592,8 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/turbopack@10.0.0-preview.13':
-    resolution: {integrity: sha512-fYP49mg25zomI0P5SwdRXsGvsMt0Qi6rmK9ocB4InhCBKHWZHSq90+CrzPedzVYftUi7SXoQ7fcd0uemtbfZBw==}
+  '@serwist/turbopack@10.0.0-preview.14':
+    resolution: {integrity: sha512-nwiY36xPxVAavLf0iZaQfUegn/0wPzh1kOsISscTOahxnLjGmp0TNMaJWfOdWb0fCoNY80tiO9fvumLsa9kJPw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       esbuild-wasm: ^0.25.0
@@ -3595,11 +3604,11 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/utils@10.0.0-preview.13':
-    resolution: {integrity: sha512-smyutmGa1ZpN9GAGmusKGASE6eNNFBGIdh2eLZTuI1JZm9wSLw3Y+NGdSb98nTQJYyVGknROZ1N0AjJ086Pm7Q==}
+  '@serwist/utils@10.0.0-preview.14':
+    resolution: {integrity: sha512-zPZg8/mAGdZRil+E0dAcywtw3yaPqJZbAJrlL5EVLuWOqunjAdNG1vh5Pc3LJxDnugi19pkWIAn4cGHlQpqWEQ==}
 
-  '@serwist/window@10.0.0-preview.13':
-    resolution: {integrity: sha512-1o0SjDqOqD8bSEyNN61hns3FFAW2LCShDA9ihl/HoTgbOBSK0BSQkG4f3U/gRpTghZLQI/f080c3iCTUsNjr3Q==}
+  '@serwist/window@10.0.0-preview.14':
+    resolution: {integrity: sha512-cIYnJdCdqy+wP00gnuR8JDvrGJLtFo6Yy4Qijx6rFZRMYcBnHwiq9B/3fJ016j+E+q9pCJLSsdChMZMEaNdk6Q==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -7745,8 +7754,8 @@ packages:
   server-only@0.0.1:
     resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
-  serwist@10.0.0-preview.13:
-    resolution: {integrity: sha512-xn57RWAf4b4Nd56x/6Nk/aslq3VoX10+Xi+wpyv69jJaNZ9FurNaPVmYzULtTCR7qERuDVPcZougeWTOsSpeiA==}
+  serwist@10.0.0-preview.14:
+    resolution: {integrity: sha512-LMfqIeSCK3hRcT/wRj132ZOmnPt6exwGSrUcDW12wpLhLavn83dFGB9FXLdIusYlAL36hN56oB/xbnU3NTpx/Q==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -8657,8 +8666,8 @@ packages:
   zod@4.0.2:
     resolution: {integrity: sha512-X2niJNY54MGam4L6Kj0AxeedeDIi/E5QFW0On2faSX5J4/pfLk1tW+cRMIMoojnCavn/u5W/kX17e1CSGnKMxA==}
 
-  zod@4.1.1:
-    resolution: {integrity: sha512-SgMZK/h8Tigt9nnKkfJMvB/mKjiJXaX26xegP4sa+0wHIFVFWVlsQGdhklDmuargBD3Hsi3rsQRIzwJIhTPJHA==}
+  zod@4.1.5:
+    resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -10436,6 +10445,11 @@ snapshots:
 
   '@lottiefiles/dotlottie-web@0.42.0': {}
 
+  '@marsidev/react-turnstile@1.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   '@neondatabase/serverless@0.10.0':
     dependencies:
       '@types/pg': 8.11.6
@@ -12001,41 +12015,41 @@ snapshots:
       domhandler: 5.0.3
       selderee: 0.11.0
 
-  '@serwist/build@10.0.0-preview.13(typescript@5.8.3)':
+  '@serwist/build@10.0.0-preview.14(typescript@5.8.3)':
     dependencies:
-      '@serwist/utils': 10.0.0-preview.13
+      '@serwist/utils': 10.0.0-preview.14
       glob: 11.0.3
       pretty-bytes: 7.0.1
       source-map: 0.8.0-beta.0
-      zod: 4.1.1
+      zod: 4.1.5
     optionalDependencies:
       typescript: 5.8.3
 
-  '@serwist/turbopack@10.0.0-preview.13(esbuild-wasm@0.25.8)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)':
+  '@serwist/turbopack@10.0.0-preview.14(esbuild-wasm@0.25.8)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)':
     dependencies:
-      '@serwist/build': 10.0.0-preview.13(typescript@5.8.3)
-      '@serwist/window': 10.0.0-preview.13(typescript@5.8.3)
+      '@serwist/build': 10.0.0-preview.14(typescript@5.8.3)
+      '@serwist/window': 10.0.0-preview.14(typescript@5.8.3)
       '@swc/core': 1.13.5
       esbuild-wasm: 0.25.8
       kolorist: 1.8.0
       next: 15.3.3(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
-      serwist: 10.0.0-preview.13(typescript@5.8.3)
-      zod: 4.1.1
+      serwist: 10.0.0-preview.14(typescript@5.8.3)
+      zod: 4.1.5
     optionalDependencies:
       typescript: 5.8.3
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@serwist/utils@10.0.0-preview.13':
+  '@serwist/utils@10.0.0-preview.14':
     dependencies:
       common-tags: 1.8.2
       kolorist: 1.8.0
 
-  '@serwist/window@10.0.0-preview.13(typescript@5.8.3)':
+  '@serwist/window@10.0.0-preview.14(typescript@5.8.3)':
     dependencies:
       '@types/trusted-types': 2.0.7
-      serwist: 10.0.0-preview.13(typescript@5.8.3)
+      serwist: 10.0.0-preview.14(typescript@5.8.3)
     optionalDependencies:
       typescript: 5.8.3
 
@@ -16747,9 +16761,9 @@ snapshots:
 
   server-only@0.0.1: {}
 
-  serwist@10.0.0-preview.13(typescript@5.8.3):
+  serwist@10.0.0-preview.14(typescript@5.8.3):
     dependencies:
-      '@serwist/utils': 10.0.0-preview.13
+      '@serwist/utils': 10.0.0-preview.14
       idb: 8.0.3
     optionalDependencies:
       typescript: 5.8.3
@@ -17779,7 +17793,7 @@ snapshots:
 
   zod@4.0.2: {}
 
-  zod@4.1.1: {}
+  zod@4.1.5: {}
 
   zustand@4.5.7(@types/react@19.1.6)(react@19.0.0):
     dependencies:

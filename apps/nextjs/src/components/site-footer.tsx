@@ -66,17 +66,18 @@ export async function SiteFooter() {
                   Do you have something to share with our audience?
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/blog"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   Blog
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <a
-                  href="#"
+                  href="https://galileyo.instatus.com"
+                  target="_blank"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   System Status
@@ -98,14 +99,14 @@ export async function SiteFooter() {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/help-center"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   Help Center
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/terms-of-service"

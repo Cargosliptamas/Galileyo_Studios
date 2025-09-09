@@ -12,6 +12,10 @@ import {
   Phone,
   Send,
 } from "lucide-react";
+import Link from "next/link";
+import { Turnstile } from '@marsidev/react-turnstile';
+import { toast } from "@galileyo/ui/toast";
+import { sendContactUsEmail } from "~/app/actions";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -19,15 +23,38 @@ const ContactUs = () => {
     email: "",
     subject: "",
     message: "",
-    priority: "normal",
+    turnstileToken: "",
+    // priority: "normal",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isTurnstileSuccess, setIsTurnstileSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSuccess = (token: string) => {
+    setIsTurnstileSuccess(true);
+    setFormData({
+      ...formData,
+      turnstileToken: token,
+    });
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    if (!isTurnstileSuccess) {
+      toast.error("Please verify you are human");
+      return;
+    }
+    const { success, error } = await sendContactUsEmail(formData.name, formData.email, formData.subject, formData.message, formData.turnstileToken);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
+    if (success) {
+      toast.success("Message sent successfully");
+      // Handle form submission here
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 3000);
+    }
   };
 
   const handleChange = (
@@ -47,29 +74,29 @@ const ContactUs = () => {
       title: "Email Support",
       description: "Get help via email within 24 hours",
       contact: "support@galileyo.com",
-      available: "24/7",
+      available: "",
     },
     {
       icon: <Phone className="h-6 w-6" />,
-      title: "Emergency Hotline",
-      description: "Critical support for urgent situations",
-      contact: "+1 (555) 123-SATS",
-      available: "24/7",
+      title: "Phone",
+      description: "Phone calls will be returned within 24-48 hours.",
+      contact: "+1 (833) 774-7774",
+      available: "",
     },
     {
       icon: <MessageSquare className="h-6 w-6" />,
       title: "Live Chat",
-      description: "Real-time support via satellite chat",
-      contact: "Available in app",
-      available: "24/7",
+      description: "Real-time support",
+      contact: "",
+      available: "",
     },
-    {
-      icon: <Headphones className="h-6 w-6" />,
-      title: "Technical Support",
-      description: "Hardware and setup assistance",
-      contact: "tech@galileyo.com",
-      available: "Mon-Fri 9AM-6PM EST",
-    },
+    // {
+    //   icon: <Headphones className="h-6 w-6" />,
+    //   title: "Technical Support",
+    //   description: "Hardware and setup assistance",
+    //   contact: "tech@galileyo.com",
+    //   available: "Mon-Fri 9AM-6PM EST",
+    // },
   ];
 
   return (
@@ -81,8 +108,7 @@ const ContactUs = () => {
             Get in Touch
           </h1>
           <p className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300">
-            Need help with your satellite communication setup? Our expert team
-            is here to assist you 24/7.
+            Connect with us through email, chat, or phone
           </p>
         </div>
       </section>
@@ -90,7 +116,7 @@ const ContactUs = () => {
       {/* Contact Methods */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {contactMethods.map((method, index) => (
               <div
                 key={index}
@@ -194,7 +220,7 @@ const ContactUs = () => {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label
                     htmlFor="priority"
                     className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
@@ -215,7 +241,7 @@ const ContactUs = () => {
                       Emergency - Critical situation
                     </option>
                   </select>
-                </div>
+                </div> */}
 
                 <div>
                   <label
@@ -235,6 +261,8 @@ const ContactUs = () => {
                     placeholder="Please describe your issue or question in detail..."
                   />
                 </div>
+
+                <Turnstile siteKey='0x4AAAAAAB0Qoj4qE5TxKPHk' onSuccess={handleSuccess} />
 
                 <button
                   type="submit"
@@ -257,12 +285,12 @@ const ContactUs = () => {
                   <MapPin className="mt-1 h-6 w-6 text-cyan-500 dark:text-cyan-400" />
                   <div>
                     <h4 className="mb-1 font-medium text-slate-900 dark:text-white">
-                      Headquarters
+                      Mailing Address
                     </h4>
                     <p className="text-slate-600 dark:text-slate-300">
-                      1234 Satellite Drive
+                      1755 Telstar Dr, Ste 300
                       <br />
-                      Houston, TX 77058
+                      Colorado Springs, CO 80920
                       <br />
                       United States
                     </p>
@@ -276,8 +304,6 @@ const ContactUs = () => {
                       Support Hours
                     </h4>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Emergency Support: 24/7
-                      <br />
                       General Support: Mon-Fri 9AM-6PM EST
                       <br />
                       Technical Support: Mon-Fri 8AM-8PM EST
@@ -285,7 +311,7 @@ const ContactUs = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                {/* <div className="flex items-start gap-4">
                   <AlertTriangle className="mt-1 h-6 w-6 text-orange-400" />
                   <div>
                     <h4 className="mb-1 font-medium text-slate-900 dark:text-white">
@@ -298,7 +324,7 @@ const ContactUs = () => {
                       failures.
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* FAQ Link */}
@@ -310,9 +336,9 @@ const ContactUs = () => {
                   Check our FAQ section for instant answers to common questions
                   about setup, billing, and troubleshooting.
                 </p>
-                <button className="font-medium text-cyan-500 transition-colors hover:text-cyan-600 dark:text-cyan-400 dark:hover:text-cyan-300">
+                <Link href="/faq" className="font-medium text-cyan-500 transition-colors hover:text-cyan-600 dark:text-cyan-400 dark:hover:text-cyan-300">
                   View FAQ →
-                </button>
+                </Link>
               </div>
             </div>
           </div>

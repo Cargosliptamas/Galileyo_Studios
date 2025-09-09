@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   AlertTriangle,
   Bell,
@@ -21,6 +21,8 @@ import * as motion from "motion/react-client";
 
 import { PhoneMockup } from "../phone-mockup";
 import { HomeBackground } from "./home-backround";
+import { useRouter } from "next/navigation";
+import { toast } from "@galileyo/ui/toast";
 
 const features = [
   {
@@ -76,6 +78,7 @@ const pricingPlans = [
     cta: "Get Started with Basic",
     popular: false,
     highlight: false,
+    id: "basic",
   },
   {
     name: "Galileyo PREMIUM",
@@ -93,6 +96,7 @@ const pricingPlans = [
     cta: "Choose Standard",
     popular: true,
     highlight: true,
+    id: "premium",
   },
   {
     name: "Starlink Mini Bundle",
@@ -109,6 +113,7 @@ const pricingPlans = [
     cta: "Upgrade to Premium",
     popular: false,
     highlight: false,
+    id: "starlink",
   },
 ];
 
@@ -411,6 +416,21 @@ interface Props {
 export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
   //const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
   const currentAlertIndex = 0;
+  const [signupEmail, setSignupEmail] = useState("");
+  const router = useRouter();
+
+  const handleSignupCTA = useCallback(() => {
+    if (!signupEmail) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    router.push(`/sign-up?email=${signupEmail}`);
+  }, [signupEmail, router]);
+
+  const handleGetStartedCTA = useCallback((plan: string) => {
+    router.push(`/sign-up?plan=${plan}`);
+  }, [router]);
 
   const [i, setI] = useState(0);
 
@@ -647,8 +667,10 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
                   type="email"
                   placeholder="Enter your email"
                   className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
                 />
-                <button className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+                <button className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400" onClick={handleSignupCTA}>
                   <Satellite className="h-4 w-4 text-white" />
                   Get Started
                 </button>
@@ -864,8 +886,10 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
               type="email"
               placeholder="Enter your email"
               className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+              value={signupEmail}
+              onChange={(e) => setSignupEmail(e.target.value)}
             />
-            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400" onClick={handleSignupCTA}>
               Join Now
             </button>
           </div>
@@ -1185,6 +1209,7 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
                       ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
                       : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
                   }`}
+                  onClick={() => handleGetStartedCTA(plan.id)}
                 >
                   {plan.cta}
                 </motion.button>

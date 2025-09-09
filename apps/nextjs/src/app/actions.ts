@@ -48,3 +48,9 @@ export async function sendNotification(message: string) {
     return { success: false, error: "Failed to send notification" };
   }
 }
+
+export async function sendContactUsEmail(name: string, email: string, subject: string, message: string, turnstileToken: string) {
+  // 0x4AAAAAAB0QoqBu_2OtubrO8Y1mCaPXWB4
+  
+  return { success: true, error: null };
+}
