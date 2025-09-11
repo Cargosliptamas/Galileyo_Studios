@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container prose text-slate-900 dark:text-slate-100 lg:max-w-screen-lg">
+    <div className="container prose mt-8 text-slate-900 dark:text-slate-100 lg:max-w-screen-lg">
       <h1 className="text-center text-slate-900 dark:text-slate-100">
         TERMS OF USE AGREEMENT
       </h1>
@@ -92,7 +92,7 @@ export default function TermsOfServicePage() {
 
         <li>
           <b>Galileyo Privacy Policy</b>. The Galileyo Privacy Policy located at{" "}
-          <Link href="/privacy-policy" target="_blank">
+          <Link href="/privacy-policy" target="_blank" className="text-cyan-500 hover:underline">
             https://galileyo.com/privacy-policy
           </Link>{" "}
           is incorporated herein by reference (“<b>Privacy Policy</b>”). The
@@ -180,7 +180,7 @@ export default function TermsOfServicePage() {
           by uploading your copyrighted work to the Services, you may submit a
           notice that meets all of the requirements of the Digital Millennium
           Copyright Act (DMCA), 17 U.S.C 512(c)(3), to our Copyright Manager at{" "}
-          <a href="mailto:abuse@galileyo.com">abuse@galileyo.com</a>. Your
+          <Link href="mailto:abuse@galileyo.com" className="text-cyan-500 hover:underline">abuse@galileyo.com</Link>. Your
           notice must include: (1) electronic or physical signature of the
           copyrighted work owner (or person authorized by the copyright owner),
           (2) a description of the copyrighted work, including the URL where the
