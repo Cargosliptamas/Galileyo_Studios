@@ -92,7 +92,11 @@ export default function TermsOfServicePage() {
 
         <li>
           <b>Galileyo Privacy Policy</b>. The Galileyo Privacy Policy located at{" "}
-          <Link href="/privacy-policy" target="_blank" className="text-cyan-500 hover:underline">
+          <Link
+            href="/privacy-policy"
+            target="_blank"
+            className="text-cyan-500 hover:underline"
+          >
             https://galileyo.com/privacy-policy
           </Link>{" "}
           is incorporated herein by reference (“<b>Privacy Policy</b>”). The
@@ -180,20 +184,26 @@ export default function TermsOfServicePage() {
           by uploading your copyrighted work to the Services, you may submit a
           notice that meets all of the requirements of the Digital Millennium
           Copyright Act (DMCA), 17 U.S.C 512(c)(3), to our Copyright Manager at{" "}
-          <Link href="mailto:abuse@galileyo.com" className="text-cyan-500 hover:underline">abuse@galileyo.com</Link>. Your
-          notice must include: (1) electronic or physical signature of the
-          copyrighted work owner (or person authorized by the copyright owner),
-          (2) a description of the copyrighted work, including the URL where the
-          infringing content is available, or a copy of it, (3) contact details
-          of the person submitting the notice, including email address,
-          telephone, and mailing address, (4) statement in “good faith belief”
-          that the work is not authorized by the copyright owner, and (5) a
-          statement by the sender that all of the above information is accurate,
-          and that the person sending the notice is either the copyright owner
-          or is authorized to act on behalf of the copyright owner. Upon
-          receiving a notice satisfying these requirements, Galileyo will take
-          whatever action, in its sole discretion, it deems appropriate,
-          including removal of the challenged content from the Services.
+          <Link
+            href="mailto:abuse@galileyo.com"
+            className="text-cyan-500 hover:underline"
+          >
+            abuse@galileyo.com
+          </Link>
+          . Your notice must include: (1) electronic or physical signature of
+          the copyrighted work owner (or person authorized by the copyright
+          owner), (2) a description of the copyrighted work, including the URL
+          where the infringing content is available, or a copy of it, (3)
+          contact details of the person submitting the notice, including email
+          address, telephone, and mailing address, (4) statement in “good faith
+          belief” that the work is not authorized by the copyright owner, and
+          (5) a statement by the sender that all of the above information is
+          accurate, and that the person sending the notice is either the
+          copyright owner or is authorized to act on behalf of the copyright
+          owner. Upon receiving a notice satisfying these requirements, Galileyo
+          will take whatever action, in its sole discretion, it deems
+          appropriate, including removal of the challenged content from the
+          Services.
         </li>
         <li>
           <b>Prohibited Content</b>.&nbsp;The Service contains a method for

@@ -375,7 +375,7 @@ export default function FeedCard({
               image={getUserAvatarIcon(item)}
               isVerified={isVerified}
               isInfluencer={isInfluencer}
-              href={isMocked ? undefined : `/profile/${item.id}`}
+              // href={isMocked ? undefined : `/profile/${item.id}`}
             >
               <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span>{item.title}</span>
