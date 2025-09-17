@@ -43,6 +43,7 @@ import { toast } from "@galileyo/ui/toast";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
+import ImageWithAuth from "../image-with-auth";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -424,8 +425,8 @@ export default function FeedCard({
         {/* Post Image */}
         {item.images.length > 0 && (
           <div className="mx-auto mb-4 max-w-md overflow-hidden rounded-lg">
-            <img
-              src={item.images[0]?.sizes[0]?.url ?? ""}
+            <ImageWithAuth
+              url={item.images[0]?.sizes[0]?.url ?? ""}
               alt="Post content"
               className="h-auto w-full object-cover"
             />
