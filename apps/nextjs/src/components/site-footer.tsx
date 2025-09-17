@@ -1,4 +1,4 @@
-// import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@galileyo/ui/button";
@@ -125,6 +125,15 @@ export async function SiteFooter() {
               </li>
             </ul>
           </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-4">
+          <a href="https://apps.apple.com/us/app/galileyo-account-app/id6475311208" target="_blank" className="max-w-52">
+            <Image src="/app_store_badge.svg" alt="Galileyo" width={300} height={200} className="object-cover" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.alwaysreachable.app" target="_blank" className="max-w-52">
+            <Image src="/google_play_badge.png" alt="Galileyo" width={500} height={500} className="w-full h-full object-cover" />
+          </a>
         </div>
 
         {/* Bottom Bar */}
