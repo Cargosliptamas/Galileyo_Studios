@@ -1,5 +1,6 @@
 export const navigationLinks = [
   { href: "/", label: "Home" },
+  { href: "/alerts-map", label: "Alerts Map" },
   // { href: "/#features", label: "Features" },
   // { href: "/#pricing", label: "Pricing" },
   // { href: "/blog", label: "Blog" },

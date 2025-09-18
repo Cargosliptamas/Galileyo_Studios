@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import Link from "next/link";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { MapIcon, PlusIcon, SearchIcon } from "lucide-react";
 
 // import { toast } from "sonner";
 
@@ -126,6 +126,9 @@ export default function AuthNavbar({ user }: { user: User }) {
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
           {/* <NotificationMenu /> */}
+          <Link href="/alerts-map" className="icon-button">
+            <MapIcon className="h-5 w-5" />
+          </Link>
           <ThemeToggle />
           <Button
             size="sm"
