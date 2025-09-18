@@ -47,7 +47,7 @@ export interface Alert {
     affectedSystems?: string[];
     casualties?: number;
     damage?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

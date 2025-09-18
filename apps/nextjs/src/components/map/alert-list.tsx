@@ -1,6 +1,7 @@
 'use client';
 
-import { Alert, ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
+import type { Alert} from '~/lib/types/alert';
+import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@galileyo/ui/card';
 import { Badge } from '@galileyo/ui/badge';
 
@@ -72,7 +73,7 @@ export function AlertList({ alerts, onAlertClick }: AlertListProps) {
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div>
                     <p><strong>Source:</strong> {alert.source}</p>
-                    <p><strong>Location:</strong> {alert.location.address || `${alert.location.city}, ${alert.location.country}`}</p>
+                    <p><strong>Location:</strong> {alert.location.address ?? `${alert.location.city}, ${alert.location.country}`}</p>
                   </div>
                   <div className="text-right">
                     <p>{new Date(alert.timestamp).toLocaleDateString()}</p>

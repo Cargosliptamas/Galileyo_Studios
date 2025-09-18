@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
-import { Alert, AlertFilters } from '~/lib/types/alert';
+import type { Alert, AlertFilters, AlertType } from '~/lib/types/alert';
 import { mockAlerts } from '~/lib/data/alerts';
-import { AlertMap, AlertMapRef } from '~/components/map/alert-map';
+import type { AlertMapRef } from '~/components/map/alert-map';
+import { AlertMap } from '~/components/map/alert-map';
 import { AlertFiltersComponent } from '~/components/map/alert-filters';
 import { AlertList } from '~/components/map/alert-list';
 import { AlertLegend } from '~/components/map/alert-legend';
@@ -25,7 +26,7 @@ export default function AlertsMapPage() {
       health_emergency: 'Health Emergency',
       traffic: 'Traffic',
       other: 'Other'
-    }) as any[],
+    }) as AlertType[],
     severities: ['low', 'medium', 'high', 'critical'],
     isActive: true,
   });

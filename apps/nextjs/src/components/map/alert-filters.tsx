@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Alert, AlertType, AlertSeverity, AlertFilters, ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
+import type { AlertType, AlertSeverity, AlertFilters} from '~/lib/types/alert';
+import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
 import { Button } from '@galileyo/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@galileyo/ui/card';
 import { Checkbox } from '@galileyo/ui/checkbox';
@@ -14,7 +15,7 @@ interface AlertFiltersProps {
 
 export function AlertFiltersComponent({ onFiltersChange, initialFilters }: AlertFiltersProps) {
   const [filters, setFilters] = useState<AlertFilters>(
-    initialFilters || {
+    initialFilters ?? {
       types: Object.keys(ALERT_TYPE_CONFIG) as AlertType[],
       severities: Object.keys(SEVERITY_CONFIG) as AlertSeverity[],
       isActive: true,

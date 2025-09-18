@@ -4,11 +4,11 @@ import { Skeleton } from '@galileyo/ui/skeleton';
 import { useEffect, useState } from 'react';
 import { authClient } from '~/auth/client';
 
-export type ImageWithAuthProps = {
+export interface ImageWithAuthProps {
   className?: HTMLElement['className'];
   alt?: string;
   url: string;
-};
+}
 
 export default function ImageWithAuth({ url, className, alt }: ImageWithAuthProps) {
   const [data, setData] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function ImageWithAuth({ url, className, alt }: ImageWithAuthProp
     };
 
     try {
-      fetchData();
+      void fetchData();
     } catch (error) {
       console.log(error);
     }

@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+ 
 import type { InfiniteData } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

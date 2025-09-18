@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import dynamic from 'next/dynamic';
 import L from 'leaflet';
-import { Alert, ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
+import type { Alert} from '~/lib/types/alert';
+import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from '~/lib/types/alert';
 import { mockAlerts } from '~/lib/data/alerts';
 import { Badge } from '@galileyo/ui/badge';
 
@@ -74,7 +75,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(({
     setIsClient(true);
     
     // Fix for default markers in Leaflet
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    delete (L.Icon.Default.prototype as unknown as { _getIconUrl: unknown })._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',

@@ -244,9 +244,6 @@ importers:
       '@trpc/tanstack-react-query':
         specifier: 'catalog:'
         version: 11.4.0(@tanstack/react-query@5.80.7(react@19.0.0))(@trpc/client@11.4.0(@trpc/server@11.4.0(typescript@5.8.3))(typescript@5.8.3))(@trpc/server@11.4.0(typescript@5.8.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
-      '@types/leaflet':
-        specifier: ^1.9.20
-        version: 1.9.20
       '@vercel/speed-insights':
         specifier: ^1.2.0
         version: 1.2.0(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
@@ -314,6 +311,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.83.0
         version: 5.83.0(@tanstack/react-query@5.80.7(react@19.0.0))(react@19.0.0)
+      '@types/leaflet':
+        specifier: ^1.9.20
+        version: 1.9.20
       '@types/node':
         specifier: ^22.15.29
         version: 22.15.29

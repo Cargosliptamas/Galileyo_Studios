@@ -1,4 +1,4 @@
-import { Alert, AlertType, AlertSeverity } from '~/lib/types/alert';
+import type { Alert, AlertType, AlertSeverity } from '~/lib/types/alert';
 
 // Mock data for demonstration - in a real app, this would come from an API
 export const mockAlerts: Alert[] = [
