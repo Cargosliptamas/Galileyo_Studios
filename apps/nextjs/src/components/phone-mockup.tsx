@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import { RiBatteryFill, RiWifiFill } from "@remixicon/react";
-import { Signal } from "lucide-react";
 
 export function PhoneMessageBubble({ children }: { children: ReactNode }) {
   return (
@@ -55,25 +53,25 @@ export function PhoneMockup({
   return (
     <div className="flex items-center justify-center">
       {/* iPhone 15 Container */}
-      <div className="relative h-[600px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1)]">
+      <div className="relative h-[504px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1)]">
         {/* Dynamic Island */}
         <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[90px] -translate-x-1/2 transform rounded-full bg-black"></div>
 
         <div className="pointer-events-none absolute -inset-[1px] rounded-[37px] border-[3px] border-zinc-700 border-opacity-40 dark:bg-zinc-900">
           <div className="flex h-full flex-col">
-            <div className="flex select-none items-center justify-between px-3 py-2 text-center">
+            {/* <div className="flex select-none items-center justify-between px-3 py-2 text-center">
               <div className="text-sm">10:41</div>
               <div className="grid grid-cols-3 gap-1">
                 <Signal className="h-4 w-4" />
                 <RiWifiFill className="h-4 w-4" />
                 <RiBatteryFill className="h-4 w-4" />
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
 
         {/* Screen Content */}
-        <div className="relative flex h-full w-full overflow-hidden rounded-[37px] bg-zinc-900/10 py-10">
+        <div className="relative flex h-full w-full overflow-hidden rounded-[37px] bg-zinc-900/10 pt-2">
           {children}
         </div>
 

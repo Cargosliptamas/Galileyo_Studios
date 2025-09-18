@@ -1,5 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   Bell,
@@ -13,39 +15,51 @@ import {
   Star,
   TrendingUp,
   Users,
+  Wallet,
   Zap,
 } from "lucide-react";
 import * as motion from "motion/react-client";
 
-import { PhoneMockup } from "../phone-mockup";
-import { CyclingAnimatedList } from "../ui/animated-list";
-import { HomeBackground } from "./home-backround";
+import { toast } from "@galileyo/ui/toast";
 
-// import { InstallPrompt } from "../layout/install-prompt";
+import { PhoneMockup } from "../phone-mockup";
+import { HomeBackground } from "./home-backround";
 
 const features = [
   {
     icon: <Globe className="h-8 w-8" />,
-    title: "Worldwide Coverage",
-    description: "Access information anywhere through our satellite network",
-  },
-  {
-    icon: <Lock className="h-8 w-8" />,
-    title: "Uncensored Content",
+    title: "Be the first to know",
+    image: "/why1c.jpg",
     description:
-      "Share and receive unfiltered information without restrictions",
+      "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
   },
   {
     icon: <Shield className="h-8 w-8" />,
-    title: "Private Groups",
+    title: "Satellite Connectivity - Get your news on-grid...or off",
+    image: "/why2c.jpg",
     description:
-      "Create secure groups to share critical information with trusted members",
+      "Connect with neighbors, influencers, and trusted sources to share vital information during crises.",
   },
   {
     icon: <Bell className="h-8 w-8" />,
-    title: "Real-Time Alerts",
+    title: "Friends - Family - Community - Always Stay in touch",
+    image: "/why3c.jpg",
     description:
-      "Receive instant notifications about emergencies and critical updates",
+      "Use our satellite app to stay safe in remote areas — and if you don’t have a satellite device, we’ll give you one for free!",
+  },
+  {
+    icon: <Lock className="h-8 w-8" />,
+    title: "Join a caring community of trusted contributors",
+    image: "/why4c.jpg",
+    description:
+      "Share updates, messages, and location info seamlessly, keeping everyone safe and informed.",
+  },
+  {
+    icon: <Wallet className="h-8 w-8" />,
+    title: "Earn Rewards",
+    image: "/why5c.jpg",
+    description:
+      "Get discounts and coins just for staying engaged and helping others.",
   },
 ];
 
@@ -62,9 +76,10 @@ const pricingPlans = [
       "Access To Web and IOS/Android Apps",
       "Active support",
     ],
-    cta: "Create Account",
+    cta: "Get Started with Basic",
     popular: false,
     highlight: false,
+    id: "basic",
   },
   {
     name: "Galileyo PREMIUM",
@@ -79,9 +94,10 @@ const pricingPlans = [
       "See Who Viewed Your Profile",
       "Premium Customer Support",
     ],
-    cta: "Join NOW",
+    cta: "Choose Standard",
     popular: true,
     highlight: true,
+    id: "premium",
   },
   {
     name: "Starlink Mini Bundle",
@@ -95,28 +111,10 @@ const pricingPlans = [
       "Goal Zero Nomad 5 Solar Panel",
       "Starlink USB-C to DC Power Cord",
     ],
-    cta: "Select Plan",
+    cta: "Upgrade to Premium",
     popular: false,
     highlight: false,
-  },
-];
-
-const satelliteFeatures = [
-  {
-    title: "200+ Countries Covered",
-    description: "Global satellite network coverage",
-  },
-  {
-    title: "Works with Bivy Stick, Starlink, and More",
-    description: "Compatible with leading satellite providers",
-  },
-  {
-    title: "End-to-End Encryption",
-    description: "Military-grade security for all communications",
-  },
-  {
-    title: "99.9% Global Uptime",
-    description: "Reliable connectivity when you need it most",
+    id: "starlink",
   },
 ];
 
@@ -405,9 +403,40 @@ const mockAlerts = [
   },
 ];
 
-export default function HomePage() {
-  // const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
+const questions = [
+  "Who has your back?",
+  "Who keeps you informed?",
+  "Who alerts you first?",
+];
+
+interface Props {
+  items?: string[];
+  cycleMs?: number; // total time per item (includes show + hide)
+}
+
+export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
+  //const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
   const currentAlertIndex = 0;
+  const [signupEmail, setSignupEmail] = useState("");
+  const router = useRouter();
+
+  const handleSignupCTA = useCallback(() => {
+    if (!signupEmail) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    router.push(`/sign-up?email=${signupEmail}`);
+  }, [signupEmail, router]);
+
+  const handleGetStartedCTA = useCallback(
+    (plan: string) => {
+      router.push(`/sign-up?plan=${plan}`);
+    },
+    [router],
+  );
+
+  const [i, setI] = useState(0);
 
   // Get one alert from each category
   const wildfireAlerts = mockAlerts.filter(
@@ -561,103 +590,112 @@ export default function HomePage() {
     }
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCurrentAlertIndex((prev) => prev + 1);
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // useEffect(() => {
-  //   setColor(resolvedTheme === "dark" ? "#ffffff" : "#000000");
-  // }, [resolvedTheme]);
-
   return (
     <>
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background Pattern */}
-        {/* <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
-          <div
-            className="absolute inset-0 block opacity-50 dark:hidden"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cbd5e1' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-          <div
-            className="absolute inset-0 hidden opacity-50 dark:block"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cbd5e1' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div> */}
         <HomeBackground />
-
         {/* <InstallPrompt /> */}
 
         <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Left Column - Text Content */}
-            <div className="lg:order-2">
+            <div className="lg:order-1">
               {/* Badge */}
               <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/90">
                 <Shield className="mr-2 h-4 w-4 text-green-400" />
-                Trusted by 5000+ users worldwide
+                Trusted by Thousands Worldwide Since 2020.
               </div>
 
-              {/* Main Headline */}
-              <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 dark:text-white lg:text-6xl">
-                Speak Freely —{" "}
-                <span className="bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent dark:from-cyan-400 dark:to-blue-400">
-                  Unleash Your Voice
+              <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 dark:text-white lg:text-5xl">
+                {/* animated question */}
+                <span className="relative inline-block align-baseline">
+                  <span
+                    key={i} // remount to restart animation each time
+                    className="anim-swap inline-block whitespace-nowrap will-change-transform"
+                    style={{ ["--cycle" as string]: `${cycleMs}ms` }}
+                    onAnimationEnd={() => setI((v) => (v + 1) % items.length)}
+                  >
+                    {items[i]}
+                  </span>
                 </span>
+
+                {/* static gradient ending */}
+                <span className="block bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent dark:from-cyan-400 dark:to-blue-400">
+                  We Do.
+                </span>
+
+                {/* local CSS for show→hold→hide */}
+                <style jsx>{`
+                  .anim-swap {
+                    animation: fadeSwap var(--cycle)
+                      cubic-bezier(0.2, 0.7, 0.3, 1) 1 both;
+                  }
+                  @keyframes fadeSwap {
+                    0% {
+                      opacity: 0;
+                      transform: translateY(8px);
+                    }
+                    12% {
+                      opacity: 1;
+                      transform: translateY(0);
+                    } /* fade/slide in */
+                    78% {
+                      opacity: 1;
+                      transform: translateY(0);
+                    } /* hold visible */
+                    100% {
+                      opacity: 0;
+                      transform: translateY(-8px);
+                    } /* fade/slide out */
+                  }
+
+                  /* Respect reduced motion */
+                  @media (prefers-reduced-motion: reduce) {
+                    .anim-swap {
+                      animation: none;
+                    }
+                  }
+                `}</style>
               </h1>
 
               {/* Supporting Tagline */}
               <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
-                Break the Chains & Stand alongside hundreds of uncensored truth
-                seekers who refuse to be silenced!
+                Join the Only Global Social Emergency App that works Off Grid.
+                {/* The social emergency app designed that keeps you and your loved ones safe. */}
               </p>
 
               {/* CTA Buttons */}
               <div className="mb-12 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/sign-up"
-                  className="transform rounded-lg bg-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                />
+                <button
+                  className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
+                  onClick={handleSignupCTA}
                 >
+                  <Satellite className="h-4 w-4 text-white" />
                   Get Started
-                </Link>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap gap-6 text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-green-400" />
-                  <span>99.9% Uptime</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-blue-400" />
-                  <span>200+ Countries</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-purple-400" />
-                  <span>Military-Grade Encryption</span>
-                </div>
+                </button>
               </div>
 
               {/* Emergency Preview Section */}
               <div className="mt-16">
                 <div className="mb-6">
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-600">
+                  <div className="text-white-700 mb-4 inline-flex items-center gap-2 rounded-full border-2 border-[#4a85ed] px-4 py-2">
                     <Zap className="h-4 w-4" />
                     <span className="font-medium">Emergency Alerts</span>
                   </div>
                   <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    Real-Time Emergency Response
+                    Get Lifesaving Alerts Now!
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Get instant alerts for wildfires, severe weather,
-                    earthquakes, and infrastructure emergencies.
+                    Instant, location-aware alerts for disasters, cyber breaches
+                    and emergencies.
                   </p>
                 </div>
 
@@ -699,244 +737,12 @@ export default function HomePage() {
                     </div>
                   </motion.div>
                 </div>
-
-                {/* News Categories */}
-                {/* <div className="mb-6 grid grid-cols-2 gap-4">
-                  <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
-                      </div>
-                      <span className="text-sm font-medium text-red-400">
-                        Critical Alerts
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Life-threatening emergencies requiring immediate action
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <Zap className="h-4 w-4 text-orange-400" />
-                      </div>
-                      <span className="text-sm font-medium text-orange-400">
-                        Infrastructure
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Power, water, transportation, and communication updates
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <Users className="h-4 w-4 text-blue-400" />
-                      </div>
-                      <span className="text-sm font-medium text-blue-400">
-                        Community
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Shelter locations, volunteer opportunities, aid
-                      distribution
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <CheckCircle className="h-4 w-4 text-green-400" />
-                      </div>
-                      <span className="text-sm font-medium text-green-400">
-                        Recovery
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      All-clear notifications and recovery progress updates
-                    </p>
-                  </div>
-                </div> */}
-
-                <CyclingAnimatedList delay={4000}>
-                  <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
-                      </div>
-                      <span className="text-sm font-medium text-red-400">
-                        Critical Alerts
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Life-threatening emergencies requiring immediate action
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <Zap className="h-4 w-4 text-orange-400" />
-                      </div>
-                      <span className="text-sm font-medium text-orange-400">
-                        Infrastructure
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Power, water, transportation, and communication updates
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <Users className="h-4 w-4 text-blue-400" />
-                      </div>
-                      <span className="text-sm font-medium text-blue-400">
-                        Community
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      Shelter locations, volunteer opportunities, aid
-                      distribution
-                    </p>
-                  </div>
-
-                  <div className="cursor-pointer rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                      <div>
-                        <CheckCircle className="h-4 w-4 text-green-400" />
-                      </div>
-                      <span className="text-sm font-medium text-green-400">
-                        Recovery
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
-                      All-clear notifications and recovery progress updates
-                    </p>
-                  </div>
-                </CyclingAnimatedList>
-                {/* <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <Satellite className="h-4 w-4 text-cyan-500" />
-                    </div>
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Advanced Capabilities
-                    </span>
-                  </div>
-
-                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                    <li>• Multi-source verification and fact-checking</li>
-                    <li>• Customizable alert priorities and filters</li>
-                    <li>• Integration with local emergency services</li>
-                    <li>• Historical emergency data and patterns</li>
-                  </ul>
-                </div> */}
               </div>
             </div>
 
             {/* Right Column - Satellite Illustration */}
-            <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-1">
-              {/* <div className="relative w-full max-w-lg">
-                <div className="relative z-10 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-2xl dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
-                  <div className="mb-6 text-center">
-                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-500">
-                      <Satellite className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
-                      Galileyo Network
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      Global Satellite Coverage
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between rounded-lg bg-slate-100/50 p-3 dark:bg-slate-800/50">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-                        <span className="text-sm text-slate-600 dark:text-slate-300">
-                          Network Status
-                        </span>
-                      </div>
-                      <span className="text-sm font-medium text-green-400">
-                        Online
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-lg bg-slate-100/50 p-3 dark:bg-slate-800/50">
-                      <div className="flex items-center gap-2">
-                        <Signal className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />
-                        <span className="text-sm text-slate-600 dark:text-slate-300">
-                          Signal Strength
-                        </span>
-                      </div>
-                      <span className="text-sm font-medium text-cyan-500 dark:text-cyan-400">
-                        Excellent
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-lg bg-slate-100/50 p-3 dark:bg-slate-800/50">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-purple-400" />
-                        <span className="text-sm text-slate-600 dark:text-slate-300">
-                          Encryption
-                        </span>
-                      </div>
-                      <span className="text-sm font-medium text-purple-400">
-                        Active
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute -left-8 -top-8 flex h-12 w-12 animate-bounce items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg">
-                  <Radio className="h-6 w-6 text-white" />
-                </div>
-
-                <div className="absolute -right-12 -top-4 flex h-10 w-10 animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-500 shadow-lg">
-                  <Wifi className="h-5 w-5 text-white" />
-                </div>
-
-                <div
-                  className="absolute -bottom-6 -left-12 flex h-14 w-14 animate-bounce items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg"
-                  style={{ animationDelay: "0.5s" }}
-                >
-                  <Globe className="h-7 w-7 text-white" />
-                </div>
-
-                <div className="pointer-events-none absolute inset-0">
-                  <div className="absolute left-1/2 top-1/2 h-px w-32 -translate-x-1/2 -translate-y-1/2 rotate-45 transform bg-gradient-to-r from-cyan-400/50 to-transparent"></div>
-                  <div className="absolute left-1/2 top-1/2 h-px w-28 -translate-x-1/2 -translate-y-1/2 -rotate-45 transform bg-gradient-to-r from-purple-400/50 to-transparent"></div>
-                  <div className="absolute left-1/2 top-1/2 h-px w-36 -translate-x-1/2 -translate-y-1/2 rotate-12 transform bg-gradient-to-r from-green-400/50 to-transparent"></div>
-                </div>
-
-                <div className="pointer-events-none absolute inset-0">
-                  <div
-                    className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform animate-spin rounded-full border border-cyan-400/20"
-                    style={{ animationDuration: "20s" }}
-                  ></div>
-                  <div
-                    className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 transform animate-spin rounded-full border border-blue-400/10"
-                    style={{
-                      animationDuration: "15s",
-                      animationDirection: "reverse",
-                    }}
-                  ></div>
-                </div>
-
-                <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 blur-3xl dark:from-cyan-500/10 dark:to-blue-500/10"></div>
-              </div> */}
-              {/* <div className="relative z-50 mx-auto h-[700px] w-[350px] min-w-[350px] rounded-[42px] border-[14px] border-black bg-gray-800 shadow-xl">
-                <div className="absolute left-1/2 top-0 z-50 h-[18px] w-[148px] translate-x-[-50%] rounded-b-[1rem] bg-black"></div>
-                <div className="absolute left-[-105px] top-[124px] z-50 h-[46px] w-[4px] rounded-l-lg bg-black"></div>
-                <div className="absolute left-[-105px] top-[178px] z-50 h-[46px] w-[4px] rounded-l-lg bg-black"></div>
-                <div className="absolute right-[-105px] top-[142px] z-50 h-[64px] w-[4px] rounded-r-lg bg-black"></div>
-                <div className="relative h-full w-full overflow-hidden break-words rounded-[32px] bg-gray-800"></div>
-              </div> */}
+            <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-2">
+              {/* Mobile Taglines */}
 
               <motion.div
                 className="relative"
@@ -945,15 +751,21 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <PhoneMockup>
-                  <Image
-                    className="device-screen"
-                    src="/nexus_phone.jpg"
-                    alt="App"
-                    width={300}
-                    height={600}
+                  <video
+                    className="max-w-full rounded-xl shadow-lg"
+                    src="/galileyo-mobile-video.mp4"
+                    poster="/galileyo-mobile-poster.jpg"
+                    width={272}
+                    height={504}
+                    playsInline
+                    muted
+                    autoPlay
+                    loop
+                    controls={false}
+                    preload="metadata"
                   />
                 </PhoneMockup>
-                {/* Animated Text Boxes */}
+
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -963,10 +775,10 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Be the first one to know
+                      Emergency Alerts 24./7
                     </span>
                   </div>
-                  {/* Arrow pointing to phone */}
+
                   <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
                     <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
                   </div>
@@ -981,10 +793,10 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Support Free & Uncensored Speech
+                      Critical Influencer Info
                     </span>
                   </div>
-                  {/* Arrow pointing to phone */}
+
                   <div className="absolute -left-2 top-1/2 -translate-y-1/2 transform">
                     <div className="h-0 w-0 border-b-4 border-r-8 border-t-4 border-b-transparent border-r-white/95 border-t-transparent dark:border-r-slate-800/95"></div>
                   </div>
@@ -999,10 +811,10 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-purple-500"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Follow Your Favourite Influencers
+                      Earn Rewards Speaking Truth
                     </span>
                   </div>
-                  {/* Arrow pointing to phone */}
+
                   <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
                     <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
                   </div>
@@ -1016,7 +828,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section
         id="features"
-        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
+        className="bg-white py-20 dark:bg-slate-950 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
@@ -1036,147 +848,66 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
             >
-              When traditional communication breaks down, Galileyo keeps you
-              connected. Whether it's an emergency, natural disaster, or total
-              network outage — our platform ensures real-time, uncensored
-              information reaches you anywhere in the world.
+              Stay informed, when it matters. Galileyo unites communities to
+              protect what matters most.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -2 }}
-                className="group rounded-xl border border-slate-200 bg-slate-50 p-8 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+                whileHover={{ y: -10 }}
+                style={{
+                  ["background" as string]: `url(${feature.image})`,
+                  backgroundSize: "cover",
+                }}
+                className={`group flex h-[300px] w-[200px] items-end rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800`}
               >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                  className="mb-4 text-cyan-500 transition-colors group-hover:text-cyan-600 dark:text-cyan-400 dark:group-hover:text-cyan-300"
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3 className="mb-3 text-xl font-semibold text-slate-900 dark:text-white">
-                  {feature.title}
-                </h3>
-                <p className="leading-relaxed text-slate-600 dark:text-slate-300">
-                  {feature.description}
-                </p>
+                <div className="pointer-events-none absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
+                <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                  <h3 className="mb-3 w-full text-center text-xl font-semibold text-slate-900 dark:text-white">
+                    {feature.title}
+                  </h3>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section
-        id="pricing"
-        className="bg-white py-20 dark:bg-slate-950 lg:py-32"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
+      {/* Newsletter Signup */}
+      <section className="lg:py-0">
+        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
+          <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
+            Your safety matters.
+          </h3>
+          <p className="mb-6 text-slate-600 dark:text-slate-300">
+            Join Galileyo to help protect each other.
+          </p>
+          <div className="max-w-mdi mx-auto flex flex-col gap-4 sm:flex-row">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+              value={signupEmail}
+              onChange={(e) => setSignupEmail(e.target.value)}
+            />
+            <button
+              className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
+              onClick={handleSignupCTA}
             >
-              Simple, Transparent Pricing
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300"
-            >
-              Choose the plan that best fits your needs.
-            </motion.p>
-          </div>
-
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
-                  plan.highlight
-                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
-                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
-                }`}
-              >
-                {plan.popular && (
-                  <div
-                    // initial={{ opacity: 0, y: -10 }}
-                    // animate={{ opacity: 1, y: 0 }}
-                    // transition={{ duration: 0.6, delay: 0.5 }}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                  >
-                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                      <Star className="h-4 w-4 fill-current" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-
-                <div className="mb-8 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    {plan.name}
-                  </h3>
-                  <p className="mb-4 text-slate-600 dark:text-slate-300">
-                    {plan.description}
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span
-                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
-                    >
-                      {plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className="ml-1 text-slate-500 dark:text-slate-400">
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <ul className="mb-8 space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check
-                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-green-400"}`}
-                      />
-                      <span className="text-slate-600 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
-                    plan.highlight
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
-                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
-                  }`}
-                >
-                  {plan.cta}
-                </motion.button>
-              </div>
-            ))}
+              Join Now
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="lg:py-32">
+      {/* Next-Generation Emergency Features Section */}
+      <section className="py-20 lg:py-20">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-400">
@@ -1184,11 +915,11 @@ export default function HomePage() {
               <span className="font-medium">Coming Soon</span>
             </div>
             <h2 className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl">
-              Next-Generation Emergency Features
+              Emergency Support When You Need It Most
             </h2>
             <p className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300">
-              Advanced emergency response capabilities powered by AI and
-              real-time satellite data.
+              AI and satellite tech deliver fast, life-saving assistance - when
+              every second counts.
             </p>
           </div>
 
@@ -1397,8 +1128,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Satellite Power Section */}
-      <section className="bg-slate-50/50 py-20 dark:bg-slate-900/50 lg:py-32">
+      {/* Pricing Section */}
+      <section id="pricing" className="bg-white py-20 dark:bg-slate-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
             <motion.h2
@@ -1408,72 +1139,115 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
-              The Power of Satellites
+              Simple, Honest Pricing
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
+              className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
             >
-              Galileyo partners with top-tier satellite providers to give you
-              24/7 coverage — from the mountains to the oceans and everywhere in
-              between. Our satellite-ready app ensures vital communication
-              reaches you, even in the most remote places.
+              Transparent pricing with no surprises.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {satelliteFeatures.map((feature, index) => (
-              <motion.div
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+            {pricingPlans.map((plan, index) => (
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -2 }}
-                className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
+                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                  plan.highlight
+                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                }`}
               >
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.2 }}
-                  className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                {plan.popular && (
+                  <div
+                    // initial={{ opacity: 0, y: -10 }}
+                    // animate={{ opacity: 1, y: 0 }}
+                    // transition={{ duration: 0.6, delay: 0.5 }}
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
+                  >
+                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                      <Star className="h-4 w-4 fill-current" />
+                      Most Popular
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-8 text-center">
+                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                    {plan.name}
+                  </h3>
+                  <p className="mb-4 text-slate-600 dark:text-slate-300">
+                    {plan.description}
+                  </p>
+                  <div className="flex items-center justify-center">
+                    <span
+                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                    >
+                      {plan.price}
+                    </span>
+                    {plan.period && (
+                      <span className="ml-1 text-slate-500 dark:text-slate-400">
+                        {plan.period}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <ul className="mb-8 space-y-4">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start gap-3">
+                      <Check
+                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
+                      />
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+                    plan.highlight
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
+                      : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+                  }`}
+                  onClick={() => handleGetStartedCTA(plan.id)}
                 >
-                  <Satellite className="h-8 w-8 text-white" />
-                </motion.div>
-                <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {feature.description}
-                </p>
-              </motion.div>
+                  {plan.cta}
+                </motion.button>
+              </div>
             ))}
           </div>
         </div>
-
-        {/* Newsletter Signup */}
-        <div className="mx-auto mt-16 max-w-3xl rounded-2xl border p-8 text-center">
-          <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
-            Stay Updated
-          </h3>
-          <p className="mb-6 text-slate-600 dark:text-slate-300">
-            Subscribe to our newsletter for the latest articles, product
-            updates, and emergency preparedness tips.
-          </p>
-          <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
-            />
-            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
-              Subscribe
-            </button>
-          </div>
-        </div>
       </section>
+
+      {/* Newsletter Signup */}
+      <div className="mx-auto mt-16 max-w-5xl rounded-2xl border p-8 text-center">
+        <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
+          Still on the fence?
+        </h3>
+        <p className="mb-6 text-slate-600 dark:text-slate-300">
+          Get updates and tips in your inbox. Not for emergency alerts.
+        </p>
+        <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+          />
+          <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+            Subscribe
+          </button>
+        </div>
+      </div>
     </>
   );
 }

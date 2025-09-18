@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import Link from "next/link";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { MapIcon, PlusIcon, SearchIcon } from "lucide-react";
 
 // import { toast } from "sonner";
 
@@ -18,21 +18,24 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ThemeToggle } from "@galileyo/ui/theme";
 
 import type { User } from "~/auth/client";
+import { useCreatePostModal } from "~/hooks/use-create-post-modal";
 import { AppIcon } from "../app-icon";
+import CreatePostModal from "../feed/create-post-modal";
 import { navigationLinks } from "./navigation-items";
 import { UserMenu } from "./user-menu";
 
 export default function AuthNavbar({ user }: { user: User }) {
   const id = useId();
 
-  const handleCreatePost = () => {
-    console.log("create post");
-    // toast("Loading more...");
-  };
+  const {
+    open: openCreatePost,
+    isOpen: isCreatePostOpen,
+    close: closeCreatePost,
+  } = useCreatePostModal();
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
-      <div className="flex h-16 items-center justify-between gap-4">
+      <div className="lg:px-8* mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-8 sm:px-6">
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
           {/* Mobile menu trigger */}
@@ -93,6 +96,7 @@ export default function AuthNavbar({ user }: { user: User }) {
             <Link
               href="/dashboard"
               className="w-20 text-primary hover:text-primary/90"
+              suppressHydrationWarning
             >
               <AppIcon />
             </Link>
@@ -122,11 +126,14 @@ export default function AuthNavbar({ user }: { user: User }) {
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
           {/* <NotificationMenu /> */}
+          <Link href="/alerts-map" className="icon-button">
+            <MapIcon className="h-5 w-5" />
+          </Link>
           <ThemeToggle />
           <Button
             size="sm"
             className="text-sm max-sm:aspect-square max-sm:p-0"
-            onClick={handleCreatePost}
+            onClick={openCreatePost}
           >
             <PlusIcon
               className="opacity-60 sm:-ms-1"
@@ -156,6 +163,8 @@ export default function AuthNavbar({ user }: { user: User }) {
           </NavigationMenuList>
         </NavigationMenu>
       </div> */}
+
+      <CreatePostModal isOpen={isCreatePostOpen} onClose={closeCreatePost} />
     </header>
   );
 }

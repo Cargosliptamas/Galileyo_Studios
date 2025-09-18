@@ -1,4 +1,4 @@
-// import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@galileyo/ui/button";
@@ -66,17 +66,18 @@ export async function SiteFooter() {
                   Do you have something to share with our audience?
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/blog"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   Blog
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <a
-                  href="#"
+                  href="https://galileyo.instatus.com"
+                  target="_blank"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   System Status
@@ -98,14 +99,14 @@ export async function SiteFooter() {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/help-center"
                   className="text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   Help Center
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/terms-of-service"
@@ -124,6 +125,15 @@ export async function SiteFooter() {
               </li>
             </ul>
           </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-4">
+          <a href="https://apps.apple.com/us/app/galileyo-account-app/id6475311208" target="_blank" className="max-w-52">
+            <Image src="/app_store_badge.svg" alt="Galileyo" width={300} height={200} className="object-cover" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.alwaysreachable.app" target="_blank" className="max-w-52">
+            <Image src="/google_play_badge.png" alt="Galileyo" width={500} height={500} className="w-full h-full object-cover" />
+          </a>
         </div>
 
         {/* Bottom Bar */}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { SignupSchema } from "@galileyo/api/schemas";
@@ -25,13 +25,15 @@ import { useTRPC } from "~/trpc/react";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
   const trpc = useTRPC();
   const form = useForm({
     schema: SignupSchema,
     defaultValues: {
       first_name: "",
       last_name: "",
-      email: "",
+      email: email ?? "",
       password: "",
       password_confirmation: "",
       country: "",

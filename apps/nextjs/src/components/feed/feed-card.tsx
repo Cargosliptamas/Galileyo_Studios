@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+ 
 import type { InfiniteData } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,6 +43,7 @@ import { toast } from "@galileyo/ui/toast";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
+import ImageWithAuth from "../image-with-auth";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -375,7 +376,7 @@ export default function FeedCard({
               image={getUserAvatarIcon(item)}
               isVerified={isVerified}
               isInfluencer={isInfluencer}
-              href={isMocked ? undefined : `/profile/${item.id}`}
+              // href={isMocked ? undefined : `/profile/${item.id}`}
             >
               <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span>{item.title}</span>
@@ -424,8 +425,8 @@ export default function FeedCard({
         {/* Post Image */}
         {item.images.length > 0 && (
           <div className="mx-auto mb-4 max-w-md overflow-hidden rounded-lg">
-            <img
-              src={item.images[0]?.sizes[0]?.url ?? ""}
+            <ImageWithAuth
+              url={item.images[0]?.sizes[0]?.url ?? ""}
               alt="Post content"
               className="h-auto w-full object-cover"
             />

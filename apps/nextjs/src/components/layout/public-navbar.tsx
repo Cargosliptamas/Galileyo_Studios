@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 
 import { cn } from "@galileyo/ui";
@@ -19,9 +20,23 @@ import { navigationLinks } from "./navigation-items";
 
 export default function PublicNavbar() {
   const { scrollY } = useScroll();
-  const [isAnimationActive, setIsAnimationActive] = useState(false);
+  const pathname = usePathname();
+
+  const isHome = useMemo(
+    () => pathname === "/" || pathname === "/home",
+    [pathname],
+  );
+
+  const [isAnimationActive, setIsAnimationActive] = useState(() =>
+    isHome ? false : true,
+  );
 
   useMotionValueEvent(scrollY, "change", (latest) => {
+    if (!isHome) {
+      setIsAnimationActive(true);
+      return;
+    }
+
     if (latest > 100) {
       setIsAnimationActive(true);
     } else {
@@ -29,11 +44,19 @@ export default function PublicNavbar() {
     }
   });
 
+  useEffect(() => {
+    if (isHome) {
+      setIsAnimationActive(false);
+    } else {
+      setIsAnimationActive(true);
+    }
+  }, [isHome]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
-      <div className="flex h-16 items-center justify-between gap-4">
+      <div className="lg:px-8* mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-8 sm:px-6">
         {/* Left side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Mobile menu trigger */}
           <Popover>
             <PopoverTrigger asChild>
@@ -97,6 +120,11 @@ export default function PublicNavbar() {
             <Link href="/" className="flex w-20" suppressHydrationWarning>
               <AppIcon useDark={true} />
             </Link>
+          </div>
+        </div>
+        {/* Center side */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
@@ -116,13 +144,13 @@ export default function PublicNavbar() {
           </div>
         </div>
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <motion.div
             variants={{
               hidden: { opacity: 0 },
               visible: { opacity: 1 },
             }}
-            initial="hidden"
+            initial={isHome ? "hidden" : "visible"}
             // transition={{
             //   delay: 0.5,
             // }}
