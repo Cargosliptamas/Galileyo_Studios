@@ -23,6 +23,7 @@ export function initAuth(options: {
   productionUrl: string;
   secret: string | undefined;
   emailOptions: EmailOptions;
+  emailAndPassword?: BetterAuthOptions["emailAndPassword"];
 
   // discordClientId: string;
   // discordClientSecret: string;
@@ -59,9 +60,12 @@ export function initAuth(options: {
     },
     session: {
       additionalFields: {},
+      expiresIn: 604800, // 7 days
+      updateAge: 259200, // 3 days
     },
     baseURL: options.baseUrl,
     secret: options.secret,
+    emailAndPassword: options.emailAndPassword,
     plugins: [
       magicLink({
         disableSignUp: true,

@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { headers } from "next/headers";
+// import bcrypt from "bcrypt";
 
 import { initAuth } from "@galileyo/auth";
 
@@ -23,6 +24,13 @@ export const auth = initAuth({
     sendMagicLink: async ({ email, token, url }) =>
       sendMagicLinkEmail({ to: email, token, url }),
   },
+  // emailAndPassword: {
+  //   enabled: true,
+  //   password: {
+  //     hash: async (password) => await bcrypt.hash(password, 10),
+  //     verify: async ({ hash, password }) => await bcrypt.compare(password, hash),
+  //   },
+  // },
   // discordClientId: env.AUTH_DISCORD_ID,
   // discordClientSecret: env.AUTH_DISCORD_SECRET,
 });
