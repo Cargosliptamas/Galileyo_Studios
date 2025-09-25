@@ -15,9 +15,11 @@ export const PushNotificationContext = createContext<{
   subscribeToPush: () => Promise<void>;
   unsubscribeFromPush: () => Promise<void>;
   sendPushNotification: (message: string) => Promise<void>;
+  isSubscriptionLoading: boolean;
 }>({
   isSupported: false,
   subscription: null,
+  isSubscriptionLoading: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   subscribeToPush: async () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -61,6 +63,7 @@ export function PushNotificationProvider({
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null,
   );
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   async function registerServiceWorker() {
     const registration = await navigator.serviceWorker.register("/sw.js", {
@@ -72,27 +75,44 @@ export function PushNotificationProvider({
   }
 
   async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready;
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-      ),
-    });
-    setSubscription(sub);
+    setIsSubscribing(true);
+    
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        ),
+      });
+      setSubscription(sub);
 
-    const serializedSub = JSON.parse(
-      JSON.stringify(sub),
-    ) as unknown as PushSubscription;
-    await subscribeUser(serializedSub);
+      const serializedSub = JSON.parse(
+        JSON.stringify(sub),
+      ) as unknown as PushSubscription;
+      await subscribeUser(serializedSub);
 
-    await sendNotification("Thank you for subscribing to push notifications!");
+      await sendNotification("Thank you for subscribing to push notifications!");
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsSubscribing(false);
+    }
   }
 
   async function unsubscribeFromPush() {
-    await subscription?.unsubscribe();
-    setSubscription(null);
-    await unsubscribeUser();
+    setIsSubscribing(true);
+    
+    try {
+      await subscription?.unsubscribe();
+      setSubscription(null);
+      await unsubscribeUser();
+      setIsSubscribing(false);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsSubscribing(false);
+    }
   }
 
   async function sendPushNotification(message: string) {
@@ -113,6 +133,7 @@ export function PushNotificationProvider({
       value={{
         isSupported,
         subscription,
+        isSubscriptionLoading: isSubscribing,
         subscribeToPush,
         unsubscribeFromPush,
         sendPushNotification,

@@ -1,13 +1,21 @@
 "use client"
 
 import type { ComponentProps } from "react";
-import { useId, useState } from "react"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { useId, useState } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-import { Input } from "@galileyo/ui/input"
-import { Label } from "@galileyo/ui/label"
+import { Input } from "@galileyo/ui/input";
+import { Label } from "@galileyo/ui/label";
 
-export function PasswordInput({ ...props }: Omit<ComponentProps<"input">, "id" | "type" | "placeholder">) {
+export type PasswordInputProps = Omit<ComponentProps<"input">, "id" | "type"> & {
+  label?: string;
+}
+
+export function PasswordInput({
+  label,
+  placeholder,
+  ...props
+}: PasswordInputProps) {
   const id = useId()
   const [isVisible, setIsVisible] = useState<boolean>(false)
 
@@ -15,12 +23,12 @@ export function PasswordInput({ ...props }: Omit<ComponentProps<"input">, "id" |
 
   return (
     <div className="*:not-first:mt-2">
-      <Label htmlFor={id}>Password</Label>
+      <Label htmlFor={id}>{label || "Password"}</Label>
       <div className="relative">
         <Input
           id={id}
           className="pe-9"
-          placeholder="Password"
+          placeholder={placeholder || "Password"}
           type={isVisible ? "text" : "password"}
           {...props}
         />

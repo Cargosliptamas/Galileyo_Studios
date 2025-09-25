@@ -52,3 +52,24 @@ export const ProfileGeneralSchema = z.object({
   about: z.string(),
   zip: z.string(),
 });
+
+export const ChangePasswordSchema = z.object({
+  currentPassword: z.string().min(5, { message: "Current password is required" }),
+  newPassword: passwordSchema,
+  passwordConfirmation: z
+    .string()
+    .min(1, { message: "Password confirmation is required" }),
+}).refine((data) => data.newPassword === data.passwordConfirmation, {
+  message: "Passwords do not match",
+  path: ["passwordConfirmation"],
+});
+
+export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+
+export const PrivacySchema = z.object({
+  memberDirectory: z.enum(["Public", "Friend"]),
+  satellitePhoneNumber: z.enum(["Public", "Friend"]),
+  location: z.enum(["Public", "Friend"]),
+});
+
+export type PrivacyInput = z.infer<typeof PrivacySchema>;

@@ -3,6 +3,8 @@
 import webpush from "web-push";
 
 import { env } from "~/env";
+import { getSession } from "~/auth/server";
+import { VisibleError } from "~/lib/visible-error";
 
 webpush.setVapidDetails(
   "mailto:info@galileyo.com",
@@ -37,7 +39,7 @@ export async function sendNotification(message: string) {
     await webpush.sendNotification(
       subscription as unknown as webpush.PushSubscription,
       JSON.stringify({
-        title: "Test Notification",
+        title: "Galileyo",
         body: message,
         icon: "/galileyo_new_logo.png",
       }),
@@ -70,4 +72,80 @@ export async function sendContactUsEmail(
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return { success: true, error: null };
+}
+
+export async function updateProfilePicture(form: FormData) {
+  const session = await getSession();
+  
+  if (!session) {
+    throw new Error("No session found");
+  }
+  
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customer/update-avatar`,
+    {
+      method: "POST",
+      headers: {
+        // "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${session.session.token}`,
+      },
+      body: form,
+    },
+  );
+
+  const result = (await request.json()) as {
+    status: "success" | "error";
+    data: {
+      id: string;
+      photo: string;
+    };
+    error: {
+      message: string;
+      code: string | number | null;
+    };
+  };
+
+  if (result.status !== "success") {
+    throw new VisibleError(result.error.message);
+  }
+
+  return result.data;
+}
+
+export async function updateHeaderPicture(form: FormData) {
+  const session = await getSession();
+  
+  if (!session) {
+    throw new Error("No session found");
+  }
+  
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/customer/update-header`,
+    {
+      method: "POST",
+      headers: {
+        // "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${session.session.token}`,
+      },
+      body: form,
+    },
+  );
+
+  const result = (await request.json()) as {
+    status: "success" | "error";
+    data: {
+      id: string;
+      header: string;
+    };
+    error: {
+      message: string;
+      code: string | number | null;
+    };
+  };
+
+  if (result.status !== "success") {
+    throw new VisibleError(result.error.message);
+  }
+
+  return result.data;
 }

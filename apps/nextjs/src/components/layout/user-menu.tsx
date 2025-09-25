@@ -28,6 +28,7 @@ import type { User as AuthUser } from "~/auth/client";
 import type { Profile } from "~/hooks/use-profiles";
 import { authClient } from "~/auth/client";
 import { useProfiles } from "~/hooks/use-profiles";
+import { getProfilePicture } from "~/lib/user";
 
 interface UserMenuProps {
   user: AuthUser;
@@ -43,10 +44,12 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
 
   // Get the currently active profile or fall back to main user
   const getCurrentProfile = () => {
+    const profilePicture = getProfilePicture(user);
+
     if (profiles.length === 0) {
       return {
         name: user.name,
-        avatar: user.image,
+        avatar: profilePicture,
         role: "user" as const,
         isMainProfile: true,
       };
@@ -65,7 +68,7 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
     // If no active profile, return main user info
     return {
       name: user.name,
-      avatar: user.image,
+      avatar: profilePicture,
       role: "user" as const,
       isMainProfile: true,
     };

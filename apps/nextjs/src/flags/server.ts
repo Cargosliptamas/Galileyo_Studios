@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Attributes } from '@flags-sdk/growthbook';
 import { growthbookAdapter } from '@flags-sdk/growthbook';
 import type { Identify } from 'flags';

@@ -37,6 +37,7 @@ import { toast } from "@galileyo/ui/toast";
 import { authClient } from "~/auth/client";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
+import { getProfilePicture } from "~/lib/user";
 
 function CommentComponent({
   comment,
@@ -70,6 +71,10 @@ function CommentComponent({
   });
 
   const { data: session } = authClient.useSession();
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <div
@@ -165,7 +170,7 @@ function CommentComponent({
           {replyingTo === comment.id && (
             <div className="mt-3 flex gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={session?.user.image ?? ""} />
+                <AvatarImage src={getProfilePicture(session?.user) ?? ""} />
                 <AvatarFallback className="bg-slate-700 text-white">
                   {session?.user.name.charAt(0)}
                 </AvatarFallback>
@@ -366,6 +371,10 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
 
   // }
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[80vh] max-w-2xl border-slate-200 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
@@ -415,7 +424,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         {/* Comment Input */}
         <div className="mb-4 flex gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={session?.user.image ?? ""} />
+            <AvatarImage src={getProfilePicture(session?.user) ?? ""} />
             <AvatarFallback className="bg-slate-700 text-white">
               {session?.user.name.charAt(0)}
             </AvatarFallback>
