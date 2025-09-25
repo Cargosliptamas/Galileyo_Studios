@@ -14,6 +14,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@flags-sdk/growthbook": "^0.1.0",
     "@galileyo/api": "workspace:*",
     "@galileyo/auth": "workspace:*",
     "@galileyo/db": "workspace:*",
@@ -31,6 +32,7 @@
     "@trpc/tanstack-react-query": "catalog:",
     "@vercel/speed-insights": "^1.2.0",
     "bcrypt": "^6.0.0",
+    "flags": "^4.0.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.525.0",
     "motion": "^12.23.9",

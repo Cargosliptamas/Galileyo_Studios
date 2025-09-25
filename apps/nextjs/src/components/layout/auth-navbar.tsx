@@ -24,7 +24,7 @@ import CreatePostModal from "../feed/create-post-modal";
 import { navigationLinks } from "./navigation-items";
 import { UserMenu } from "./user-menu";
 
-export default function AuthNavbar({ user }: { user: User }) {
+export default function AuthNavbar({ user, showMap }: { user: User, showMap: boolean }) {
   const id = useId();
 
   const {
@@ -126,9 +126,9 @@ export default function AuthNavbar({ user }: { user: User }) {
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
           {/* <NotificationMenu /> */}
-          <Link href="/alerts-map" className="icon-button">
+          {showMap && <Link href="/alerts-map" className="icon-button">
             <MapIcon className="h-5 w-5" />
-          </Link>
+          </Link>}
           <ThemeToggle />
           <Button
             size="sm"

@@ -24,6 +24,8 @@ export const env = createEnv({
     EMAIL_PASSWORD: z.string().nullish().default(null),
     EMAIL_FROM: z.string().default("no-reply@galileyo.com"),
     VAPID_PRIVATE_KEY: z.string().default(""),
+    GROWTHBOOK_CLIENT_KEY: z.string().optional(),
+    GROWTHBOOK_API_HOST: z.string().optional(),
   },
 
   /**
