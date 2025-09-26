@@ -4,13 +4,14 @@ import type React from "react"
 import {
   useCallback,
   useRef,
-  useState,
-  type ChangeEvent,
-  type DragEvent,
-  type InputHTMLAttributes,
+  useState
+  
+  
+  
 } from "react"
+import type {ChangeEvent, DragEvent, InputHTMLAttributes} from "react";
 
-export type FileMetadata = {
+export interface FileMetadata {
   name: string
   size: number
   type: string
@@ -18,13 +19,13 @@ export type FileMetadata = {
   id: string
 }
 
-export type FileWithPreview = {
+export interface FileWithPreview {
   file: File | FileMetadata
   id: string
   preview?: string
 }
 
-export type FileUploadOptions = {
+export interface FileUploadOptions {
   maxFiles?: number // Only used when multiple is true, defaults to Infinity
   maxSize?: number // in bytes
   accept?: string
@@ -34,13 +35,13 @@ export type FileUploadOptions = {
   onFilesAdded?: (addedFiles: FileWithPreview[]) => void // Callback when new files are added
 }
 
-export type FileUploadState = {
+export interface FileUploadState {
   files: FileWithPreview[]
   isDragging: boolean
   errors: string[]
 }
 
-export type FileUploadActions = {
+export interface FileUploadActions {
   addFiles: (files: FileList | File[]) => void
   removeFile: (id: string) => void
   clearFiles: () => void
@@ -168,7 +169,7 @@ export const useFileUpload = (
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
-      if (!newFiles || newFiles.length === 0) return
+      if (newFiles.length === 0) return
 
       const newFilesArray = Array.from(newFiles)
       const errors: string[] = []
@@ -278,8 +279,7 @@ export const useFileUpload = (
       setState((prev) => {
         const fileToRemove = prev.files.find((file) => file.id === id)
         if (
-          fileToRemove &&
-          fileToRemove.preview &&
+          fileToRemove?.preview &&
           fileToRemove.file instanceof File &&
           fileToRemove.file.type.startsWith("image/")
         ) {
@@ -339,11 +339,13 @@ export const useFileUpload = (
         return
       }
 
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (e.dataTransfer.files.length > 0) {
         // In single file mode, only use the first file
         if (!multiple) {
-          const file = e.dataTransfer.files[0] as File;
-          addFiles([file])
+          const file = e.dataTransfer.files[0];
+          if (file) {
+            addFiles([file])
+          }
         } else {
           addFiles(e.dataTransfer.files)
         }
@@ -373,8 +375,8 @@ export const useFileUpload = (
         ...props,
         type: "file" as const,
         onChange: handleFileChange,
-        accept: props.accept || accept,
-        multiple: props.multiple !== undefined ? props.multiple : multiple,
+        accept: props.accept ?? accept,
+        multiple: props.multiple ?? multiple,
         ref: inputRef,
       }
     },

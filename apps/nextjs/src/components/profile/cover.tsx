@@ -17,13 +17,13 @@ import { useFileUpload } from "~/hooks/use-file-upload";
 import { updateHeaderPicture } from "~/app/actions";
 import { isVisibleError } from "~/lib/visible-error";
 
-type Area = { x: number; y: number; width: number; height: number }
+interface Area { x: number; y: number; width: number; height: number }
 
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener("load", () => resolve(image))
-    image.addEventListener("error", (error) => reject(error))
+    image.addEventListener("error", (error) => reject(new Error(error.message)))
     image.setAttribute("crossOrigin", "anonymous")
     image.src = url
   })
@@ -98,7 +98,7 @@ export function Cover() {
     },
   ] = useFileUpload({ accept: "image/*" });
 
-  const previewUrl = files[0]?.preview || null
+  const previewUrl = files[0]?.preview ?? null
   const fileId = files[0]?.id
 
   const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null)
@@ -151,7 +151,7 @@ export function Cover() {
   useEffect(() => {
     const currentFinalUrl = finalImageUrl
     return () => {
-      if (currentFinalUrl && currentFinalUrl.startsWith("blob:")) {
+      if (currentFinalUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(currentFinalUrl)
       }
     }

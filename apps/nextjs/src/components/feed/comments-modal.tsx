@@ -170,9 +170,9 @@ function CommentComponent({
           {replyingTo === comment.id && (
             <div className="mt-3 flex gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={getProfilePicture(session?.user) ?? ""} />
+                <AvatarImage src={getProfilePicture(session.user) ?? ""} />
                 <AvatarFallback className="bg-slate-700 text-white">
-                  {session?.user.name.charAt(0)}
+                  {session.user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -424,9 +424,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         {/* Comment Input */}
         <div className="mb-4 flex gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={getProfilePicture(session?.user) ?? ""} />
+            <AvatarImage src={getProfilePicture(session.user) ?? ""} />
             <AvatarFallback className="bg-slate-700 text-white">
-              {session?.user.name.charAt(0)}
+              {session.user.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">

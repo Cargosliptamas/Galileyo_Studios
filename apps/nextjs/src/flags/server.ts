@@ -3,9 +3,11 @@ import "server-only";
 import type { Attributes } from '@flags-sdk/growthbook';
 import { growthbookAdapter } from '@flags-sdk/growthbook';
 import type { Identify } from 'flags';
-import { dedupe, flag as flagConstruct, Flag } from 'flags/next';
+import type { Flag } from 'flags/next';
+import { dedupe, flag as flagConstruct } from 'flags/next';
 import { getSession } from '~/auth/server';
-import { flagDefaults, FlagTypes, flags as availableFlags } from './flags';
+import type { FlagTypes} from './flags';
+import { flagDefaults, flags as availableFlags } from './flags';
 
 const identify = dedupe(async () => {
   const user = await getSession();

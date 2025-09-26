@@ -8,5 +8,5 @@ export class VisibleError extends Error {
 }
 
 export function isVisibleError(error: unknown): error is VisibleError {
-  return (error as VisibleError)?.name === "VisibleError";
+  return typeof error === "object" && error !== null && "name" in error && error.name === "VisibleError";
 }

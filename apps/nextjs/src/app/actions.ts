@@ -82,7 +82,7 @@ export async function updateProfilePicture(form: FormData) {
   }
   
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/customer/update-avatar`,
+    `${env.NEXT_PUBLIC_API_URL}/customer/update-avatar`,
     {
       method: "POST",
       headers: {
@@ -120,7 +120,7 @@ export async function updateHeaderPicture(form: FormData) {
   }
   
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/customer/update-header`,
+    `${env.NEXT_PUBLIC_API_URL}/customer/update-header`,
     {
       method: "POST",
       headers: {

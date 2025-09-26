@@ -62,9 +62,11 @@ export function UserAvatar({
       </NavigationComponent>
       <div className="flex-1">
         <div className="mb-1 flex items-center gap-2">
-          <h3 className="font-semibold text-slate-900 dark:text-white">
-            {name}
-          </h3>
+          <NavigationComponent href={href}>
+            <h3 className="font-semibold text-slate-900 dark:text-white">
+              {name}
+            </h3>
+          </NavigationComponent>
           {isInfluencer && (
             <span className="rounded bg-purple-500/20 px-2 py-0.5 text-xs font-medium text-purple-400">
               Influencer

@@ -23,12 +23,12 @@ export function PasswordInput({
 
   return (
     <div className="*:not-first:mt-2">
-      <Label htmlFor={id}>{label || "Password"}</Label>
+      <Label htmlFor={id}>{label ?? "Password"}</Label>
       <div className="relative">
         <Input
           id={id}
           className="pe-9"
-          placeholder={placeholder || "Password"}
+          placeholder={placeholder ?? "Password"}
           type={isVisible ? "text" : "password"}
           {...props}
         />

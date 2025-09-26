@@ -94,6 +94,7 @@ export function PushNotificationProvider({
 
       await sendNotification("Thank you for subscribing to push notifications!");
     } catch (error) {
+      console.error("Error subscribing to push notifications:", error);
       throw error;
     } finally {
       setIsSubscribing(false);
@@ -109,6 +110,7 @@ export function PushNotificationProvider({
       await unsubscribeUser();
       setIsSubscribing(false);
     } catch (error) {
+      console.error("Error unsubscribing from push notifications:", error);
       throw error;
     } finally {
       setIsSubscribing(false);

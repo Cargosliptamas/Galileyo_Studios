@@ -7,26 +7,17 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import {
-  AlertTriangle,
   Battery,
   Bell,
-  Camera,
   Clock,
   Download,
-  Eye,
-  EyeOff,
-  // Calendar,
-  Globe,
   Key,
   Laptop,
   Loader2,
   Lock,
-  Mail,
   MapPin,
   Monitor,
-  // Signal,
   MoreHorizontal,
-  Phone,
   Save,
   Shield,
   Smartphone,
@@ -38,8 +29,6 @@ import {
   Wifi,
   X,
   ArrowLeftIcon,
-  CircleUserRoundIcon,
-  XIcon,
   ZoomInIcon,
   ZoomOutIcon,
   Plus,
@@ -106,14 +95,14 @@ import { PasswordInput } from "../ui/password-input";
 import { ScrollArea, ScrollBar } from "@galileyo/ui";
 
 // Define type for pixel crop area
-type Area = { x: number; y: number; width: number; height: number }
+interface Area { x: number; y: number; width: number; height: number }
 
 // Helper function to create a cropped image blob
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener("load", () => resolve(image))
-    image.addEventListener("error", (error) => reject(error))
+    image.addEventListener("error", (error) => reject(new Error(error.message)))
     image.setAttribute("crossOrigin", "anonymous") // Needed for canvas Tainted check
     image.src = url
   })
@@ -285,21 +274,21 @@ export function Profile() {
   });
 
   // Notification Settings State
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    emergencyAlerts: true,
-    networkUpdates: true,
-    securityAlerts: true,
-    marketingEmails: false,
-    weeklyDigest: true,
-    soundEnabled: true,
-    vibrationEnabled: true,
-    quietHours: {
-      enabled: true,
-      start: "22:00",
-      end: "07:00",
-    },
-  });
+  // const [notificationSettings, setNotificationSettings] = useState({
+  //   emailNotifications: true,
+  //   emergencyAlerts: true,
+  //   networkUpdates: true,
+  //   securityAlerts: true,
+  //   marketingEmails: false,
+  //   weeklyDigest: true,
+  //   soundEnabled: true,
+  //   vibrationEnabled: true,
+  //   quietHours: {
+  //     enabled: true,
+  //     start: "22:00",
+  //     end: "07:00",
+  //   },
+  // });
 
   const privacyForm = useForm({
     schema: PrivacySchema,
@@ -412,7 +401,7 @@ export function Profile() {
     return bars;
   };
 
-  const previewUrl = files[0]?.preview || null
+  const previewUrl = files[0]?.preview ?? null
   const fileId = files[0]?.id
 
   const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null)
@@ -496,7 +485,7 @@ export function Profile() {
 
     // Cleanup function
     return () => {
-      if (currentFinalUrl && currentFinalUrl.startsWith("blob:")) {
+      if (currentFinalUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(currentFinalUrl)
       }
     }

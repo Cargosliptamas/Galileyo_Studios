@@ -97,8 +97,6 @@ export const commentRouter = {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 
-      console.log(result.data.list);
-
       return result.data;
     }),
   getRepliesForComment: protectedProcedure
