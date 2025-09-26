@@ -30,9 +30,12 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
+    "@anolilab/semantic-release-pnpm": "^1.1.12",
     "@galileyo/prettier-config": "workspace:*",
+    "@intuit/semantic-release-slack": "^1.0.11",
     "@turbo/gen": "^2.5.4",
     "prettier": "catalog:",
+    "semantic-release": "^24.2.9",
     "turbo": "^2.5.4",
     "typescript": "catalog:"
   },
