@@ -2,8 +2,8 @@
 
 import webpush from "web-push";
 
-import { env } from "~/env";
 import { getSession } from "~/auth/server";
+import { env } from "~/env";
 import { VisibleError } from "~/lib/visible-error";
 
 webpush.setVapidDetails(
@@ -76,11 +76,11 @@ export async function sendContactUsEmail(
 
 export async function updateProfilePicture(form: FormData) {
   const session = await getSession();
-  
+
   if (!session) {
     throw new Error("No session found");
   }
-  
+
   const request = await fetch(
     `${env.NEXT_PUBLIC_API_URL}/customer/update-avatar`,
     {
@@ -114,11 +114,11 @@ export async function updateProfilePicture(form: FormData) {
 
 export async function updateHeaderPicture(form: FormData) {
   const session = await getSession();
-  
+
   if (!session) {
     throw new Error("No session found");
   }
-  
+
   const request = await fetch(
     `${env.NEXT_PUBLIC_API_URL}/customer/update-header`,
     {

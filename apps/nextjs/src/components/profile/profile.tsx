@@ -7,6 +7,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import {
+  ArrowLeftIcon,
   Battery,
   Bell,
   Clock,
@@ -18,6 +19,7 @@ import {
   MapPin,
   Monitor,
   MoreHorizontal,
+  Plus,
   Save,
   Shield,
   Smartphone,
@@ -28,23 +30,19 @@ import {
   UserRoundIcon,
   Wifi,
   X,
-  ArrowLeftIcon,
   ZoomInIcon,
   ZoomOutIcon,
-  Plus,
 } from "lucide-react";
 
-import { ProfileGeneralSchema, ChangePasswordSchema, PrivacySchema } from "@galileyo/api/schemas";
+import {
+  ChangePasswordSchema,
+  PrivacySchema,
+  ProfileGeneralSchema,
+} from "@galileyo/api/schemas";
+import { ScrollArea, ScrollBar } from "@galileyo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@galileyo/ui/dropdown-menu";
 import {
   Cropper,
   CropperCropArea,
@@ -59,7 +57,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@galileyo/ui/dialog";
-import { Slider } from "@galileyo/ui/slider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@galileyo/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -69,14 +73,8 @@ import {
   FormMessage,
   useForm,
 } from "@galileyo/ui/form";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@galileyo/ui/table";
 import { Input } from "@galileyo/ui/input";
 import { Label } from "@galileyo/ui/label";
-import { Separator } from "@galileyo/ui/separator";
-import { LoadingSwitch, Switch } from "@galileyo/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
-import { Textarea } from "@galileyo/ui/textarea";
-import { toast } from "@galileyo/ui/toast";
 import {
   Select,
   SelectContent,
@@ -84,47 +82,67 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@galileyo/ui/select";
+import { Separator } from "@galileyo/ui/separator";
+import { Slider } from "@galileyo/ui/slider";
+import { LoadingSwitch, Switch } from "@galileyo/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@galileyo/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
+import { Textarea } from "@galileyo/ui/textarea";
+import { toast } from "@galileyo/ui/toast";
 
+import { updateProfilePicture } from "~/app/actions";
+import { useFileUpload } from "~/hooks/use-file-upload";
+import { isVisibleError } from "~/lib/visible-error";
 import { useTRPC } from "~/trpc/react";
 import { usePushNotification } from "../layout/push-notification-provider";
-import { useFileUpload } from "~/hooks/use-file-upload";
-import { updateProfilePicture } from "~/app/actions";
-import { isVisibleError } from "~/lib/visible-error";
-import Cover from "./cover";
 import { PasswordInput } from "../ui/password-input";
-import { ScrollArea, ScrollBar } from "@galileyo/ui";
+import Cover from "./cover";
 
 // Define type for pixel crop area
-interface Area { x: number; y: number; width: number; height: number }
+interface Area {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 // Helper function to create a cropped image blob
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
-    const image = new Image()
-    image.addEventListener("load", () => resolve(image))
-    image.addEventListener("error", (error) => reject(new Error(error.message)))
-    image.setAttribute("crossOrigin", "anonymous") // Needed for canvas Tainted check
-    image.src = url
-  })
+    const image = new Image();
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", (error) =>
+      reject(new Error(error.message)),
+    );
+    image.setAttribute("crossOrigin", "anonymous"); // Needed for canvas Tainted check
+    image.src = url;
+  });
 
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
   outputWidth: number = pixelCrop.width, // Optional: specify output size
-  outputHeight: number = pixelCrop.height
+  outputHeight: number = pixelCrop.height,
 ): Promise<Blob | null> {
   try {
-    const image = await createImage(imageSrc)
-    const canvas = document.createElement("canvas")
-    const ctx = canvas.getContext("2d")
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
     if (!ctx) {
-      return null
+      return null;
     }
 
     // Set canvas size to desired output size
-    canvas.width = outputWidth
-    canvas.height = outputHeight
+    canvas.width = outputWidth;
+    canvas.height = outputHeight;
 
     // Draw the cropped image onto the canvas
     ctx.drawImage(
@@ -136,20 +154,20 @@ async function getCroppedImg(
       0,
       0,
       outputWidth, // Draw onto the output size
-      outputHeight
-    )
+      outputHeight,
+    );
 
     // Convert canvas to blob
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
-        resolve(blob)
-      }, "image/jpeg") // Specify format and quality if needed
-    })
+        resolve(blob);
+      }, "image/jpeg"); // Specify format and quality if needed
+    });
   } catch (error) {
-    console.error("Error in getCroppedImg:", error)
-    return null
+    console.error("Error in getCroppedImg:", error);
+    return null;
   }
-};
+}
 
 interface Device {
   id: number;
@@ -166,8 +184,12 @@ interface Device {
 
 export function Profile() {
   const trpc = useTRPC();
-  const { subscription, subscribeToPush, unsubscribeFromPush, isSubscriptionLoading } =
-    usePushNotification();
+  const {
+    subscription,
+    subscribeToPush,
+    unsubscribeFromPush,
+    isSubscriptionLoading,
+  } = usePushNotification();
 
   const { data: currentUser } = useSuspenseQuery(
     trpc.profile.getProfile.queryOptions(),
@@ -293,8 +315,10 @@ export function Profile() {
   const privacyForm = useForm({
     schema: PrivacySchema,
     defaultValues: {
-      memberDirectory: currentUser.general_visibility === 0 ? "Public" : "Friend",
-      satellitePhoneNumber: currentUser.phone_visibility === 0 ? "Public" : "Friend",
+      memberDirectory:
+        currentUser.general_visibility === 0 ? "Public" : "Friend",
+      satellitePhoneNumber:
+        currentUser.phone_visibility === 0 ? "Public" : "Friend",
       location: currentUser.address_visibility === 0 ? "Public" : "Friend",
     },
   });
@@ -401,25 +425,25 @@ export function Profile() {
     return bars;
   };
 
-  const previewUrl = files[0]?.preview ?? null
-  const fileId = files[0]?.id
+  const previewUrl = files[0]?.preview ?? null;
+  const fileId = files[0]?.id;
 
-  const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Ref to track the previous file ID to detect new uploads
-  const previousFileIdRef = useRef<string | undefined | null>(null)
+  const previousFileIdRef = useRef<string | undefined | null>(null);
 
   // State to store the desired crop area in pixels
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   // State for zoom level
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(1);
 
   // Callback for Cropper to provide crop data - Wrap with useCallback
   const handleCropChange = useCallback((pixels: Area | null) => {
-    setCroppedAreaPixels(pixels)
-  }, [])
+    setCroppedAreaPixels(pixels);
+  }, []);
 
   const handleApply = async () => {
     // Check if we have the necessary data
@@ -428,34 +452,37 @@ export function Profile() {
         previewUrl,
         fileId,
         croppedAreaPixels,
-      })
+      });
       // Remove file if apply is clicked without crop data?
       if (fileId) {
-        removeFile(fileId)
-        setCroppedAreaPixels(null)
+        removeFile(fileId);
+        setCroppedAreaPixels(null);
       }
-      return
+      return;
     }
 
     try {
       // 1. Get the cropped image blob using the helper
-      const croppedBlob = await getCroppedImg(previewUrl, croppedAreaPixels)
+      const croppedBlob = await getCroppedImg(previewUrl, croppedAreaPixels);
 
       if (!croppedBlob) {
-        throw new Error("Failed to generate cropped image blob.")
+        throw new Error("Failed to generate cropped image blob.");
       }
 
       // 2. Create a NEW object URL from the cropped blob
-      const newFinalUrl = URL.createObjectURL(croppedBlob)
+      const newFinalUrl = URL.createObjectURL(croppedBlob);
 
       // 3. Revoke the OLD finalImageUrl if it exists
       if (finalImageUrl) {
-        URL.revokeObjectURL(finalImageUrl)
+        URL.revokeObjectURL(finalImageUrl);
       }
 
       setIsProfilePicUploading(true);
       const formData = new FormData();
-      formData.append("image_file", new File([croppedBlob], "profile-picture.png"));
+      formData.append(
+        "image_file",
+        new File([croppedBlob], "profile-picture.png"),
+      );
       await updateProfilePicture(formData);
 
       setFinalImageUrl(newFinalUrl);
@@ -465,7 +492,7 @@ export function Profile() {
 
       await queryClient.invalidateQueries(trpc.profile.pathFilter());
     } catch (error) {
-      console.error("Error during apply:", error)
+      console.error("Error during apply:", error);
       // Close the dialog even if cropping fails
       setIsDialogOpen(false);
 
@@ -478,7 +505,7 @@ export function Profile() {
     } finally {
       setIsProfilePicUploading(false);
     }
-  }
+  };
 
   useEffect(() => {
     const currentFinalUrl = finalImageUrl;
@@ -486,22 +513,22 @@ export function Profile() {
     // Cleanup function
     return () => {
       if (currentFinalUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(currentFinalUrl)
+        URL.revokeObjectURL(currentFinalUrl);
       }
-    }
-  }, [finalImageUrl])
+    };
+  }, [finalImageUrl]);
 
   // Effect to open dialog when a *new* file is ready
   useEffect(() => {
     // Check if fileId exists and is different from the previous one
     if (fileId && fileId !== previousFileIdRef.current) {
-      setIsDialogOpen(true) // Open dialog for the new file
-      setCroppedAreaPixels(null) // Reset crop area for the new file
-      setZoom(1) // Reset zoom for the new file
+      setIsDialogOpen(true); // Open dialog for the new file
+      setCroppedAreaPixels(null); // Reset crop area for the new file
+      setZoom(1); // Reset zoom for the new file
     }
     // Update the ref to the current fileId for the next render
-    previousFileIdRef.current = fileId
-  }, [fileId]) // Depend only on fileId
+    previousFileIdRef.current = fileId;
+  }, [fileId]); // Depend only on fileId
 
   return (
     <div className="min-h-screen">
@@ -526,7 +553,7 @@ export function Profile() {
         {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <ScrollArea>
-            <TabsList className="mb-8 w-full lg:grid lg:grid-cols-4 rounded-xl border border-slate-200 bg-white/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
+            <TabsList className="mb-8 w-full rounded-xl border border-slate-200 bg-white/50 p-1 dark:border-slate-700 dark:bg-slate-800/50 lg:grid lg:grid-cols-4">
               <TabsTrigger
                 value="general"
                 className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
@@ -594,16 +621,21 @@ export function Profile() {
                     </p>
                     <div className="flex gap-2">
                       <div
-                        className="data-[dragging=true]:bg-accent/50 relative transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none"
+                        className="has-disabled:pointer-events-none has-disabled:opacity-50 relative outline-none transition-colors focus-visible:ring-[3px] has-[img]:border-none data-[dragging=true]:bg-accent/50"
                         onClick={openFileDialog}
                         onDragEnter={handleDragEnter}
                         onDragLeave={handleDragLeave}
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
                         data-dragging={isDragging || undefined}
-                        aria-label={finalImageUrl ? "Change image" : "Upload image"}
+                        aria-label={
+                          finalImageUrl ? "Change image" : "Upload image"
+                        }
                       >
-                        <Button variant="outline" disabled={isProfilePicUploading}>
+                        <Button
+                          variant="outline"
+                          disabled={isProfilePicUploading}
+                        >
                           <Upload className="mr-2 inline h-4 w-4" />
                           Upload New
                         </Button>
@@ -634,7 +666,7 @@ export function Profile() {
                 <Cover />
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogContent className="gap-0 p-0 sm:max-w-140 *:[button]:hidden">
+                  <DialogContent className="sm:max-w-140 *:[button]:hidden gap-0 p-0">
                     <DialogDescription className="sr-only">
                       Crop image dialog
                     </DialogDescription>
@@ -665,7 +697,7 @@ export function Profile() {
                     </DialogHeader>
                     {previewUrl && (
                       <Cropper
-                        className="h-96 sm:h-120"
+                        className="sm:h-120 h-96"
                         image={previewUrl}
                         zoom={zoom}
                         onCropChange={handleCropChange}
@@ -818,7 +850,12 @@ export function Profile() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <PasswordInput {...field} autoComplete="current-password" placeholder="Current Password" label="Current Password" />
+                            <PasswordInput
+                              {...field}
+                              autoComplete="current-password"
+                              placeholder="Current Password"
+                              label="Current Password"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -833,7 +870,12 @@ export function Profile() {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <PasswordInput {...field} autoComplete="new-password" placeholder="New Password" label="New Password" />
+                                <PasswordInput
+                                  {...field}
+                                  autoComplete="new-password"
+                                  placeholder="New Password"
+                                  label="New Password"
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -847,7 +889,12 @@ export function Profile() {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <PasswordInput {...field} autoComplete="new-password" placeholder="Confirm New Password" label="Confirm New Password" />
+                                <PasswordInput
+                                  {...field}
+                                  autoComplete="new-password"
+                                  placeholder="Confirm New Password"
+                                  label="Confirm New Password"
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -862,8 +909,14 @@ export function Profile() {
                         type="submit"
                         disabled={changePassword.isPending}
                       >
-                        {changePassword.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Key className="h-4 w-4" />}
-                        {changePassword.isPending ? "Updating..." : "Update Password"}
+                        {changePassword.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Key className="h-4 w-4" />
+                        )}
+                        {changePassword.isPending
+                          ? "Updating..."
+                          : "Update Password"}
                       </Button>
                     </div>
                   </form>
@@ -973,9 +1026,14 @@ export function Profile() {
                         name="memberDirectory"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Who can see you in the member directory?</FormLabel>
+                            <FormLabel>
+                              Who can see you in the member directory?
+                            </FormLabel>
                             <FormControl>
-                              <Select value={field.value} onValueChange={field.onChange}>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <SelectTrigger>
                                   <SelectValue />
                                 </SelectTrigger>
@@ -995,9 +1053,14 @@ export function Profile() {
                         name="satellitePhoneNumber"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Who can see your satellite phone number?</FormLabel>
+                            <FormLabel>
+                              Who can see your satellite phone number?
+                            </FormLabel>
                             <FormControl>
-                              <Select value={field.value} onValueChange={field.onChange}>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <SelectTrigger>
                                   <SelectValue />
                                 </SelectTrigger>
@@ -1017,9 +1080,14 @@ export function Profile() {
                         name="location"
                         render={({ field }) => (
                           <FormItem className="md:col-span-2">
-                            <FormLabel>Who can see your state, country?</FormLabel>
+                            <FormLabel>
+                              Who can see your state, country?
+                            </FormLabel>
                             <FormControl>
-                              <Select value={field.value} onValueChange={field.onChange}>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <SelectTrigger>
                                   <SelectValue />
                                 </SelectTrigger>
@@ -1041,8 +1109,14 @@ export function Profile() {
                         className="flex items-center gap-2"
                         disabled={updatePrivacy.isPending}
                       >
-                        {updatePrivacy.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                        {updatePrivacy.isPending ? "Saving..." : "Save Privacy Settings"}
+                        {updatePrivacy.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        {updatePrivacy.isPending
+                          ? "Saving..."
+                          : "Save Privacy Settings"}
                       </Button>
                     </div>
                   </form>
@@ -1098,7 +1172,9 @@ export function Profile() {
                     <div className="relative inline-flex cursor-pointer items-center">
                       <LoadingSwitch
                         loading={isSubscriptionLoading}
-                        loadingComponent={<Loader2 className="h-4 w-4 animate-spin" />}
+                        loadingComponent={
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        }
                         checked={subscription ? true : false}
                         onCheckedChange={(checked) => {
                           if (checked) {

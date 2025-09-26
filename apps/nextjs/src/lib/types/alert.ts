@@ -1,25 +1,25 @@
-import { 
-  CloudRain, 
-  AlertTriangle, 
-  Shield, 
-  Lock, 
-  Wrench, 
-  Heart, 
-  Car, 
-  AlertCircle 
-} from 'lucide-react';
+import {
+  AlertCircle,
+  AlertTriangle,
+  Car,
+  CloudRain,
+  Heart,
+  Lock,
+  Shield,
+  Wrench,
+} from "lucide-react";
 
-export type AlertType = 
-  | 'weather'
-  | 'natural_disaster'
-  | 'cyber_attack'
-  | 'security_breach'
-  | 'infrastructure'
-  | 'health_emergency'
-  | 'traffic'
-  | 'other';
+export type AlertType =
+  | "weather"
+  | "natural_disaster"
+  | "cyber_attack"
+  | "security_breach"
+  | "infrastructure"
+  | "health_emergency"
+  | "traffic"
+  | "other";
 
-export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type AlertSeverity = "low" | "medium" | "high" | "critical";
 
 export interface Alert {
   id: string;
@@ -63,74 +63,75 @@ export interface AlertFilters {
 
 export const ALERT_TYPE_CONFIG = {
   weather: {
-    label: 'Weather',
-    color: '#3B82F6',
+    label: "Weather",
+    color: "#3B82F6",
     icon: CloudRain,
-    description: 'Weather-related alerts including storms, floods, and extreme conditions'
+    description:
+      "Weather-related alerts including storms, floods, and extreme conditions",
   },
   natural_disaster: {
-    label: 'Natural Disaster',
-    color: '#EF4444',
+    label: "Natural Disaster",
+    color: "#EF4444",
     icon: AlertTriangle,
-    description: 'Natural disasters like earthquakes, hurricanes, wildfires'
+    description: "Natural disasters like earthquakes, hurricanes, wildfires",
   },
   cyber_attack: {
-    label: 'Cyber Attack',
-    color: '#8B5CF6',
+    label: "Cyber Attack",
+    color: "#8B5CF6",
     icon: Shield,
-    description: 'Cybersecurity incidents and digital threats'
+    description: "Cybersecurity incidents and digital threats",
   },
   security_breach: {
-    label: 'Security Breach',
-    color: '#F59E0B',
+    label: "Security Breach",
+    color: "#F59E0B",
     icon: Lock,
-    description: 'Physical security incidents and breaches'
+    description: "Physical security incidents and breaches",
   },
   infrastructure: {
-    label: 'Infrastructure',
-    color: '#6B7280',
+    label: "Infrastructure",
+    color: "#6B7280",
     icon: Wrench,
-    description: 'Infrastructure failures and maintenance issues'
+    description: "Infrastructure failures and maintenance issues",
   },
   health_emergency: {
-    label: 'Health Emergency',
-    color: '#10B981',
+    label: "Health Emergency",
+    color: "#10B981",
     icon: Heart,
-    description: 'Public health emergencies and medical alerts'
+    description: "Public health emergencies and medical alerts",
   },
   traffic: {
-    label: 'Traffic',
-    color: '#F97316',
+    label: "Traffic",
+    color: "#F97316",
     icon: Car,
-    description: 'Traffic incidents and road closures'
+    description: "Traffic incidents and road closures",
   },
   other: {
-    label: 'Other',
-    color: '#64748B',
+    label: "Other",
+    color: "#64748B",
     icon: AlertCircle,
-    description: 'Other types of alerts and notifications'
-  }
+    description: "Other types of alerts and notifications",
+  },
 } as const;
 
 export const SEVERITY_CONFIG = {
   low: {
-    label: 'Low',
-    color: '#10B981',
-    priority: 1
+    label: "Low",
+    color: "#10B981",
+    priority: 1,
   },
   medium: {
-    label: 'Medium',
-    color: '#F59E0B',
-    priority: 2
+    label: "Medium",
+    color: "#F59E0B",
+    priority: 2,
   },
   high: {
-    label: 'High',
-    color: '#EF4444',
-    priority: 3
+    label: "High",
+    color: "#EF4444",
+    priority: 3,
   },
   critical: {
-    label: 'Critical',
-    color: '#DC2626',
-    priority: 4
-  }
+    label: "Critical",
+    color: "#DC2626",
+    priority: 4,
+  },
 } as const;

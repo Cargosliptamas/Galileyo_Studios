@@ -10,10 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
 import { Input } from "@galileyo/ui/input";
 import { Label } from "@galileyo/ui/label";
 import { toast } from "@galileyo/ui/toast";
+
 // import { Switch } from "@galileyo/ui/switch";
 
 import { authClient } from "~/auth/client";
 import { AppIcon } from "../app-icon";
+
 // import { PasswordInput } from "../ui/password-input";
 
 export function LoginForm({

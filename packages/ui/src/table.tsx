@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { cn } from "@galileyo/ui";
 
 const Table = React.forwardRef<

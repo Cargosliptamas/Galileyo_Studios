@@ -53,16 +53,20 @@ export const ProfileGeneralSchema = z.object({
   zip: z.string(),
 });
 
-export const ChangePasswordSchema = z.object({
-  currentPassword: z.string().min(5, { message: "Current password is required" }),
-  newPassword: passwordSchema,
-  passwordConfirmation: z
-    .string()
-    .min(1, { message: "Password confirmation is required" }),
-}).refine((data) => data.newPassword === data.passwordConfirmation, {
-  message: "Passwords do not match",
-  path: ["passwordConfirmation"],
-});
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(5, { message: "Current password is required" }),
+    newPassword: passwordSchema,
+    passwordConfirmation: z
+      .string()
+      .min(1, { message: "Password confirmation is required" }),
+  })
+  .refine((data) => data.newPassword === data.passwordConfirmation, {
+    message: "Passwords do not match",
+    path: ["passwordConfirmation"],
+  });
 
 export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
 

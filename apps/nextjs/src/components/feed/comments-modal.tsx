@@ -35,9 +35,9 @@ import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
 import { authClient } from "~/auth/client";
+import { getProfilePicture } from "~/lib/user";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
-import { getProfilePicture } from "~/lib/user";
 
 function CommentComponent({
   comment,

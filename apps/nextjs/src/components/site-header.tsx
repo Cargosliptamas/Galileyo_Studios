@@ -13,11 +13,7 @@ export function SiteHeader({
 }) {
   return (
     <>
-      {
-        user ?
-          <AuthNavbar user={user} showMap={showMap} /> :
-          <PublicNavbar />
-      }
+      {user ? <AuthNavbar user={user} showMap={showMap} /> : <PublicNavbar />}
     </>
   );
 }

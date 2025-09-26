@@ -76,7 +76,7 @@ export function PushNotificationProvider({
 
   async function subscribeToPush() {
     setIsSubscribing(true);
-    
+
     try {
       const registration = await navigator.serviceWorker.ready;
       const sub = await registration.pushManager.subscribe({
@@ -92,7 +92,9 @@ export function PushNotificationProvider({
       ) as unknown as PushSubscription;
       await subscribeUser(serializedSub);
 
-      await sendNotification("Thank you for subscribing to push notifications!");
+      await sendNotification(
+        "Thank you for subscribing to push notifications!",
+      );
     } catch (error) {
       console.error("Error subscribing to push notifications:", error);
       throw error;
@@ -103,7 +105,7 @@ export function PushNotificationProvider({
 
   async function unsubscribeFromPush() {
     setIsSubscribing(true);
-    
+
     try {
       await subscription?.unsubscribe();
       setSubscription(null);
