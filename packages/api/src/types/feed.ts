@@ -1,3 +1,5 @@
+import { z } from "zod/v4";
+
 export interface ReactionType {
   id: string;
   cnt: number;
@@ -24,6 +26,8 @@ export interface BaseFeedItem {
   // TODO: remove this
   is_liked: boolean | null;
   is_bookmarked: boolean | null;
+  is_subscribed: boolean | undefined;
+  is_owner: boolean | undefined;
 }
 
 export interface FollowerListItem extends BaseFeedItem {
@@ -137,3 +141,21 @@ export interface InfluencerFeedType {
   page_description: string | null;
   public_link: string;
 }
+
+export const GetLatestNewsParams = z.object({
+  limit: z.number().optional().default(10),
+  cursor: z.number().optional().default(1),
+  type: z.enum(["subscriptions", "discover"]),
+});
+
+export const GetBySubscriptionParams = z.object({
+  id: z.number(),
+  type: z.enum(["subscription", "followerList"]),
+  limit: z.number().optional().default(10),
+  cursor: z.number().optional().default(1),
+});
+
+export type GetLatestNewsParamTypes = z.infer<typeof GetLatestNewsParams>;
+export type GetBySubscriptionParamTypes = z.infer<
+  typeof GetBySubscriptionParams
+>;

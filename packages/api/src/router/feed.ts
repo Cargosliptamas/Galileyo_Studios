@@ -2,43 +2,22 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
-// import { desc, eq } from "@galileyo/db";
-// import { CreatePostSchema, Post } from "@galileyo/db/schema";
-
 import type {
   FeedItem,
   FinancialItemBackend,
   InfluencerFeedType,
   PrivateFeedType,
 } from "../types/feed";
-import {
-  protectedProcedure,
-  // publicProcedure
-} from "../trpc";
+import { mapFeedItem } from "../lib/feed";
+import { protectedProcedure, publicProcedure } from "../trpc";
+// import { desc, eq } from "@galileyo/db";
+// import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
-function mapFeedItem(item: FeedItem): FeedItem {
-  const itemMap = { ...item };
-
-  if (Array.isArray(item.reactions)) {
-    itemMap.reactions = item.reactions.map((reaction) => ({
-      id: String(reaction.id),
-      cnt: Number(reaction.cnt),
-      selected: reaction.selected,
-    }));
-  }
-
-  return itemMap as FeedItem;
-}
+import { GetBySubscriptionParams, GetLatestNewsParams } from "../types/feed";
 
 export const feedRouter = {
   getLatestNews: protectedProcedure
-    .input(
-      z.object({
-        limit: z.number().optional().default(10),
-        cursor: z.number().optional().default(1),
-        type: z.enum(["subscriptions", "discover"]),
-      }),
-    )
+    .input(GetLatestNewsParams)
     .query(async ({ ctx, input }) => {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/news/last`;
       if (input.type === "discover") {
@@ -80,18 +59,7 @@ export const feedRouter = {
         };
       }
 
-      const result = feedJson as {
-        status: "success" | "error";
-        data: {
-          more_than_id: number | null;
-          less_than_id: number | null;
-          is_test_count: number | null;
-          list: FeedItem[];
-          count: number;
-          page: number;
-          page_size: number;
-        };
-      };
+      const result = feedJson;
 
       if (result.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -311,4 +279,228 @@ export const feedRouter = {
 
     return responseJson.data.list;
   }),
+  getNewsBySubscriptionOrFollowerList: publicProcedure
+    .input(GetBySubscriptionParams)
+    .query(async ({ ctx, input }) => {
+      const config: {
+        url: string;
+        body: Record<string, number | string>;
+        headers: Record<string, string>;
+      } = {
+        url: ``,
+        body: {},
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      if (ctx.session?.session.token) {
+        config.headers.Authorization = `Bearer ${ctx.session.session.token}`;
+      }
+
+      switch (input.type) {
+        case "subscription":
+          config.url = `${process.env.NEXT_PUBLIC_API_URL}/default/news-by-subscription`;
+          config.body = {
+            id_subscription: input.id,
+          };
+          break;
+        case "followerList":
+          config.url = `${process.env.NEXT_PUBLIC_API_URL}/news/by-follower-list`;
+          config.body = {
+            id_follower_list: input.id,
+          };
+          break;
+      }
+
+      const response = await fetch(config.url, {
+        method: "POST",
+        headers: config.headers,
+        body: JSON.stringify({
+          ...config.body,
+          page: input.cursor,
+          page_size: input.limit,
+        }),
+      });
+
+      let responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: {
+          id_subscription: number | undefined;
+          id_follower_list: number | undefined;
+          is_public: boolean;
+          is_subscribe: boolean;
+          short_page_format: boolean;
+          page_description: string | null;
+          more_than_id: number | null;
+          less_than_id: number | null;
+          is_test_count: number | null;
+          list?: FeedItem[];
+          count: number;
+          page: number;
+          page_size: number;
+        };
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      responseJson = {
+        ...responseJson,
+        data: {
+          ...responseJson.data,
+          list: responseJson.data.list?.map(mapFeedItem) ?? [],
+        },
+      };
+
+      return responseJson.data;
+    }),
+  setSubscription: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        subscribed: z.boolean(),
+        zip: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/feed/set`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${ctx.session.session.token}`,
+          },
+          body: JSON.stringify({
+            id: input.id,
+            checked: input.subscribed,
+            zip: input.zip,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: {
+          id: number;
+          checked: boolean;
+        };
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return responseJson.data;
+    }),
+  reportPost: protectedProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        reason: z.string(),
+        additionalText: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { postId, reason, additionalText } = input;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/report`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_news: postId,
+            reason: reason,
+            additional_text: additionalText ?? null,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        // data?: any;
+      };
+
+      console.log(responseJson);
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return responseJson;
+    }),
+  muteSubscription: protectedProcedure
+    .input(
+      z.object({
+        subscriptionId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { subscriptionId } = input;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/mute`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_subscription: subscriptionId,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+      };
+
+      console.log(responseJson);
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return responseJson;
+    }),
+  unmuteSubscription: protectedProcedure
+    .input(
+      z.object({
+        subscriptionId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { subscriptionId } = input;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/unmute`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_subscription: subscriptionId,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return responseJson;
+    }),
 } satisfies TRPCRouterRecord;

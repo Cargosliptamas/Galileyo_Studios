@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
+  Bookmark,
   ChevronDown,
   LogOut,
   MoreHorizontal,
@@ -228,6 +229,14 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
             <Link href="/profile" className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               Account Settings
+            </Link>
+          </DropdownMenuItem>
+
+          {/* Bookmarks */}
+          <DropdownMenuItem asChild>
+            <Link href="/bookmarks" className="cursor-pointer">
+              <Bookmark className="mr-2 h-4 w-4" />
+              Bookmarks
             </Link>
           </DropdownMenuItem>
 

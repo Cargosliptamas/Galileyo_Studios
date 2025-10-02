@@ -15,7 +15,7 @@ import { fontVariables } from "~/lib/fonts";
 export const metadata: Metadata = {
   metadataBase: new URL(
     env.VERCEL_ENV === "production"
-      ? "https://turbo.t3.gg"
+      ? "https://galileyo.com"
       : "http://localhost:3000",
   ),
   title: "Galileyo | Speak Freely — Unleash Your Voice",

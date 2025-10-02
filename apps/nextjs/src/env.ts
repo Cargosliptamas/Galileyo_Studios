@@ -16,7 +16,7 @@ export const env = createEnv({
    * This way you can ensure the app isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.url(),
     EMAIL_IS_SECURE: z.coerce.boolean().default(false),
     EMAIL_HOST: z.string().default("localhost"),
     EMAIL_PORT: z.coerce.number().default(1026),
@@ -34,8 +34,9 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_API_URL: z.string().url(),
+    NEXT_PUBLIC_API_URL: z.url(),
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().default(""),
+    NEXT_PUBLIC_STYLEGUIDE_ENABLED: z.coerce.boolean().default(false),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -44,6 +45,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    NEXT_PUBLIC_STYLEGUIDE_ENABLED: process.env.NEXT_STYLEGUIDE_ENABLED,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   skipValidation:

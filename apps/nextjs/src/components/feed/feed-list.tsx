@@ -2,7 +2,7 @@
 
 import type { QueryFunction } from "@tanstack/react-query";
 import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { Sparkles, Users } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -14,20 +14,15 @@ import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
 import { FEED_LIMIT } from "~/constants/feed";
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
+import { getUniqueId } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
 import CommentsModal from "./comments-modal";
 import FeedCard from "./feed-card";
 import FeedCardSkeleton from "./feed-card-skeleton";
+import ReportModal from "./report-modal";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";
-
-function getUniqueId(item: FeedItem) {
-  const idPart = item.id ?? crypto.randomUUID();
-  const createdAtPart = item.created_at ?? "";
-
-  return `${item.type}-${idPart}-${createdAtPart}`;
-}
 
 // const MockedFeeds: InfluencerItem[] = [
 //   {
@@ -177,6 +172,24 @@ export default function FeedList() {
     void setTabState(tab);
   };
 
+  const getQueryKeys = useCallback(
+    () =>
+      trpc.feed.getLatestNews.infiniteQueryKey({
+        limit: FEED_LIMIT,
+        type: activeTab as "subscriptions" | "discover",
+      }),
+    [trpc, activeTab],
+  );
+
+  const getQueryKeysOnError = useCallback(
+    () =>
+      trpc.feed.getLatestNews.infiniteQueryKey({
+        limit: 100,
+        type: activeTab as "subscriptions" | "discover",
+      }),
+    [trpc, activeTab],
+  );
+
   useEffect(() => {
     if (inView) {
       void fetchNextPage();
@@ -249,8 +262,8 @@ export default function FeedList() {
                   <FeedCard
                     key={getUniqueId(item)}
                     item={item}
-                    limit={FEED_LIMIT}
-                    type={activeTab}
+                    getQueryKeys={getQueryKeys}
+                    getQueryKeysOnError={getQueryKeysOnError}
                   />
                 ))}
               </Fragment>
@@ -270,11 +283,7 @@ export default function FeedList() {
                 )}
               </button>
             </div>
-            <div>
-              {isFetching && !isFetchingNextPage
-                ? "Background Updating..."
-                : null}
-            </div>
+            <div>{isFetching && !isFetchingNextPage ? "Loading..." : null}</div>
           </>
         )}
       </div>
@@ -286,6 +295,8 @@ export default function FeedList() {
           post={post}
         />
       )}
+
+      <ReportModal />
     </CommentsModalContext.Provider>
   );
 }

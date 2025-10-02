@@ -1,27 +1,26 @@
 "use client";
 
-import { useId } from "react";
 import Link from "next/link";
-import { MapIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { MapIcon, PlusIcon } from "lucide-react";
 
 // import { toast } from "sonner";
 
 import { Button } from "@galileyo/ui/button";
-import { Input } from "@galileyo/ui/input";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@galileyo/ui/navigation-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
+// import {
+//   NavigationMenu,
+//   NavigationMenuItem,
+//   NavigationMenuLink,
+//   NavigationMenuList,
+// } from "@galileyo/ui/navigation-menu";
+// import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ThemeToggle } from "@galileyo/ui/theme";
 
 import type { User } from "~/auth/client";
 import { useCreatePostModal } from "~/hooks/use-create-post-modal";
 import { AppIcon } from "../app-icon";
 import CreatePostModal from "../feed/create-post-modal";
-import { navigationLinks } from "./navigation-items";
+import CommandMenu from "./command-menu";
+// import { navigationLinks } from "./navigation-items";
 import { UserMenu } from "./user-menu";
 
 export default function AuthNavbar({
@@ -31,8 +30,6 @@ export default function AuthNavbar({
   user: User;
   showMap: boolean;
 }) {
-  const id = useId();
-
   const {
     open: openCreatePost,
     isOpen: isCreatePostOpen,
@@ -45,7 +42,7 @@ export default function AuthNavbar({
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
           {/* Mobile menu trigger */}
-          <Popover>
+          {/* <Popover>
             <PopoverTrigger asChild>
               <Button
                 className="group size-8 md:hidden"
@@ -96,7 +93,7 @@ export default function AuthNavbar({
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
           {/* Logo */}
           <div className="flex items-center">
             <Link
@@ -110,22 +107,8 @@ export default function AuthNavbar({
         </div>
         {/* Middle area */}
         <div className="grow">
-          {/* Search form */}
           <div className="relative mx-auto w-full max-w-xs">
-            <Input
-              id={id}
-              className="peer h-8 pe-10 ps-8"
-              placeholder="Search..."
-              type="search"
-            />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/80 peer-disabled:opacity-50">
-              <SearchIcon size={16} />
-            </div>
-            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-2 text-muted-foreground">
-              <kbd className="inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
-                ⌘K
-              </kbd>
-            </div>
+            <CommandMenu />
           </div>
         </div>
         {/* Right side */}

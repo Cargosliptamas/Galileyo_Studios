@@ -14,7 +14,7 @@ export default async function AppLayout({
   const showMap = await flags["show-map"]();
 
   return (
-    <div className="relative z-10 flex min-h-svh flex-col bg-background dark:bg-slate-900">
+    <div className="font-inter relative z-10 flex min-h-svh flex-col bg-background dark:bg-slate-900">
       <SiteHeader user={session?.user} showMap={showMap} />
       <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter />

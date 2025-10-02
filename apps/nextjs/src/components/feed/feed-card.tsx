@@ -1,5 +1,4 @@
- 
-import type { InfiniteData } from "@tanstack/react-query";
+import type { InfiniteData, QueryKey } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -8,6 +7,7 @@ import {
   // Globe,
   // Shield,
   Heart,
+  Loader2,
   MapPin,
   MessageCircle,
   MoreHorizontal,
@@ -41,9 +41,11 @@ import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
 import { useCommentsModal } from "~/hooks/use-comments-modal";
+import { useFeedSubscription } from "~/hooks/use-feed-subscription";
+import { useReportModal } from "~/hooks/use-report-modal";
 import { useTRPC } from "~/trpc/react";
-import { UserAvatar } from "./user-avatar";
 import ImageWithAuth from "../image-with-auth";
+import { UserAvatar } from "./user-avatar";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -68,28 +70,60 @@ const reactionOptions = [
 
 export default function FeedCard({
   item,
-  limit,
-  type,
   isMocked = false,
+  getQueryKeys,
+  getQueryKeysOnError,
 }: {
   item: FeedItem;
-  limit: number;
-  type: string;
   isMocked?: boolean;
+  getQueryKeys: () => QueryKey;
+  getQueryKeysOnError: () => QueryKey;
 }) {
   const trpc = useTRPC();
+  const { mutation: setSubscriptionMutation, setSubscription } =
+    useFeedSubscription();
 
   const { openModal } = useCommentsModal();
+  const { open: openReportModal } = useReportModal();
 
   const queryClient = useQueryClient();
+
+  const muteMutation = useMutation(
+    trpc.feed.muteSubscription.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+    }),
+  );
+
+  const createBookmark = useMutation(
+    trpc.bookmark.create.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.bookmark.list.pathFilter());
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+    }),
+  );
+
+  const deleteBookmark = useMutation(
+    trpc.bookmark.delete.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.bookmark.list.pathFilter());
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+    }),
+  );
 
   const setReaction = useMutation(
     trpc.feed.setReaction.mutationOptions({
       onMutate: (data) => {
-        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
-          limit,
-          type: type as "subscriptions" | "discover",
-        });
+        // const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+        //   limit,
+        //   type: type as "subscriptions" | "discover",
+        // });
+        const queryKey = getQueryKeys() as ReturnType<
+          typeof trpc.feed.getLatestNews.infiniteQueryKey
+        >;
 
         const previousData = queryClient.getQueryData(queryKey);
 
@@ -162,10 +196,13 @@ export default function FeedCard({
         console.log("error", err);
         toast.error("Failed to set reaction");
 
-        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
-          limit: 100,
-          type: type as "subscriptions" | "discover",
-        });
+        // const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+        //   limit: 100,
+        //   type: type as "subscriptions" | "discover",
+        // });
+        const queryKey = getQueryKeysOnError() as ReturnType<
+          typeof trpc.feed.getLatestNews.infiniteQueryKey
+        >;
 
         queryClient.setQueryData(queryKey, context?.previousData);
       },
@@ -178,10 +215,13 @@ export default function FeedCard({
       //   await queryClient.invalidateQueries(trpc.feed.pathFilter());
       // },
       onMutate: (data) => {
-        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
-          limit,
-          type: type as "subscriptions" | "discover",
-        });
+        // const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+        //   limit,
+        //   type: type as "subscriptions" | "discover",
+        // });
+        const queryKey = getQueryKeys() as ReturnType<
+          typeof trpc.feed.getLatestNews.infiniteQueryKey
+        >;
 
         const previousData = queryClient.getQueryData(queryKey);
 
@@ -232,10 +272,13 @@ export default function FeedCard({
         console.log("error", err);
         toast.error("Failed to remove reaction");
 
-        const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
-          limit: 100,
-          type: type as "subscriptions" | "discover",
-        });
+        // const queryKey = trpc.feed.getLatestNews.infiniteQueryKey({
+        //   limit: 100,
+        //   type: type as "subscriptions" | "discover",
+        // });
+        const queryKey = getQueryKeysOnError() as ReturnType<
+          typeof trpc.feed.getLatestNews.infiniteQueryKey
+        >;
 
         queryClient.setQueryData(queryKey, context?.previousData);
       },
@@ -313,9 +356,21 @@ export default function FeedCard({
     }
   };
 
-  const handleBookmark = () => {
-    console.log("handleBookmark");
-  };
+  const handleBookmark = useCallback(() => {
+    if (item.id) {
+      createBookmark.mutate({
+        post_id: item.id,
+      });
+    }
+  }, [item.id, createBookmark]);
+
+  const handleDeleteBookmark = useCallback(() => {
+    if (item.id) {
+      deleteBookmark.mutate({
+        post_id: item.id,
+      });
+    }
+  }, [item.id, deleteBookmark]);
 
   const handleReactionClick = useCallback(
     (reactionType: string) => {
@@ -340,14 +395,31 @@ export default function FeedCard({
     [userReaction?.id, item.id, setReaction, removeReaction],
   );
 
+  const profileLink = useMemo(() => {
+    if (isMocked || item.type === "financial") {
+      return undefined;
+    }
+
+    if ("id_follower_list" in item && item.id_follower_list) {
+      return `/profile/by-follower-list/${item.id_follower_list}`;
+    }
+
+    if ("id_subscription" in item && item.id_subscription) {
+      return `/profile/by-subscription/${item.id_subscription}`;
+    }
+
+    // return `/profile/${item.id}`;
+    return undefined;
+  }, [isMocked, item.id]);
+
   const hasActions = useMemo(() => {
     return item.type !== "financial" && item.type !== "not_sended_yet";
   }, [item]);
 
   const isInfluencer = item.type === "influencer";
-  const isVerified = ["influencer", "financial", "not_sended_yet"].includes(
-    item.type,
-  );
+  // const isVerified = ["influencer", "financial", "not_sended_yet"].includes(
+  //   item.type,
+  // );
 
   const getTotalReactions = () => {
     return item.reactions.reduce((acc, reaction) => acc + reaction.cnt, 0);
@@ -365,6 +437,25 @@ export default function FeedCard({
     return num.toString();
   };
 
+  const handleSubscription = useCallback(() => {
+    setSubscription({
+      id: Number(item.id),
+      subscribed: !item.is_subscribed,
+    });
+  }, [item.id, item.is_subscribed, setSubscription]);
+
+  const handleMute = useCallback(() => {
+    if ("id_subscription" in item && item.id_subscription) {
+      muteMutation.mutate({
+        subscriptionId: String(item.id_subscription),
+      });
+    }
+  }, [item, muteMutation]);
+
+  const handleReport = useCallback(() => {
+    openReportModal(item);
+  }, [item, openReportModal]);
+
   return (
     // <Card className="max-w-3xl mx-auto">
     <Card className="transform border-slate-200 bg-white/50 transition-all duration-300 hover:scale-[1.01] hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
@@ -374,13 +465,15 @@ export default function FeedCard({
             <UserAvatar
               name={item.title}
               image={getUserAvatarIcon(item)}
-              isVerified={isVerified}
+              // isVerified={isVerified}
+              isVerified={false}
               isInfluencer={isInfluencer}
+              href={profileLink}
               // href={isMocked ? undefined : `/profile/${item.id}`}
             >
               <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <span>{item.title}</span>
-                <span>•</span>
+                {/* <span>{item.title}</span>
+                <span>•</span> */}
                 <span>{item.created_at}</span>
                 {item.location && (
                   <>
@@ -395,21 +488,36 @@ export default function FeedCard({
             </UserAvatar>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Follow {item.title}</DropdownMenuItem>
-              <DropdownMenuItem>Mute {item.title}</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-500 hover:bg-slate-700 dark:text-red-400">
-                Report Post
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {!item.is_owner && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={handleSubscription}
+                  disabled={isMocked || setSubscriptionMutation.isPending}
+                >
+                  {item.is_subscribed ? "Unfollow" : "Follow"}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleMute}
+                  disabled={isMocked || muteMutation.isPending}
+                >
+                  Mute
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-red-500 hover:bg-slate-700 dark:text-red-400"
+                  onClick={handleReport}
+                >
+                  Report Post
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Post Type Badge */}
@@ -618,21 +726,35 @@ export default function FeedCard({
               </div>
 
               <div className="flex items-end justify-end gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleBookmark()}
-                  disabled={isMocked}
-                  className={`p-2 transition-colors ${
-                    (item.is_bookmarked ?? false)
-                      ? "text-yellow-400 hover:text-yellow-300"
-                      : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
-                  }`}
-                >
-                  <Bookmark
-                    className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
-                  />
-                </Button>
+                {item.id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      item.is_bookmarked
+                        ? handleDeleteBookmark()
+                        : handleBookmark()
+                    }
+                    disabled={
+                      isMocked ||
+                      createBookmark.isPending ||
+                      deleteBookmark.isPending
+                    }
+                    className={`p-2 transition-colors ${
+                      (item.is_bookmarked ?? false)
+                        ? "text-yellow-400 hover:text-yellow-300"
+                        : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+                    }`}
+                  >
+                    {createBookmark.isPending || deleteBookmark.isPending ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Bookmark
+                        className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+                      />
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           </>

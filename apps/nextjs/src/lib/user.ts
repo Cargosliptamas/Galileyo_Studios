@@ -1,12 +1,12 @@
 "use client";
 
 import type { User } from "~/auth/client";
-import { env } from "~/env";
+import { getUserImageUrl } from "./image";
 
 export const getProfilePicture = (user: User) => {
   if (!user.image) {
     return null;
   }
 
-  return env.NEXT_PUBLIC_API_URL.replace("/v1", "/uploads/user/") + user.image;
+  return getUserImageUrl(user.image);
 };

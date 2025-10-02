@@ -11,6 +11,7 @@
     "lint": "eslint",
     "start": "pnpm with-env next start",
     "typecheck": "tsc --noEmit",
+    "tailwind-preview": "tsx test.ts",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -35,7 +36,7 @@
     "flags": "^4.0.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.525.0",
-    "motion": "^12.23.9",
+    "motion": "^12.23.22",
     "next": "^15.3.3",
     "nodemailer": "^7.0.5",
     "nuqs": "^2.4.3",

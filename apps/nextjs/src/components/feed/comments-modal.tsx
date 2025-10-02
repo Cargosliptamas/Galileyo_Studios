@@ -324,6 +324,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const createComment = useMutation(
     trpc.comment.create.mutationOptions({
       onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.feed.pathFilter());
         await queryClient.invalidateQueries(trpc.comment.pathFilter());
       },
       onError: () => {
@@ -356,8 +357,6 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         parentId: parentId,
       });
     }
-
-    console.log("parentId", parentId);
 
     setReplyText("");
     setReplyingTo(null);

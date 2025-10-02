@@ -975,7 +975,7 @@ export function Profile() {
                       </Table>
                     </div>
                     <div className="flex justify-end">
-                      <Button className="flex items-center gap-2">
+                      <Button className="flex items-center gap-2" disabled>
                         <Plus className="h-4 w-4" />
                         Add Passkey
                       </Button>
