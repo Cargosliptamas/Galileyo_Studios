@@ -1,6 +1,6 @@
 import { cache, Suspense } from "react";
 
-import { Card, CardContent, CardHeader } from "@galileyo/ui";
+import { Card, CardContent, CardHeader, Skeleton } from "@galileyo/ui";
 
 import type { ProfileInfo } from "~/lib/server/profile";
 import { FEED_LIMIT } from "~/constants/feed";
@@ -74,11 +74,17 @@ export default function InfluencerPage({
                 />
               </div>
               <div className="col-span-6 md:col-span-2 md:flex md:justify-end">
-                <InfluencerActions
-                  id={info.id}
-                  isLoggedIn={isLoggedIn ?? false}
-                  type={info.type}
-                />
+                <Suspense
+                  fallback={
+                    <Skeleton className="h-8 w-full rounded-md bg-slate-200 dark:bg-slate-700" />
+                  }
+                >
+                  <InfluencerActions
+                    id={info.id}
+                    isLoggedIn={isLoggedIn ?? false}
+                    type={info.type}
+                  />
+                </Suspense>
               </div>
             </CardHeader>
             <CardContent>

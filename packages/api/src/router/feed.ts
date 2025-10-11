@@ -10,9 +10,6 @@ import type {
 } from "../types/feed";
 import { mapFeedItem } from "../lib/feed";
 import { protectedProcedure, publicProcedure } from "../trpc";
-// import { desc, eq } from "@galileyo/db";
-// import { CreatePostSchema, Post } from "@galileyo/db/schema";
-
 import { GetBySubscriptionParams, GetLatestNewsParams } from "../types/feed";
 
 export const feedRouter = {
@@ -20,8 +17,10 @@ export const feedRouter = {
     .input(GetLatestNewsParams)
     .query(async ({ ctx, input }) => {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/news/last`;
-      if (input.type === "discover") {
+      if (input.type === "discover" && input.onlyInfluencers) {
         url = `${process.env.NEXT_PUBLIC_API_URL}/news/by-influencers`;
+      } else if (input.type === "discover" && !input.onlyInfluencers) {
+        url = `${process.env.NEXT_PUBLIC_API_URL}/news/by-discover`;
       }
 
       const feed = await fetch(url, {
@@ -155,66 +154,22 @@ export const feedRouter = {
       return mapFeedItem(responseJson.data);
     }),
   createPost: protectedProcedure
-    .input(
-      z.object({
-        content: z.string(),
-        satelliteContent: z.string().optional(),
-        media: z.array(z.any()),
-        scheduledFor: z.date().optional(),
-        isScheduled: z.boolean(),
-        profileId: z.string().nullish(),
-      }),
-    )
+    .input(z.instanceof(FormData))
     .mutation(async ({ ctx, input }) => {
-      const {
-        content,
-        satelliteContent,
-        media,
-        scheduledFor,
-        isScheduled,
-        profileId,
-      } = input;
-
-      const formData = new FormData();
-      formData.append("text", content);
-      if (satelliteContent) {
-        formData.append("satellite_text", satelliteContent);
-      }
-      formData.append("subscriptions", "[]");
-      formData.append(
-        "schedule",
-        scheduledFor ? scheduledFor.toISOString() : "",
-      );
-      formData.append("timezone", "UTC");
-      formData.append("is_schedule", isScheduled ? "1" : "0");
-
-      media.forEach((file) => {
-        formData.append("files[]", file);
-      });
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/all-send-form/send`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${ctx.session.session.token}`,
-            "Content-Type": "application/json",
-            // "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify({
-            text: content,
-            text_short: satelliteContent ?? null,
-            subscriptions: profileId ? [+profileId] : [],
-            schedule: scheduledFor ? scheduledFor.toISOString() : null,
-            timezone: "UTC",
-            is_schedule: isScheduled ? "1" : "0",
-          }),
+          body: input,
         },
       );
 
       const responseJson = (await response.json()) as {
         status: "success" | "error";
-        data: FeedItem;
+        data: FeedItem | null;
       };
 
       console.log(responseJson);
@@ -222,8 +177,6 @@ export const feedRouter = {
       if (responseJson.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
-
-      // return mapFeedItem(responseJson.data);
     }),
   getPrivateFeeds: protectedProcedure.query(async ({ ctx }) => {
     const response = await fetch(
@@ -253,6 +206,15 @@ export const feedRouter = {
     return responseJson.data.list;
   }),
   getInfluencerFeeds: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session.user.isInfluencer) {
+      return {
+        list: [] as InfluencerFeedType[],
+        count: 0,
+        page: 1,
+        page_size: 10,
+      };
+    }
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/influencer/index`,
       {
@@ -277,7 +239,7 @@ export const feedRouter = {
       throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
 
-    return responseJson.data.list;
+    return responseJson.data;
   }),
   getNewsBySubscriptionOrFollowerList: publicProcedure
     .input(GetBySubscriptionParams)
@@ -427,8 +389,6 @@ export const feedRouter = {
         // data?: any;
       };
 
-      console.log(responseJson);
-
       if (responseJson.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
@@ -461,8 +421,6 @@ export const feedRouter = {
       const responseJson = (await response.json()) as {
         status: "success" | "error";
       };
-
-      console.log(responseJson);
 
       if (responseJson.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });

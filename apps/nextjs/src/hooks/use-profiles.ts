@@ -169,8 +169,10 @@ export function useProfiles() {
 
   useEffect(() => {
     if (privateFeeds && privateFeeds.length > 0) {
+      const ids = privateFeeds.map((feed) => feed.id.toString());
+
       setProfiles((prevProfiles) => [
-        ...prevProfiles,
+        ...prevProfiles.filter((p) => !ids.includes(p.id)),
         ...privateFeeds.map((feed) => ({
           id: feed.id.toString(),
           name: feed.title,
@@ -184,10 +186,12 @@ export function useProfiles() {
   }, [privateFeeds]);
 
   useEffect(() => {
-    if (influencerFeeds && influencerFeeds.length > 0) {
+    if (influencerFeeds && influencerFeeds.list.length > 0) {
+      const ids = influencerFeeds.list.map((feed) => feed.id.toString());
+
       setProfiles((prevProfiles) => [
-        ...prevProfiles,
-        ...influencerFeeds.map((feed) => ({
+        ...prevProfiles.filter((p) => !ids.includes(p.id)),
+        ...influencerFeeds.list.map((feed) => ({
           id: feed.id.toString(),
           name: feed.title,
           avatar: feed.image ?? undefined,

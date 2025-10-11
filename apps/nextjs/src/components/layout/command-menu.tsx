@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -27,6 +27,7 @@ import {
 } from "@galileyo/ui/command";
 
 import { useDebounce } from "~/hooks/use-debounce";
+import { fuzzySearch } from "~/lib/fuzzy-search";
 import { getUserImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "../feed/user-avatar";
@@ -87,7 +88,7 @@ const defaultCommandMenuItems: CommandMenuItems = {
         ...navigationLinks
           .filter((link) => link.label !== "Home")
           .map((link, index) => ({
-            key: `navigation-${index}`,
+            key: `navigation-${index}-${link.label}`,
             href: link.href,
             label: link.label,
             icon: <ArrowUpRightIcon size={16} />,
@@ -104,14 +105,14 @@ export default function CommandMenu() {
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [items] = useState(() => defaultCommandMenuItems);
+  const [items, setItems] = useState(() => defaultCommandMenuItems);
   const [searchResults, setSearchResults] = useState<SearchResultUserType[]>(
     [],
   );
   const [isSearching, setIsSearching] = useState(false);
 
   // Debounce the search query
-  const debouncedQuery = useDebounce(query, 300);
+  const debouncedQuery = useDebounce(query, 500);
 
   const searchMutation = useMutation(
     trpc.search.search.mutationOptions({
@@ -169,6 +170,18 @@ export default function CommandMenu() {
       setSearchResults([]);
       setIsSearching(false);
     }
+
+    // Filter the items based on the debounced query
+    const filteredItems = defaultCommandMenuItems.groups.map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        fuzzySearch(debouncedQuery, item.label),
+      ),
+    }));
+
+    setItems({
+      groups: filteredItems,
+    });
   }, [debouncedQuery]);
 
   useEffect(() => {
@@ -222,7 +235,7 @@ export default function CommandMenu() {
         }}
       >
         <CommandInput
-          placeholder="Type a command or search..."
+          placeholder="Type a command or search for a user..."
           value={query}
           onValueChange={handleInputChange}
         />
@@ -279,8 +292,8 @@ export default function CommandMenu() {
 
               {/* Default Menu Items */}
               {items.groups.map((group) => (
-                <>
-                  <CommandGroup key={group.key} heading={group.label}>
+                <Fragment key={group.key}>
+                  <CommandGroup heading={group.label}>
                     {group.items.map((item) => (
                       <CommandItem
                         key={item.key}
@@ -298,7 +311,7 @@ export default function CommandMenu() {
                     ))}
                   </CommandGroup>
                   <CommandSeparator />
-                </>
+                </Fragment>
               ))}
             </>
           )}

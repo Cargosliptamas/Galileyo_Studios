@@ -16,6 +16,7 @@ export function AppIcon({ useDark }: { useDark?: boolean }) {
         className="object-contain"
         width={500}
         height={315}
+        priority
       />
     );
   }
@@ -27,6 +28,7 @@ export function AppIcon({ useDark }: { useDark?: boolean }) {
       className="object-contain"
       width={500}
       height={315}
+      priority
     />
   );
 

@@ -56,6 +56,26 @@ export function initAuth(options: {
           required: true,
           defaultValue: "",
         },
+        isInfluencer: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+        },
+        isVerified: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+        },
+        isSpsActive: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+        },
+        status: {
+          type: "number",
+          required: true,
+          defaultValue: 1,
+        },
       },
     },
     session: {

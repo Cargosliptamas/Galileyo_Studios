@@ -1,12 +1,13 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
+import type { GetLatestNewsParamTypes } from "@galileyo/api/schemas";
+
 import { getSession } from "~/auth/server";
-import FeedCardSkeleton from "~/components/feed/feed-card-skeleton";
-import FeedList from "~/components/feed/feed-list";
+import { FeedTypeSwitcher } from "~/components/feed/feed-type-switcher";
 import { FEED_LIMIT } from "~/constants/feed";
-// import { Debug } from "~/components/dashboard/debug";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
+
+type FeedTypes = GetLatestNewsParamTypes["type"];
 
 export default async function DashboardPage({
   searchParams,
@@ -14,6 +15,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab } = await searchParams;
+  const activeTab = (tab ?? "subscriptions") as FeedTypes;
 
   const session = await getSession();
   if (!session) {
@@ -24,8 +26,7 @@ export default async function DashboardPage({
     trpc.feed.getLatestNews.infiniteQueryOptions({
       limit: FEED_LIMIT,
       cursor: 1,
-      type:
-        (tab as "subscriptions" | "discover" | undefined) ?? "subscriptions",
+      type: activeTab,
     }),
   );
 
@@ -34,19 +35,7 @@ export default async function DashboardPage({
       <main className="container py-4">
         <h1 className="mb-4 text-2xl font-bold">Feed</h1>
 
-        <Suspense
-          fallback={
-            <div className="space-y-4">
-              <FeedCardSkeleton />
-              <FeedCardSkeleton />
-              <FeedCardSkeleton />
-              <FeedCardSkeleton />
-              <FeedCardSkeleton />
-            </div>
-          }
-        >
-          <FeedList />
-        </Suspense>
+        <FeedTypeSwitcher user={session.user} />
       </main>
     </HydrateClient>
   );

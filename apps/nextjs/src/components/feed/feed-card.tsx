@@ -12,7 +12,6 @@ import {
   MessageCircle,
   MoreHorizontal,
   Satellite,
-  Share,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
@@ -67,6 +66,34 @@ const reactionOptions = [
   { type: "fire" as const, emoji: "🔥", label: "Fire", id: "5" },
   { type: "disgust" as const, emoji: "🤢", label: "Disgust", id: "6" },
 ];
+
+function getFeedImageUrls(item: FeedItem) {
+  const images: string[] = [];
+
+  for (const image of item.images) {
+    let original: string | null = null;
+    let normal: string | null = null;
+
+    for (const size of image.sizes) {
+      switch (size.type) {
+        case "origin":
+          original = size.url;
+          break;
+        case "normal":
+          normal = size.url;
+          break;
+      }
+    }
+
+    const imageUrl = original ?? normal;
+
+    if (imageUrl) {
+      images.push(imageUrl);
+    }
+  }
+
+  return images;
+}
 
 export default function FeedCard({
   item,
@@ -351,6 +378,8 @@ export default function FeedCard({
       case "financial":
         // TODO: add financial avatar icon
         return null;
+      case "user":
+        return (item as InfluencerItem).image ?? null;
       default:
         return null;
     }
@@ -404,7 +433,11 @@ export default function FeedCard({
       return `/profile/by-follower-list/${item.id_follower_list}`;
     }
 
-    if ("id_subscription" in item && item.id_subscription) {
+    if (
+      "id_subscription" in item &&
+      item.id_subscription &&
+      item.type === "influencer"
+    ) {
       return `/profile/by-subscription/${item.id_subscription}`;
     }
 
@@ -420,6 +453,10 @@ export default function FeedCard({
   // const isVerified = ["influencer", "financial", "not_sended_yet"].includes(
   //   item.type,
   // );
+
+  const feedImageUrls = useMemo(() => {
+    return getFeedImageUrls(item);
+  }, [item]);
 
   const getTotalReactions = () => {
     return item.reactions.reduce((acc, reaction) => acc + reaction.cnt, 0);
@@ -531,13 +568,16 @@ export default function FeedCard({
         )}
 
         {/* Post Image */}
-        {item.images.length > 0 && (
-          <div className="mx-auto mb-4 max-w-md overflow-hidden rounded-lg">
-            <ImageWithAuth
-              url={item.images[0]?.sizes[0]?.url ?? ""}
-              alt="Post content"
-              className="h-auto w-full object-cover"
-            />
+        {feedImageUrls.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {feedImageUrls.map((url, index) => (
+              <ImageWithAuth
+                key={`feed-image-${item.id}-${index}`}
+                url={url}
+                alt="Post content"
+                className="h-auto w-full object-cover"
+              />
+            ))}
           </div>
         )}
 
@@ -561,6 +601,11 @@ export default function FeedCard({
 
         {item.type === "financial" && (
           <div className="">
+            {(item as unknown as FinancialItem).ticker && (
+              <div className="mb-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                {(item as unknown as FinancialItem).ticker}
+              </div>
+            )}
             <div className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">
               {formatPrice((item as unknown as FinancialItem).price)}
             </div>
@@ -619,7 +664,7 @@ export default function FeedCard({
                   <HoverCardTrigger asChild>
                     {/* <div className="flex flex-col items-center gap-2"> */}
                     <Button
-                      disabled={isMocked}
+                      disabled={isMocked || !item.show_reactions}
                       variant="ghost"
                       // size="icon"
                       className={cn(
@@ -707,7 +752,8 @@ export default function FeedCard({
                   variant="ghost"
                   className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
                   onClick={() => openModal(item)}
-                  disabled={isMocked}
+                  disabled={isMocked || !item.show_comments}
+                  data-phid="show-comments"
                 >
                   <MessageCircle className="h-5 w-5" />
                   <span className="text-sm font-medium">
@@ -715,14 +761,14 @@ export default function FeedCard({
                   </span>
                 </Button>
 
-                <Button
+                {/* <Button
                   variant="ghost"
                   className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
                   disabled={isMocked}
                 >
                   <Share className="h-5 w-5" />
                   <span className="text-sm font-medium">{formatNumber(0)}</span>
-                </Button>
+                </Button> */}
               </div>
 
               <div className="flex items-end justify-end gap-2">
@@ -740,6 +786,7 @@ export default function FeedCard({
                       createBookmark.isPending ||
                       deleteBookmark.isPending
                     }
+                    data-phid="bookmark-post"
                     className={`p-2 transition-colors ${
                       (item.is_bookmarked ?? false)
                         ? "text-yellow-400 hover:text-yellow-300"

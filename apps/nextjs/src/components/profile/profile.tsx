@@ -800,6 +800,7 @@ export function Profile() {
                               placeholder="Bio"
                               rows={3}
                               {...field}
+                              value={field.value}
                             />
                           </FormControl>
                           <FormMessage />

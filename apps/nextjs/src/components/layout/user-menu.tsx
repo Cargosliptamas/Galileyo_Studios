@@ -5,10 +5,9 @@ import Link from "next/link";
 import {
   Bookmark,
   ChevronDown,
+  CreditCard,
   LogOut,
-  MoreHorizontal,
   Settings,
-  Trash2,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
@@ -16,14 +15,13 @@ import { Button } from "@galileyo/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@galileyo/ui/dropdown-menu";
+import { ThemeToggle } from "@galileyo/ui/theme";
 
 import type { User as AuthUser } from "~/auth/client";
 import type { Profile } from "~/hooks/use-profiles";
@@ -33,11 +31,16 @@ import { getProfilePicture } from "~/lib/user";
 
 interface UserMenuProps {
   user: AuthUser;
+  onlyAvatar?: boolean;
   onProfileSwitch?: (profile: Profile) => void;
 }
 
-export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
-  const { profiles, switchProfile, deleteProfile } = useProfiles();
+export function UserMenu({
+  user,
+  // onProfileSwitch,
+  onlyAvatar = false,
+}: UserMenuProps) {
+  const { profiles, deleteProfile } = useProfiles();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -77,18 +80,18 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
 
   const currentProfile = getCurrentProfile();
 
-  const handleProfileSwitch = (profileId: string) => {
-    try {
-      const profile = switchProfile(profileId);
-      if (profile && onProfileSwitch) {
-        onProfileSwitch(profile);
-      }
-      // Close dropdown after switching
-      setIsDropdownOpen(false);
-    } catch (error) {
-      console.error("Failed to switch profile:", error);
-    }
-  };
+  // const handleProfileSwitch = (profileId: string) => {
+  //   try {
+  //     const profile = switchProfile(profileId);
+  //     if (profile && onProfileSwitch) {
+  //       onProfileSwitch(profile);
+  //     }
+  //     // Close dropdown after switching
+  //     setIsDropdownOpen(false);
+  //   } catch (error) {
+  //     console.error("Failed to switch profile:", error);
+  //   }
+  // };
 
   const handleDeleteProfile = () => {
     if (!selectedProfile) return;
@@ -135,14 +138,18 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
               />
               <AvatarFallback>{currentProfile.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div className="hidden flex-col items-start text-left md:flex">
-              <span className="text-sm font-medium">{currentProfile.name}</span>
-              {!currentProfile.isMainProfile && (
-                <span className="text-xs text-muted-foreground">
-                  {getRoleLabel(currentProfile.role)} Profile
+            {!onlyAvatar && (
+              <div className="hidden flex-col items-start text-left md:flex">
+                <span className="text-sm font-medium">
+                  {currentProfile.name}
                 </span>
-              )}
-            </div>
+                {!currentProfile.isMainProfile && (
+                  <span className="text-xs text-muted-foreground">
+                    {getRoleLabel(currentProfile.role)} Profile
+                  </span>
+                )}
+              </div>
+            )}
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -172,55 +179,17 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
 
           <DropdownMenuSeparator />
 
-          {/* Profile List */}
-          <div className="p-2">
-            <div className="mb-2 px-2 text-xs font-medium text-muted-foreground">
-              Switch Profile
-            </div>
-            {profiles.map((profile) => (
-              <div key={profile.id} className="group relative">
-                <DropdownMenuItem
-                  className="flex cursor-pointer items-center gap-3 p-2"
-                  onClick={() => handleProfileSwitch(profile.id)}
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={profile.avatar} alt={profile.name} />
-                    <AvatarFallback>{profile.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-sm font-medium">
-                      {profile.name}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {getRoleLabel(profile.role)}
-                    </span>
-                  </div>
-                  {profile.isActive && (
-                    <div className="h-2 w-2 rounded-full bg-green-500" />
-                  )}
-                </DropdownMenuItem>
-
-                {/* Profile Actions */}
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setSelectedProfile(profile);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                      className="text-red-600"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Profile
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              className="cursor-default"
+              onSelect={(event) => event.preventDefault()}
+            >
+              <span>Theme</span>
+              <div className="ml-auto">
+                <ThemeToggle />
               </div>
-            ))}
-          </div>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
 
           <DropdownMenuSeparator />
 
@@ -237,6 +206,14 @@ export function UserMenu({ user, onProfileSwitch }: UserMenuProps) {
             <Link href="/bookmarks" className="cursor-pointer">
               <Bookmark className="mr-2 h-4 w-4" />
               Bookmarks
+            </Link>
+          </DropdownMenuItem>
+
+          {/* Profile Settings */}
+          <DropdownMenuItem asChild>
+            <Link href="/payment" className="cursor-pointer">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Payment Details
             </Link>
           </DropdownMenuItem>
 

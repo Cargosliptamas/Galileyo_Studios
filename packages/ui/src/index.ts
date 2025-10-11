@@ -87,6 +87,7 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+export { EmojiPicker } from "./emoji-picker";
 export {
   Form,
   FormControl,
@@ -158,6 +159,7 @@ export {
   SheetTitle,
   SheetTrigger,
 } from "./sheet";
+export * from "./sidebar";
 export { Skeleton } from "./skeleton";
 export { Switch } from "./switch";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
@@ -165,3 +167,9 @@ export { Textarea } from "./textarea";
 export { ThemeProvider } from "./theme";
 export { toast, Toaster } from "./toast";
 export { Toggle } from "./toggle";
+export {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";

@@ -9,9 +9,13 @@
     "baseColor": "zinc",
     "cssVariables": true
   },
+  "iconLibrary": "radix",
   "aliases": {
-    "utils": "@galileyo/ui",
     "components": "src/",
+    "utils": "@galileyo/ui",
     "ui": "src/"
+  },
+  "registries": {
+    "@ai-elements": "https://registry.ai-sdk.dev/{name}.json"
   }
 }

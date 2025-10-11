@@ -28,6 +28,8 @@ export interface BaseFeedItem {
   is_bookmarked: boolean | null;
   is_subscribed: boolean | undefined;
   is_owner: boolean | undefined;
+  show_reactions: boolean | undefined;
+  show_comments: boolean | undefined;
 }
 
 export interface FollowerListItem extends BaseFeedItem {
@@ -59,6 +61,7 @@ export interface FinancialItem extends BaseFeedItem {
   percent: number;
   price: number;
   url: string | null;
+  ticker?: string | null;
   id_subscription: number | null;
   reactions: ReactionType[];
   images: FeedItemImageType[];
@@ -71,6 +74,7 @@ export interface FinancialItemBackend extends BaseFeedItem {
   percent: string;
   price: string;
   url: string | null;
+  ticker: string | null;
   id_subscription: number | null;
   reactions: ReactionType[];
   images: FeedItemImageType[];
@@ -145,6 +149,7 @@ export interface InfluencerFeedType {
 export const GetLatestNewsParams = z.object({
   limit: z.number().optional().default(10),
   cursor: z.number().optional().default(1),
+  onlyInfluencers: z.boolean().optional().default(false),
   type: z.enum(["subscriptions", "discover"]),
 });
 

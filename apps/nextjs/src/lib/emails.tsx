@@ -42,7 +42,7 @@ export async function sendMagicLinkEmail({
   const options = {
     from: env.EMAIL_FROM,
     to,
-    subject: "Your login code for Galileo",
+    subject: "Sign in to Galileo",
     html: emailHtml,
   };
 

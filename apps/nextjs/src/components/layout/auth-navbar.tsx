@@ -1,26 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { MapIcon, PlusIcon } from "lucide-react";
-
-// import { toast } from "sonner";
-
-import { Button } from "@galileyo/ui/button";
-// import {
-//   NavigationMenu,
-//   NavigationMenuItem,
-//   NavigationMenuLink,
-//   NavigationMenuList,
-// } from "@galileyo/ui/navigation-menu";
-// import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
-import { ThemeToggle } from "@galileyo/ui/theme";
+import { MapIcon } from "lucide-react";
 
 import type { User } from "~/auth/client";
-import { useCreatePostModal } from "~/hooks/use-create-post-modal";
 import { AppIcon } from "../app-icon";
-import CreatePostModal from "../feed/create-post-modal";
 import CommandMenu from "./command-menu";
-// import { navigationLinks } from "./navigation-items";
+import { NotificationCenter } from "./notification-center";
 import { UserMenu } from "./user-menu";
 
 export default function AuthNavbar({
@@ -30,12 +16,6 @@ export default function AuthNavbar({
   user: User;
   showMap: boolean;
 }) {
-  const {
-    open: openCreatePost,
-    isOpen: isCreatePostOpen,
-    close: closeCreatePost,
-  } = useCreatePostModal();
-
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="lg:px-8* mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-8 sm:px-6">
@@ -114,26 +94,24 @@ export default function AuthNavbar({
         {/* Right side */}
         <div className="flex flex-1 items-center justify-end gap-2">
           {/* Notification */}
-          {/* <NotificationMenu /> */}
+          <NotificationCenter />
           {showMap && (
             <Link href="/alerts-map" className="icon-button">
               <MapIcon className="h-5 w-5" />
             </Link>
           )}
-          <ThemeToggle />
-          <Button
-            size="sm"
-            className="text-sm max-sm:aspect-square max-sm:p-0"
+          {/* <ThemeToggle /> */}
+          {/* <Button
+            size="icon"
             onClick={openCreatePost}
           >
             <PlusIcon
-              className="opacity-60 sm:-ms-1"
               size={16}
               aria-hidden="true"
             />
-            <span className="max-sm:sr-only">Post</span>
-          </Button>
-          <UserMenu user={user} />
+            <span className="sr-only">Post</span>
+          </Button> */}
+          <UserMenu user={user} onlyAvatar={true} />
         </div>
       </div>
       {/* Bottom navigation */}
@@ -155,7 +133,7 @@ export default function AuthNavbar({
         </NavigationMenu>
       </div> */}
 
-      <CreatePostModal isOpen={isCreatePostOpen} onClose={closeCreatePost} />
+      {/* <CreatePostModal isOpen={isCreatePostOpen} onClose={closeCreatePost} /> */}
     </header>
   );
 }

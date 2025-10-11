@@ -26,6 +26,7 @@ export const env = createEnv({
     VAPID_PRIVATE_KEY: z.string().default(""),
     GROWTHBOOK_CLIENT_KEY: z.string().optional(),
     GROWTHBOOK_API_HOST: z.string().optional(),
+    ZYTE_API_KEY: z.string().optional(),
   },
 
   /**
@@ -33,10 +34,12 @@ export const env = createEnv({
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_API_URL: z.url(),
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().default(""),
     NEXT_PUBLIC_STYLEGUIDE_ENABLED: z.coerce.boolean().default(false),
+    NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
+    NEXT_PUBLIC_ZYTE_ENABLED: z.coerce.boolean().default(false),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -46,7 +49,9 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     NEXT_PUBLIC_STYLEGUIDE_ENABLED: process.env.NEXT_STYLEGUIDE_ENABLED,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    NEXT_PUBLIC_ZYTE_ENABLED: process.env.NEXT_PUBLIC_ZYTE_ENABLED,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",

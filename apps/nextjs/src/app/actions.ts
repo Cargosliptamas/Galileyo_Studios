@@ -149,3 +149,40 @@ export async function updateHeaderPicture(form: FormData) {
 
   return result.data;
 }
+
+export async function downloadInvoice(invoiceId: number) {
+  const session = await getSession();
+  if (!session) {
+    throw new Error("No session found");
+  }
+
+  const request = await fetch(
+    `${env.NEXT_PUBLIC_API_URL}/product/download-invoice`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.session.token}`,
+      },
+      body: JSON.stringify({ invoice_id: invoiceId }),
+    },
+  );
+
+  const statusCode = request.status;
+
+  if (statusCode === 422) {
+    throw new VisibleError("Validation error");
+  }
+
+  if (statusCode === 404) {
+    throw new VisibleError("Invoice not found");
+  }
+
+  if (statusCode !== 200) {
+    throw new VisibleError("Failed to download invoice");
+  }
+
+  const data = await request.blob();
+
+  return data;
+}

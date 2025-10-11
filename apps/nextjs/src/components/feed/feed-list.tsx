@@ -4,13 +4,11 @@ import type { QueryFunction } from "@tanstack/react-query";
 import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { Sparkles, Users } from "lucide-react";
-import { useQueryState } from "nuqs";
 import { useInView } from "react-intersection-observer";
 
 import type { FeedItem } from "@galileyo/api/schemas";
+
 // import { Button } from "@galileyo/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
 import { FEED_LIMIT } from "~/constants/feed";
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
@@ -107,15 +105,13 @@ import ReportModal from "./report-modal";
 //   },
 // ];
 
-export default function FeedList() {
+export default function FeedList({ activeTab }: { activeTab: string }) {
   const trpc = useTRPC();
-  const [tabState, setTabState] = useQueryState("tab");
 
   const { ref, inView } = useInView();
   // const [showMockedFeeds, setShowMockedFeeds] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState<FeedItem | null>(null);
-  const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
 
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
     limit: FEED_LIMIT,
@@ -167,11 +163,6 @@ export default function FeedList() {
     setIsOpen(true);
   };
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    void setTabState(tab);
-  };
-
   const getQueryKeys = useCallback(
     () =>
       trpc.feed.getLatestNews.infiniteQueryKey({
@@ -198,29 +189,6 @@ export default function FeedList() {
 
   return (
     <CommentsModalContext.Provider value={{ handleOpenCommentsModal }}>
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        className="mb-4 w-full"
-      >
-        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-slate-200 bg-white/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
-          <TabsTrigger
-            value="subscriptions"
-            className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            Subscriptions
-          </TabsTrigger>
-          <TabsTrigger
-            value="discover"
-            className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25"
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Discover
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
       <div className="space-y-4">
         {/* <Button
           onClick={() => setShowMockedFeeds(!showMockedFeeds)}
