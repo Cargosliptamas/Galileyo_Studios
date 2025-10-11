@@ -99,8 +99,7 @@ export function SwitchPlanModal({
   };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const notUsedHandles = useCallback(() => {
-  }, []);
+  const notUsedHandles = useCallback(() => {}, []);
 
   // Preselect the preferred card when data loads
   useEffect(() => {

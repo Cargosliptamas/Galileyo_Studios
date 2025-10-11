@@ -1,8 +1,8 @@
 "use client";
 
+import type { PaginationState } from "@tanstack/react-table";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { PaginationState } from "@tanstack/react-table";
 
 import { useTRPC } from "~/trpc/react";
 import { usePaymentHistoryColumns } from "../ui/table/columns/use-payment-history-columns";

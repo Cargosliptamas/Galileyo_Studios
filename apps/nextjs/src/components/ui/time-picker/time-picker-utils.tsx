@@ -21,7 +21,11 @@ export function isValidMinuteOrSecond(value: string) {
   return /^[0-5][0-9]$/.test(value);
 }
 
-interface GetValidNumberConfig { max: number; min?: number; loop?: boolean }
+interface GetValidNumberConfig {
+  max: number;
+  min?: number;
+  loop?: boolean;
+}
 
 export function getValidNumber(
   value: string,

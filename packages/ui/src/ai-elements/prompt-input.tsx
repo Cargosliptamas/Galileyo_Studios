@@ -37,6 +37,7 @@ import { nanoid } from "nanoid";
 
 import { cn } from "@galileyo/ui";
 
+import type { Textarea } from "../textarea";
 import { Button } from "../button";
 import {
   DropdownMenu,
@@ -56,7 +57,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../select";
-import type { Textarea } from "../textarea";
 
 export type FileUIPart = FileUIPartAi & {
   id: string;

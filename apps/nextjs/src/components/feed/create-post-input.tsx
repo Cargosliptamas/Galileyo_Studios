@@ -13,8 +13,8 @@ import { addDays, format } from "date-fns";
 import { Calendar, ChevronDown, Globe, Satellite, Smile } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
-import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
 import type { Article } from "@galileyo/api/schemas";
+import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
 import {
   Badge,
   Card,
@@ -180,9 +180,7 @@ function CreatePostComponent({ user }: { user: User }) {
     }),
   );
 
-  const handleSubmit = (
-    message: PromptInputMessage,
-  ) => {
+  const handleSubmit = (message: PromptInputMessage) => {
     try {
       const scheduledFor = isScheduled ? scheduledDate : undefined;
 
@@ -253,8 +251,8 @@ function CreatePostComponent({ user }: { user: User }) {
             value={content}
             maxLength={512}
           >
-            {profiles.length > 1 && (
-              <div className="flex w-full items-center gap-2">
+            <div className="flex w-full items-center gap-2">
+              {profiles.length > 1 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -320,27 +318,27 @@ function CreatePostComponent({ user }: { user: User }) {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {activeProfile === undefined && (
-                  <div className="flex items-center gap-2">
-                    {/* <span className="text-xs text-muted-foreground">Who can see:</span> */}
-                    <Select
-                      value={whoCanSee}
-                      onValueChange={(value) =>
-                        setWhoCanSee(value as "public" | "friends")
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Who can see?" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="public">Public</SelectItem>
-                        <SelectItem value="friends">Friends Only</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+              {activeProfile === undefined && (
+                <div className="flex items-center gap-2">
+                  {/* <span className="text-xs text-muted-foreground">Who can see:</span> */}
+                  <Select
+                    value={whoCanSee}
+                    onValueChange={(value) =>
+                      setWhoCanSee(value as "public" | "friends")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Who can see?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="friends">Friends Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
           </PromptInputTextarea>
         </PromptInputBody>
         <PromptInputToolbar>
@@ -677,9 +675,27 @@ function ScraperComponent() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="primary" className="flex w-full items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex w-full items-center gap-2 text-stone-900"
+          style={{
+            background:
+              "linear-gradient(90deg, #ff005a, #ffb800, #00ff94, #01cfff, #a259ff, #ff005a)",
+            backgroundSize: "200% 200%",
+            animation: "rainbowBG 3s linear infinite",
+          }}
+        >
           <Globe className="h-4 w-4" />
           Scrape URL
+          <style>
+            {`
+              @keyframes rainbowBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+              }
+            `}
+          </style>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600">

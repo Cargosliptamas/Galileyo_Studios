@@ -5,13 +5,11 @@ import React from "react";
 import { cn } from "@galileyo/ui";
 import { Input } from "@galileyo/ui/input";
 
-import type {
-  Period,
-  TimePickerType} from "./time-picker-utils";
+import type { Period, TimePickerType } from "./time-picker-utils";
 import {
   getArrowByType,
   getDateByType,
-  setDateByType
+  setDateByType,
 } from "./time-picker-utils";
 
 export interface TimePickerInputProps

@@ -4,10 +4,10 @@ import { useRef, useState } from "react";
 
 import { Label } from "@galileyo/ui";
 
-import { TimePeriodSelect } from "./period-select";
 import type { TimePickerInputProps } from "./time-picker-input";
-import { TimePickerInput } from "./time-picker-input";
 import type { Period } from "./time-picker-utils";
+import { TimePeriodSelect } from "./period-select";
+import { TimePickerInput } from "./time-picker-input";
 
 export interface TimePickerProps
   extends Pick<TimePickerInputProps, "date" | "setDate"> {

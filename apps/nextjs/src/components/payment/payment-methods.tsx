@@ -68,8 +68,7 @@ export function PaymentMethods() {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const notUsedHandles = useCallback(() => {
-  }, []);
+  const notUsedHandles = useCallback(() => {}, []);
 
   return (
     <>

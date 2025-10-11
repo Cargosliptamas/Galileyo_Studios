@@ -79,8 +79,7 @@ export function Membership({ user }: { user: User }) {
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const notUsedHandles = useCallback(() => {
-  }, []);
+  const notUsedHandles = useCallback(() => {}, []);
 
   return (
     <div className="space-y-6">

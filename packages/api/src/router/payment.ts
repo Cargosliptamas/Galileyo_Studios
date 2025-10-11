@@ -2,19 +2,18 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
+import type {
+  PaymentHistoryListType,
+  PaymentHistoryTypes,
+  PlanListType,
+} from "../types/payment";
 // import { z } from "zod/v4";
 
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
 import { protectedProcedure } from "../trpc";
-import type {
-  PaymentHistoryListType,
-  PaymentHistoryTypes,
-  PlanListType} from "../types/payment";
-import {
-  PaymentDetailsSchema
-} from "../types/payment";
+import { PaymentDetailsSchema } from "../types/payment";
 
 function getPaymentHistoryType(type: number): PaymentHistoryTypes {
   switch (type) {

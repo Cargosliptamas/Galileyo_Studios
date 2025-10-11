@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { PaginationState } from "@tanstack/react-table";
+import { useState } from "react";
 
 import { usePaymentHistoryColumns } from "../ui/table/columns/use-payment-history-columns";
 import { DataTable } from "../ui/table/DataTable";

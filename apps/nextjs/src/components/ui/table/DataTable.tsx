@@ -1,11 +1,12 @@
-import { useCallback, useState } from "react";
 import type {
   ColumnDef,
   ColumnFiltersState,
   OnChangeFn,
   PaginationState,
   SortingState,
-  VisibilityState} from "@tanstack/react-table";
+  VisibilityState,
+} from "@tanstack/react-table";
+import { useCallback, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -14,7 +15,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from "@tanstack/react-table";
 
 import { Skeleton } from "@galileyo/ui/skeleton";
@@ -66,8 +67,8 @@ export function DataTable<TData, TValue>({
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState<PaginationState>(() =>
-    paginationState ?? { pageIndex: 0, pageSize: 10 },
+  const [pagination, setPagination] = useState<PaginationState>(
+    () => paginationState ?? { pageIndex: 0, pageSize: 10 },
   );
 
   const handlePaginationChange = useCallback<OnChangeFn<PaginationState>>(

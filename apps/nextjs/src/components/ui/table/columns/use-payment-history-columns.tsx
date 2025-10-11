@@ -6,11 +6,11 @@ import type { PaymentHistoryType } from "@galileyo/api/schemas";
 import { Button } from "@galileyo/ui/button";
 import { toast } from "@galileyo/ui/toast";
 
+import type { ColumnDefWithLabel } from "./types";
 import { downloadInvoice } from "~/app/actions";
 import { formatCardNumber } from "~/lib/formatter";
 import { PaymentStatusBadge } from "../../payment-status-badge";
 import { DataTableColumnHeader } from "../DataTableColumnHeader";
-import type { ColumnDefWithLabel } from "./types";
 
 export const usePaymentHistoryColumns = () => {
   const handleDownloadInvoice = async (invoiceId: number) => {

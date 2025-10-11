@@ -36,7 +36,9 @@ export function DataTableToolbar<TData>({
               placeholder="Search"
               value={
                 searchTerm ??
-                (table.getColumn(searchColumn)?.getFilterValue() as string|undefined) ??
+                (table.getColumn(searchColumn)?.getFilterValue() as
+                  | string
+                  | undefined) ??
                 ""
               }
               onChange={(event) => {
