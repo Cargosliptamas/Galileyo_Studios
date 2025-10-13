@@ -15,3 +15,7 @@ export interface Article {
     probability?: number;
   };
 }
+
+export interface FetchedArticle extends Article {
+  id: string;
+}

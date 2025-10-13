@@ -13,7 +13,7 @@ import { addDays, format } from "date-fns";
 import { Calendar, ChevronDown, Globe, Satellite, Smile } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
-import type { Article } from "@galileyo/api/schemas";
+import type { FetchedArticle } from "@galileyo/api/schemas";
 import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
 import {
   Badge,
@@ -558,7 +558,7 @@ function CreatePostComponent({ user }: { user: User }) {
 function ScraperComponent() {
   const trpc = useTRPC();
   const [url, setUrl] = useState("");
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<FetchedArticle[]>([]);
   const [selectedArticles, setSelectedArticles] = useState<Set<string>>(
     new Set(),
   );
@@ -595,12 +595,12 @@ function ScraperComponent() {
     scrape.mutate({ url });
   };
 
-  const handleArticleSelect = (articleUrl: string, checked: boolean) => {
+  const handleArticleSelect = (id: string, checked: boolean) => {
     const newSelected = new Set(selectedArticles);
     if (checked) {
-      newSelected.add(articleUrl);
+      newSelected.add(id);
     } else {
-      newSelected.delete(articleUrl);
+      newSelected.delete(id);
     }
     setSelectedArticles(newSelected);
   };
@@ -609,13 +609,13 @@ function ScraperComponent() {
     if (selectedArticles.size === articles.length) {
       setSelectedArticles(new Set());
     } else {
-      setSelectedArticles(new Set(articles.map((article) => article.url)));
+      setSelectedArticles(new Set(articles.map((article) => article.id)));
     }
   };
 
   const handlePublishSelected = async () => {
     const selected = articles.filter((article) =>
-      selectedArticles.has(article.url),
+      selectedArticles.has(article.id),
     );
     if (selected.length === 0) {
       toast.error(
@@ -760,7 +760,7 @@ function ScraperComponent() {
                       key={article.url}
                       className={cn(
                         "transition-all duration-200 hover:shadow-md",
-                        selectedArticles.has(article.url) &&
+                        selectedArticles.has(article.id) &&
                           "ring-2 ring-primary",
                       )}
                     >
@@ -768,10 +768,10 @@ function ScraperComponent() {
                         <div className="flex items-start gap-3">
                           <Checkbox
                             id={`article-${article.url}`}
-                            checked={selectedArticles.has(article.url)}
+                            checked={selectedArticles.has(article.id)}
                             onCheckedChange={(checked) =>
                               handleArticleSelect(
-                                article.url,
+                                article.id,
                                 checked as boolean,
                               )
                             }

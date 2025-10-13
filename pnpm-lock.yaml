@@ -395,6 +395,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.4.0(typescript@5.8.3)
+      nanoid:
+        specifier: ^5.1.6
+        version: 5.1.6
       superjson:
         specifier: 2.2.2
         version: 2.2.2

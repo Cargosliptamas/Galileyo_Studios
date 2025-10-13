@@ -1,8 +1,9 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
+import { nanoid } from "nanoid";
 import { z } from "zod/v4";
 
-import type { Article } from "../types/scraping";
+import type { Article, FetchedArticle } from "../types/scraping";
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
@@ -16,7 +17,7 @@ const JS_FETCH_URLS: string[] = [];
 async function getArticleList(
   url: string,
   isRequiredJSFetch: boolean,
-): Promise<Article[]> {
+): Promise<FetchedArticle[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body: Record<string, any> = {
     url,
@@ -50,13 +51,19 @@ async function getArticleList(
     };
   };
 
-  return response.articleList?.articles ?? [];
+  return (
+    response.articleList?.articles?.map((article) => ({
+      ...article,
+      id: nanoid(),
+    })) ?? []
+  );
 }
 
 async function getArticleContent(
+  id: string,
   url: string,
   isRequiredJSFetch: boolean,
-): Promise<Article | undefined> {
+): Promise<FetchedArticle | undefined> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body: Record<string, any> = {
     url,
@@ -87,7 +94,7 @@ async function getArticleContent(
     article?: Article;
   };
 
-  return response.article;
+  return response.article ? { ...response.article, id } : undefined;
 }
 
 export const scraperRouter = {
@@ -138,13 +145,14 @@ export const scraperRouter = {
         });
       }
 
-      const lastArticleContents: Article[] = [];
+      const lastArticleContents: FetchedArticle[] = [];
 
       for (const article of lastArticles) {
         if (isSocialMedia) {
           lastArticleContents.push(article);
         } else {
           const articleContent = await getArticleContent(
+            article.id,
             article.url,
             isRequiredJSFetch,
           );
