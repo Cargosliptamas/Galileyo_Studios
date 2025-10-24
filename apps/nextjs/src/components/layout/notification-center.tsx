@@ -1,18 +1,25 @@
 "use client";
 
-import { BellIcon, CheckIcon, XIcon, UserPlusIcon, HeartIcon, MessageCircleIcon } from "lucide-react";
 import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  BellIcon,
+  CheckIcon,
+  HeartIcon,
+  MessageCircleIcon,
+  UserPlusIcon,
+  XIcon,
+} from "lucide-react";
 
+import { toast } from "@galileyo/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import { Badge } from "@galileyo/ui/badge";
 import { Button } from "@galileyo/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ScrollArea } from "@galileyo/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
-import { useTRPC } from "~/trpc/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@galileyo/ui";
 
+import { useTRPC } from "~/trpc/react";
 
 // Mock data types - replace with your actual types
 interface Notification {
@@ -134,32 +141,39 @@ function NotificationItem({ notification }: { notification: Notification }) {
   };*/
 
   return (
-    <div className={`flex items-start gap-3 p-3 hover:bg-muted/50 transition-colors ${!notification.read ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}>
+    <div
+      className={`flex items-start gap-3 p-3 transition-colors hover:bg-muted/50 ${!notification.read ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}
+    >
       <div className="flex-shrink-0">
         {notification.user ? (
           <Avatar className="h-8 w-8">
-            <AvatarImage src={notification.user.photo} alt={notification.user.full_name} />
-            <AvatarFallback>{notification.user.full_name.charAt(0)}</AvatarFallback>
+            <AvatarImage
+              src={notification.user.photo}
+              alt={notification.user.full_name}
+            />
+            <AvatarFallback>
+              {notification.user.full_name.charAt(0)}
+            </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
             {getNotificationIcon()}
           </div>
         )}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground truncate">
+          <p className="truncate text-sm font-medium text-foreground">
             {notification.title}
           </p>
           {!notification.read && (
-            <div className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0" />
+            <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
           )}
         </div>
-        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
           {notification.message}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="mt-1 text-xs text-muted-foreground">
           {/*formatTimestamp(request.timestamp)*/}
         </p>
       </div>
@@ -183,7 +197,7 @@ function FriendRequestItem({ request }: { request: FriendRequest }) {
       return `${days}d ago`;
     }
   };*/
-  
+
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const agreeFriendRequest = useMutation(
@@ -195,7 +209,7 @@ function FriendRequestItem({ request }: { request: FriendRequest }) {
       onError: (err) => {
         toast.error(err.message);
       },
-    })
+    }),
   );
 
   const handleAccept = () => {
@@ -215,22 +229,22 @@ function FriendRequestItem({ request }: { request: FriendRequest }) {
       onError: (err) => {
         toast.error(err.message);
       },
-    })
+    }),
   );
 
   return (
-    <div className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors">
+    <div className="flex items-center gap-3 p-3 transition-colors hover:bg-muted/50">
       <Avatar className="h-10 w-10">
         <AvatarImage src={request.photo} alt={request.full_name} />
         <AvatarFallback>{request.full_name.charAt(0)}</AvatarFallback>
       </Avatar>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground truncate">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
           {request.full_name}
         </p>
         {request.mutualFriends && (
           <p className="text-xs text-muted-foreground">
-            {request.mutualFriends} mutual friends 
+            {request.mutualFriends} mutual friends
           </p>
         )}
         <p className="text-xs text-muted-foreground">
@@ -266,28 +280,22 @@ export function NotificationCenter() {
   //const [friendRequests] = useState<FriendRequest[]>(mockFriendRequests);
 
   const trpc = useTRPC();
-  const { data } = useQuery(
-    trpc.friends.getFriendRequestToYou.queryOptions(),
-  );
+  const { data } = useQuery(trpc.friends.getFriendRequestToYou.queryOptions());
 
   const friendRequests = data?.list ?? [];
 
-  const unreadNotifications = notifications.filter(n => !n.read).length;
+  const unreadNotifications = notifications.filter((n) => !n.read).length;
   const totalUnread = unreadNotifications + friendRequests.length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-        >
+        <Button variant="ghost" size="icon" className="relative">
           <BellIcon className="h-5 w-5" />
           {totalUnread > 0 && (
             <Badge
               variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
             >
               {totalUnread > 99 ? "99+" : totalUnread}
             </Badge>
@@ -295,7 +303,10 @@ export function NotificationCenter() {
           <span className="sr-only">Notifications</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600" align="end">
+      <PopoverContent
+        className="w-80 border-slate-200 bg-white p-0 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600"
+        align="end"
+      >
         <Tabs className="w-full" value={tab} onValueChange={setTab}>
           <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
             <TabsTrigger value="notifications" className="rounded-none">
@@ -319,13 +330,15 @@ export function NotificationCenter() {
               </div>
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="notifications" className="m-0">
             <ScrollArea className="h-80">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <BellIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">No notifications yet</p>
+                  <BellIcon className="mb-2 h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    No notifications yet
+                  </p>
                 </div>
               ) : (
                 <div className="divide-y">
@@ -339,28 +352,27 @@ export function NotificationCenter() {
               )}
             </ScrollArea>
           </TabsContent>
-          
+
           <TabsContent value="requests" className="m-0">
             <ScrollArea className="h-80">
               {friendRequests.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <UserPlusIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">No friend requests</p>
+                  <UserPlusIcon className="mb-2 h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    No friend requests
+                  </p>
                 </div>
               ) : (
                 <div className="divide-y">
                   {friendRequests.map((request) => (
-                    <FriendRequestItem
-                      key={request.id}
-                      request={request}
-                    />
+                    <FriendRequestItem key={request.id} request={request} />
                   ))}
                 </div>
               )}
             </ScrollArea>
           </TabsContent>
         </Tabs>
-        
+
         {notifications.length > 0 && tab === "notifications" && (
           <div className="border-t p-3">
             <Button

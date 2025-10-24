@@ -1,55 +1,13 @@
 import {
   AlertCircle,
   AlertTriangle,
-  Car,
   CloudRain,
   Heart,
-  Lock,
   Shield,
   Wrench,
 } from "lucide-react";
 
-export type AlertType =
-  | "weather"
-  | "natural_disaster"
-  | "cyber_attack"
-  | "security_breach"
-  | "infrastructure"
-  | "health_emergency"
-  | "traffic"
-  | "other";
-
-export type AlertSeverity = "low" | "medium" | "high" | "critical";
-
-export interface Alert {
-  id: string;
-  title: string;
-  description: string;
-  type: AlertType;
-  severity: AlertSeverity;
-  location: {
-    latitude: number;
-    longitude: number;
-    address?: string;
-    city?: string;
-    country?: string;
-  };
-  timestamp: string;
-  source: string;
-  isActive: boolean;
-  affectedArea?: {
-    radius: number; // in kilometers
-  };
-  metadata?: {
-    windSpeed?: number;
-    temperature?: number;
-    humidity?: number;
-    affectedSystems?: string[];
-    casualties?: number;
-    damage?: string;
-    [key: string]: unknown;
-  };
-}
+import type { Alert, AlertSeverity, AlertType } from "@galileyo/api/schemas";
 
 export interface AlertFilters {
   types: AlertType[];
@@ -62,54 +20,197 @@ export interface AlertFilters {
 }
 
 export const ALERT_TYPE_CONFIG = {
-  weather: {
-    label: "Weather",
-    color: "#3B82F6",
-    icon: CloudRain,
-    description:
-      "Weather-related alerts including storms, floods, and extreme conditions",
-  },
-  natural_disaster: {
-    label: "Natural Disaster",
+  ACCIDENT: {
+    label: "Accident",
     color: "#EF4444",
+    icon: AlertCircle,
+    description: "Accidents and incidents",
+  },
+  ACTIVESHOOTER: {
+    label: "Active Shooter",
+    color: "#DC2626",
     icon: AlertTriangle,
-    description: "Natural disasters like earthquakes, hurricanes, wildfires",
+    description: "Active shooter incidents",
   },
-  cyber_attack: {
-    label: "Cyber Attack",
-    color: "#8B5CF6",
-    icon: Shield,
-    description: "Cybersecurity incidents and digital threats",
+  AVALANCHE: {
+    label: "Avalanche",
+    color: "#7C3AED",
+    icon: AlertTriangle,
+    description: "Avalanche warnings and incidents",
   },
-  security_breach: {
-    label: "Security Breach",
-    color: "#F59E0B",
-    icon: Lock,
-    description: "Physical security incidents and breaches",
-  },
-  infrastructure: {
-    label: "Infrastructure",
-    color: "#6B7280",
-    icon: Wrench,
-    description: "Infrastructure failures and maintenance issues",
-  },
-  health_emergency: {
-    label: "Health Emergency",
+  BIOMEDICAL: {
+    label: "Biomedical",
     color: "#10B981",
     icon: Heart,
-    description: "Public health emergencies and medical alerts",
+    description: "Biomedical emergencies",
   },
-  traffic: {
-    label: "Traffic",
-    color: "#F97316",
-    icon: Car,
-    description: "Traffic incidents and road closures",
+  CIVILUNREST: {
+    label: "Civil Unrest",
+    color: "#F59E0B",
+    icon: AlertCircle,
+    description: "Civil unrest and protests",
   },
-  other: {
-    label: "Other",
+  COMBAT: {
+    label: "Combat",
+    color: "#DC2626",
+    icon: Shield,
+    description: "Combat situations",
+  },
+  CONFLICT: {
+    label: "Conflict",
+    color: "#EF4444",
+    icon: AlertTriangle,
+    description: "Conflict situations",
+  },
+  CYBER: {
+    label: "Cyber",
+    color: "#8B5CF6",
+    icon: Shield,
+    description: "Cybersecurity incidents",
+  },
+  DROUGHT: {
+    label: "Drought",
+    color: "#F59E0B",
+    icon: CloudRain,
+    description: "Drought conditions",
+  },
+  EARTHQUAKE: {
+    label: "Earthquake",
+    color: "#DC2626",
+    icon: AlertTriangle,
+    description: "Earthquake warnings and incidents",
+  },
+  EQUIPMENT: {
+    label: "Equipment",
+    color: "#6B7280",
+    icon: Wrench,
+    description: "Equipment failures",
+  },
+  EXTREMETEMPERATURE: {
+    label: "Extreme Temperature",
+    color: "#EF4444",
+    icon: CloudRain,
+    description: "Extreme temperature warnings",
+  },
+  FLOOD: {
+    label: "Flood",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Flood warnings and incidents",
+  },
+  HIGHSURF: {
+    label: "High Surf",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "High surf warnings",
+  },
+  HIGHWIND: {
+    label: "High Wind",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "High wind warnings",
+  },
+  INCIDENT: {
+    label: "Incident",
+    color: "#F59E0B",
+    icon: AlertCircle,
+    description: "General incidents",
+  },
+  LANDSLIDE: {
+    label: "Landslide",
+    color: "#EF4444",
+    icon: AlertTriangle,
+    description: "Landslide warnings",
+  },
+  MANMADE: {
+    label: "Man-Made",
+    color: "#6B7280",
+    icon: Wrench,
+    description: "Man-made incidents",
+  },
+  MARINE: {
+    label: "Marine",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Marine incidents",
+  },
+  OCCURRENCE: {
+    label: "Occurrence",
     color: "#64748B",
     icon: AlertCircle,
-    description: "Other types of alerts and notifications",
+    description: "General occurrences",
+  },
+  POLITICALCONFLICT: {
+    label: "Political Conflict",
+    color: "#EF4444",
+    icon: AlertTriangle,
+    description: "Political conflicts",
+  },
+  SEVEREWEATHER: {
+    label: "Severe Weather",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Severe weather warnings",
+  },
+  STORM: {
+    label: "Storm",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Storm warnings",
+  },
+  TERRORISM: {
+    label: "Terrorism",
+    color: "#DC2626",
+    icon: Shield,
+    description: "Terrorism incidents",
+  },
+  TORNADO: {
+    label: "Tornado",
+    color: "#DC2626",
+    icon: AlertTriangle,
+    description: "Tornado warnings",
+  },
+  CYCLONE: {
+    label: "Tropical Cyclone",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Tropical cyclone warnings",
+  },
+  TSUNAMI: {
+    label: "Tsunami",
+    color: "#3B82F6",
+    icon: AlertTriangle,
+    description: "Tsunami warnings",
+  },
+  UNIT: {
+    label: "Unit",
+    color: "#6B7280",
+    icon: AlertCircle,
+    description: "Unit incidents",
+  },
+  VOLCANO: {
+    label: "Volcanic Eruption",
+    color: "#DC2626",
+    icon: AlertTriangle,
+    description: "Volcanic eruption warnings",
+  },
+  WEAPONS: {
+    label: "Weapons",
+    color: "#DC2626",
+    icon: Shield,
+    description: "Weapons incidents",
+  },
+  WILDFIRE: {
+    label: "Wildfire",
+    color: "#EF4444",
+    icon: AlertTriangle,
+    description: "Wildfire warnings",
+  },
+  WINTERSTORM: {
+    label: "Winter Storm",
+    color: "#3B82F6",
+    icon: CloudRain,
+    description: "Winter storm warnings",
   },
 } as const;
 
@@ -135,3 +236,5 @@ export const SEVERITY_CONFIG = {
     priority: 4,
   },
 } as const;
+
+export type { Alert, AlertType, AlertSeverity };

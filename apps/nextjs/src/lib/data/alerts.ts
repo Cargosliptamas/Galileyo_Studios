@@ -7,7 +7,7 @@ export const mockAlerts: Alert[] = [
     title: "Severe Thunderstorm Warning",
     description:
       "Heavy rain and strong winds expected in the downtown area. Avoid outdoor activities.",
-    type: "weather",
+    type: "SEVEREWEATHER",
     severity: "high",
     location: {
       latitude: 33.4484,
@@ -33,7 +33,7 @@ export const mockAlerts: Alert[] = [
     title: "Cybersecurity Incident Detected",
     description:
       "Suspicious network activity detected in financial district. Enhanced monitoring in place.",
-    type: "cyber_attack",
+    type: "CYBER",
     severity: "medium",
     location: {
       latitude: 27.9506,
@@ -54,7 +54,7 @@ export const mockAlerts: Alert[] = [
     title: "Traffic Accident on Highway",
     description:
       "Multi-vehicle accident causing delays on I-95 North. Expect 30-minute delays.",
-    type: "traffic",
+    type: "ACCIDENT",
     severity: "medium",
     location: {
       latitude: 30.2672,
@@ -76,7 +76,7 @@ export const mockAlerts: Alert[] = [
     title: "Wildfire Alert",
     description:
       "Wildfire spreading rapidly in forest area. Evacuation orders issued for nearby communities.",
-    type: "natural_disaster",
+    type: "WILDFIRE",
     severity: "critical",
     location: {
       latitude: 45.5152,
@@ -101,7 +101,7 @@ export const mockAlerts: Alert[] = [
     title: "Power Grid Failure",
     description:
       "Major power outage affecting downtown area. Estimated restoration time: 3 hours.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "high",
     location: {
       latitude: 32.7767,
@@ -129,7 +129,7 @@ export const mockAlerts: Alert[] = [
     title: "Public Health Advisory",
     description:
       "Air quality alert due to industrial emissions. Sensitive individuals should stay indoors.",
-    type: "health_emergency",
+    type: "BIOMEDICAL",
     severity: "medium",
     location: {
       latitude: 40.7128,
@@ -153,7 +153,7 @@ export const mockAlerts: Alert[] = [
     id: "7",
     title: "Severe Thunderstorm Warning",
     description: "Severe thunderstorms expected with damaging winds and hail.",
-    type: "weather",
+    type: "SEVEREWEATHER",
     severity: "high",
     location: {
       latitude: 47.6062,
@@ -177,7 +177,7 @@ export const mockAlerts: Alert[] = [
     id: "8",
     title: "Cyber Attack Detected",
     description: "Suspicious network activity detected in city infrastructure.",
-    type: "cyber_attack",
+    type: "CYBER",
     severity: "medium",
     location: {
       latitude: 25.7617,
@@ -200,7 +200,7 @@ export const mockAlerts: Alert[] = [
     id: "9",
     title: "Flood Watch",
     description: "Heavy rainfall may cause flooding in low-lying areas.",
-    type: "natural_disaster",
+    type: "WILDFIRE",
     severity: "medium",
     location: {
       latitude: 33.749,
@@ -223,7 +223,7 @@ export const mockAlerts: Alert[] = [
     id: "10",
     title: "Security Breach at Airport",
     description: "Unauthorized access detected in restricted area.",
-    type: "security_breach",
+    type: "INCIDENT",
     severity: "high",
     location: {
       latitude: 39.9526,
@@ -247,7 +247,7 @@ export const mockAlerts: Alert[] = [
     id: "11",
     title: "Bridge Closure",
     description: "Bridge closed due to structural concerns.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "medium",
     location: {
       latitude: 42.3601,
@@ -271,7 +271,7 @@ export const mockAlerts: Alert[] = [
     id: "12",
     title: "Heat Advisory",
     description: "High temperatures expected. Stay hydrated.",
-    type: "health_emergency",
+    type: "BIOMEDICAL",
     severity: "low",
     location: {
       latitude: 36.1627,
@@ -295,7 +295,7 @@ export const mockAlerts: Alert[] = [
     id: "13",
     title: "Major Traffic Accident",
     description: "Multi-vehicle accident causing major delays.",
-    type: "traffic",
+    type: "ACCIDENT",
     severity: "high",
     location: {
       latitude: 41.8781,
@@ -319,7 +319,7 @@ export const mockAlerts: Alert[] = [
     id: "14",
     title: "Gas Leak Reported",
     description: "Evacuations underway due to gas leak.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "critical",
     location: {
       latitude: 38.9072,
@@ -342,7 +342,7 @@ export const mockAlerts: Alert[] = [
     id: "15",
     title: "Tornado Watch",
     description: "Conditions are favorable for tornadoes.",
-    type: "weather",
+    type: "SEVEREWEATHER",
     severity: "critical",
     location: {
       latitude: 35.4676,
@@ -365,7 +365,7 @@ export const mockAlerts: Alert[] = [
     id: "16",
     title: "Water Contamination Alert",
     description: "Boil water advisory in effect.",
-    type: "health_emergency",
+    type: "BIOMEDICAL",
     severity: "high",
     location: {
       latitude: 37.7749,
@@ -388,7 +388,7 @@ export const mockAlerts: Alert[] = [
     id: "17",
     title: "Wildfire Contained",
     description: "Wildfire has been contained, monitoring continues.",
-    type: "natural_disaster",
+    type: "WILDFIRE",
     severity: "medium",
     location: {
       latitude: 34.0522,
@@ -411,7 +411,7 @@ export const mockAlerts: Alert[] = [
     id: "18",
     title: "Suspicious Package",
     description: "Police investigating suspicious package at train station.",
-    type: "security_breach",
+    type: "INCIDENT",
     severity: "medium",
     location: {
       latitude: 39.7392,
@@ -434,7 +434,7 @@ export const mockAlerts: Alert[] = [
     id: "19",
     title: "Network Outage",
     description: "Internet connectivity lost in several neighborhoods.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "medium",
     location: {
       latitude: 29.7604,
@@ -457,7 +457,7 @@ export const mockAlerts: Alert[] = [
     id: "20",
     title: "Hazardous Material Spill",
     description: "Chemical spill reported on highway.",
-    type: "other",
+    type: "OCCURRENCE",
     severity: "high",
     location: {
       latitude: 39.7684,
@@ -480,7 +480,7 @@ export const mockAlerts: Alert[] = [
     id: "21",
     title: "Amber Alert",
     description: "Child abduction reported, vehicle last seen heading north.",
-    type: "other",
+    type: "OCCURRENCE",
     severity: "critical",
     location: {
       latitude: 44.9778,
@@ -503,7 +503,7 @@ export const mockAlerts: Alert[] = [
     id: "22",
     title: "Winter Storm Warning",
     description: "Heavy snow and ice expected overnight.",
-    type: "weather",
+    type: "SEVEREWEATHER",
     severity: "high",
     location: {
       latitude: 43.0389,
@@ -526,7 +526,7 @@ export const mockAlerts: Alert[] = [
     id: "23",
     title: "Hospital System Outage",
     description: "IT outage affecting patient records and scheduling.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "critical",
     location: {
       latitude: 40.4406,
@@ -549,7 +549,7 @@ export const mockAlerts: Alert[] = [
     id: "24",
     title: "Earthquake Aftershock",
     description: "Minor aftershock felt in the region.",
-    type: "natural_disaster",
+    type: "WILDFIRE",
     severity: "low",
     location: {
       latitude: 34.0522,
@@ -572,7 +572,7 @@ export const mockAlerts: Alert[] = [
     id: "25",
     title: "School Lockdown",
     description: "Precautionary lockdown due to nearby police activity.",
-    type: "security_breach",
+    type: "INCIDENT",
     severity: "medium",
     location: {
       latitude: 39.1031,
@@ -595,7 +595,7 @@ export const mockAlerts: Alert[] = [
     id: "26",
     title: "Train Derailment",
     description: "Freight train derailed, hazardous materials contained.",
-    type: "infrastructure",
+    type: "EQUIPMENT",
     severity: "high",
     location: {
       latitude: 41.2565,
@@ -618,7 +618,7 @@ export const mockAlerts: Alert[] = [
     id: "27",
     title: "Extreme Cold Warning",
     description: "Wind chills below -20°C expected.",
-    type: "weather",
+    type: "SEVEREWEATHER",
     severity: "critical",
     location: {
       latitude: 46.8772,
@@ -641,7 +641,7 @@ export const mockAlerts: Alert[] = [
     id: "28",
     title: "Fire at Industrial Plant",
     description: "Large fire reported, emergency crews on scene.",
-    type: "natural_disaster",
+    type: "WILDFIRE",
     severity: "high",
     location: {
       latitude: 29.4241,
@@ -664,7 +664,7 @@ export const mockAlerts: Alert[] = [
     id: "29",
     title: "Malware Outbreak",
     description: "Ransomware detected in city government systems.",
-    type: "cyber_attack",
+    type: "CYBER",
     severity: "critical",
     location: {
       latitude: 39.9612,
@@ -687,7 +687,7 @@ export const mockAlerts: Alert[] = [
     id: "30",
     title: "Major Road Construction",
     description: "Expect delays due to ongoing roadwork.",
-    type: "traffic",
+    type: "ACCIDENT",
     severity: "medium",
     location: {
       latitude: 36.1699,

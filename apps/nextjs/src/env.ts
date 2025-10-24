@@ -27,6 +27,8 @@ export const env = createEnv({
     GROWTHBOOK_CLIENT_KEY: z.string().optional(),
     GROWTHBOOK_API_HOST: z.string().optional(),
     ZYTE_API_KEY: z.string().optional(),
+    DISASTERAWARE_USERNAME: z.string().min(1),
+    DISASTERAWARE_PASSWORD: z.string().min(1),
   },
 
   /**
