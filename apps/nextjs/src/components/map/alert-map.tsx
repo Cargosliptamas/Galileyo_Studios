@@ -80,9 +80,9 @@ function getIconPath(alertType: string): string {
     WINTERSTORM:
       '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
   };
-  
+
   const path = iconPaths[alertType];
-  
+
   if (!path) {
     return iconPaths.INCIDENT ?? "";
   }

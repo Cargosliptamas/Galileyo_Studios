@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getSession } from "~/auth/server";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
+
 // import { flags } from "~/flags/server";
 
 export default async function AppLayout({
