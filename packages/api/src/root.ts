@@ -2,6 +2,7 @@ import { authRouter } from "./router/auth";
 import { bookmarkRouter } from "./router/bookmark";
 import { commentRouter } from "./router/comment";
 import { feedRouter } from "./router/feed";
+import { friendsRouter } from "./router/friends";
 import { paymentRouter } from "./router/payment";
 import { postRouter } from "./router/post";
 import { profileRouter } from "./router/profile";
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   bookmark: bookmarkRouter,
   comment: commentRouter,
   feed: feedRouter,
+  friends: friendsRouter,
   post: postRouter,
   payment: paymentRouter,
   profile: profileRouter,
