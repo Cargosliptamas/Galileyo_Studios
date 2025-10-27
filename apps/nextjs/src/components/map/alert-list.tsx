@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@galileyo/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
+import { Card, CardContent } from "@galileyo/ui/card";
 
 import type { Alert } from "~/lib/types/alert";
 import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from "~/lib/types/alert";
@@ -24,9 +24,9 @@ export function AlertList({ alerts, onAlertClick }: AlertListProps) {
 
   return (
     <div className="space-y-3">
-      <CardHeader>
+      {/* <CardHeader>
         <CardTitle>Recent Alerts ({alerts.length})</CardTitle>
-      </CardHeader>
+      </CardHeader> */}
 
       {sortedAlerts.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground">

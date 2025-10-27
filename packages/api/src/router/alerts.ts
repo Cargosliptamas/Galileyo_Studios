@@ -94,8 +94,6 @@ export const alertsRouter = {
   list: protectedProcedure.query(async () => {
     const token = await getCachedApiToken();
 
-    console.log("TOKEN", token);
-
     const response = await fetch(
       "https://api.disasteraware.com/hazards/active/category/EVENT",
       {

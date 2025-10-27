@@ -9,86 +9,13 @@ import {
 } from "react";
 import dynamic from "next/dynamic";
 import L from "leaflet";
+import { renderToString } from "react-dom/server";
 
 import { Badge } from "@galileyo/ui/badge";
 
 import type { Alert } from "~/lib/types/alert";
 import { mockAlerts } from "~/lib/data/alerts";
 import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from "~/lib/types/alert";
-
-// Helper function to get SVG path for each alert type
-function getIconPath(alertType: string): string {
-  const iconPaths: Record<string, string> = {
-    ACCIDENT: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-    ACTIVESHOOTER:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    AVALANCHE:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    BIOMEDICAL:
-      '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>',
-    CIVILUNREST:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    COMBAT:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    CONFLICT:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    CYBER:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    DROUGHT:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    EARTHQUAKE:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    EQUIPMENT:
-      '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-    EXTREMETEMPERATURE:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    FLOOD:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    HIGHSURF:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    HIGHWIND:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    INCIDENT: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-    LANDSLIDE:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    MANMADE:
-      '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-    MARINE:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    OCCURRENCE: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-    POLITICALCONFLICT:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    SEVEREWEATHER:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    STORM:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    TERRORISM:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    TORNADO:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    CYCLONE:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-    TSUNAMI:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    UNIT: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
-    VOLCANO:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    WEAPONS:
-      '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
-    WILDFIRE:
-      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    WINTERSTORM:
-      '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10Z"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
-  };
-
-  const path = iconPaths[alertType];
-
-  if (!path) {
-    return iconPaths.INCIDENT ?? "";
-  }
-
-  return path;
-}
 
 // Dynamically import the map component to avoid SSR issues
 const MapContainer = dynamic(
@@ -115,16 +42,45 @@ const Circle = dynamic(
   { ssr: false },
 );
 
+const Polygon = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Polygon),
+  { ssr: false },
+);
+
+const Rectangle = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Rectangle),
+  { ssr: false },
+);
+
+const AttributionControl = dynamic(
+  () => import("react-leaflet").then((mod) => mod.AttributionControl),
+  { ssr: false },
+);
+
+interface SelectedLocation {
+  lat: number;
+  lon: number;
+  display_name: string;
+  boundingbox?: [string, string, string, string];
+  geojson?: {
+    type: string;
+    coordinates: number[][][] | number[][];
+  };
+}
+
 interface AlertMapProps {
   alerts?: Alert[];
   center?: [number, number];
   zoom?: number;
   onAlertClick?: (alert: Alert) => void;
   showAffectedAreas?: boolean;
+  selectedLocation?: SelectedLocation | null;
 }
 
 export interface AlertMapRef {
   panToAlert: (alert: Alert) => void;
+  panToLocation: (lat: number, lng: number, zoom?: number) => void;
+  getUserLocation: () => Promise<{ lat: number; lng: number } | null>;
 }
 
 export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
@@ -135,6 +91,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
       zoom = 6,
       onAlertClick,
       showAffectedAreas = true,
+      selectedLocation,
     },
     ref,
   ) => {
@@ -170,6 +127,40 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
           });
         }
       },
+      panToLocation: (lat: number, lng: number, zoom = 12) => {
+        if (mapRef.current) {
+          const latLng = L.latLng(lat, lng);
+          mapRef.current.setView(latLng, zoom, {
+            animate: true,
+            duration: 1,
+          });
+        }
+      },
+      getUserLocation: async () => {
+        return new Promise((resolve) => {
+          // if (!navigator.geolocation) {
+          //   resolve(null);
+          //   return;
+          // }
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              });
+            },
+            () => {
+              resolve(null);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            },
+          );
+        });
+      },
     }));
 
     if (!isClient) {
@@ -186,6 +177,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
           center={center}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
+          attributionControl={false}
           className="z-0"
           ref={mapRef}
         >
@@ -200,13 +192,14 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
 
             // Create custom icon for each alert type
             const IconComponent = alertConfig.icon;
+            const iconHtml = renderToString(
+              <IconComponent className="h-6 w-6" style={{ color: "white" }} />,
+            );
             const customIcon = L.divIcon({
               className: "custom-marker",
               html: `
-              <div class="custom-marker ${alert.type}" style="background-color: ${alertConfig.color};">
-                <svg style="color: white; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  ${getIconPath(alert.type)}
-                </svg>
+              <div class="custom-marker ${alert.type}" style="background-color: ${alertConfig.color}; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%;">
+                ${iconHtml}
               </div>
             `,
               iconSize: [24, 24],
@@ -293,6 +286,122 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
               </div>
             );
           })}
+
+          {/* Selected Location Region */}
+          {selectedLocation && (
+            <>
+              {/* Render polygon if geojson is available */}
+              {selectedLocation.geojson &&
+                selectedLocation.geojson.type === "Polygon" &&
+                Array.isArray(selectedLocation.geojson.coordinates[0]) && (
+                  <Polygon
+                    positions={
+                      (selectedLocation.geojson.coordinates as number[][][])[0]
+                        ?.map((coord: number[]) => {
+                          const lat = coord[0];
+                          const lon = coord[1];
+                          return lat !== undefined && lon !== undefined
+                            ? ([lon, lat] as [number, number])
+                            : null;
+                        })
+                        .filter(
+                          (coord): coord is [number, number] => coord !== null,
+                        ) ?? []
+                    }
+                    pathOptions={{
+                      color: "#4682B4",
+                      fillColor: "#87CEEB",
+                      fillOpacity: 0.3,
+                      weight: 2,
+                      opacity: 0.8,
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-2">
+                        <p className="text-sm font-medium">
+                          {selectedLocation.display_name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {Number(selectedLocation.lat).toFixed(6)},{" "}
+                          {Number(selectedLocation.lon).toFixed(6)}
+                        </p>
+                      </div>
+                    </Popup>
+                  </Polygon>
+                )}
+
+              {/* Render rectangle if bounding box is available (fallback) */}
+              {!selectedLocation.geojson && selectedLocation.boundingbox && (
+                <Rectangle
+                  bounds={[
+                    [
+                      parseFloat(selectedLocation.boundingbox[0]),
+                      parseFloat(selectedLocation.boundingbox[2]),
+                    ], // min_lat, min_lon
+                    [
+                      parseFloat(selectedLocation.boundingbox[1]),
+                      parseFloat(selectedLocation.boundingbox[3]),
+                    ], // max_lat, max_lon
+                  ]}
+                  pathOptions={{
+                    color: "#4682B4",
+                    fillColor: "#87CEEB",
+                    fillOpacity: 0.3,
+                    weight: 2,
+                    opacity: 0.8,
+                  }}
+                >
+                  <Popup>
+                    <div className="p-2">
+                      <p className="text-sm font-medium">
+                        {selectedLocation.display_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {Number(selectedLocation.lat).toFixed(6)},{" "}
+                        {Number(selectedLocation.lon).toFixed(6)}
+                      </p>
+                    </div>
+                  </Popup>
+                </Rectangle>
+              )}
+
+              {/* Center marker */}
+              <Marker
+                position={[
+                  Number(selectedLocation.lat),
+                  Number(selectedLocation.lon),
+                ]}
+                icon={L.divIcon({
+                  className: "selected-location-marker",
+                  html: `
+                    <div style="
+                      background-color: #4682B4; 
+                      border: 3px solid #87CEEB;
+                      width: 20px; 
+                      height: 20px; 
+                      border-radius: 50%; 
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                    "></div>
+                  `,
+                  iconSize: [20, 20],
+                  iconAnchor: [10, 10],
+                })}
+              >
+                <Popup>
+                  <div className="p-2">
+                    <p className="text-sm font-medium">
+                      {selectedLocation.display_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {Number(selectedLocation.lat).toFixed(6)},{" "}
+                      {Number(selectedLocation.lon).toFixed(6)}
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            </>
+          )}
+          <AttributionControl position="bottomright" prefix="Galileyo" />
         </MapContainer>
       </div>
     );
