@@ -53,7 +53,7 @@ export function PhoneMockup({
   return (
     <div className="flex items-center justify-center">
       {/* iPhone 15 Container */}
-      <div className="relative h-[504px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1)]">
+      <div className="relative h-[504px] w-72 rounded-[45px] border-8 border-zinc-900 bg-black shadow-[0_0_2px_2px_rgba(255,255,255,0.1)]">
         {/* Dynamic Island */}
         <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[90px] -translate-x-1/2 transform rounded-full bg-black"></div>
 

@@ -867,9 +867,9 @@ export default function HomePage({ items = questions, cycleMs = 6000 }: Props) {
                 }}
                 className={`group flex h-[300px] w-[200px] items-end rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all duration-200 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800`}
               >
-                <div className="pointer-events-none absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
+                <div className="pointer-events-none absolute inset-0 rounded-xl bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
                 <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-                  <h3 className="mb-3 w-full text-center text-xl font-semibold text-slate-900 dark:text-white">
+                  <h3 className="mb-3 w-full text-center text-xl font-semibold text-white dark:text-white">
                     {feature.title}
                   </h3>
                 </div>
