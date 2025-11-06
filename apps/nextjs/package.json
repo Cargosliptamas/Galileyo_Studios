@@ -11,6 +11,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "pnpm with-env next start",
+    "start:ws": "pnpm with-env tsx src/server/trpc-ws.ts --tsconfig tsconfig.server.json",
     "typecheck": "tsc --noEmit",
     "tailwind-preview": "tsx test.ts",
     "with-env": "dotenv -e ../../.env --"
