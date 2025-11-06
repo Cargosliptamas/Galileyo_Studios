@@ -111,4 +111,152 @@ export const friendsRouter = {
 
       return result.data;
     }),
+  friendList: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().default(10),
+        cursor: z.number().default(0),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/friends`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            page: input.cursor,
+            page_size: input.limit,
+          }),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          search: string | null;
+          list: {
+            id: number;
+            full_name: string;
+            first_name: string;
+            last_name: string;
+            photo: string;
+            country: string;
+            state: string;
+            zip: string;
+            is_phone_visible: boolean;
+            is_address_visible: boolean;
+            is_deleted: boolean;
+          }[];
+          count: string;
+          page: number;
+          page_size: number;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return result.data;
+    }),
+  addFriend: protectedProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/add-friend`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_user: input.userId,
+          }),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          id_user: string;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+  cancelFriendRequest: protectedProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/cancel-friend-request`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_user: input.userId,
+          }),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          id_user: string;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+  deleteFriend: protectedProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customer/delete-friend`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_user: input.userId,
+          }),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          id_user: string;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
 } satisfies TRPCRouterRecord;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BellIcon,
@@ -20,6 +21,7 @@ import { ScrollArea } from "@galileyo/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 
 import { useTRPC } from "~/trpc/react";
+import { UserAvatar } from "../feed/user-avatar";
 
 // Mock data types - replace with your actual types
 interface Notification {
@@ -234,23 +236,31 @@ function FriendRequestItem({ request }: { request: FriendRequest }) {
 
   return (
     <div className="flex items-center gap-3 p-3 transition-colors hover:bg-muted/50">
-      <Avatar className="h-10 w-10">
-        <AvatarImage src={request.photo} alt={request.full_name} />
-        <AvatarFallback>{request.full_name.charAt(0)}</AvatarFallback>
-      </Avatar>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-foreground">
-          {request.full_name}
-        </p>
-        {request.mutualFriends && (
-          <p className="text-xs text-muted-foreground">
-            {request.mutualFriends} mutual friends
+      <Link
+        href={`/profile/${request.id}`}
+        className="flex flex-1 items-center gap-2"
+      >
+        <UserAvatar
+          name={request.full_name}
+          image={request.photo ?? null}
+          isVerified={false}
+          isInfluencer={false}
+          onlyAvatar={true}
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-foreground">
+            {request.full_name}
           </p>
-        )}
-        <p className="text-xs text-muted-foreground">
-          {/*formatTimestamp(request.timestamp)*/}
-        </p>
-      </div>
+          {request.mutualFriends && (
+            <p className="text-xs text-muted-foreground">
+              {request.mutualFriends} mutual friends
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            {/*formatTimestamp(request.timestamp)*/}
+          </p>
+        </div>
+      </Link>
       <div className="flex gap-1">
         <Button
           size="sm"

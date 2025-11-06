@@ -29,7 +29,7 @@ export function ChatRecipients() {
   const { chatId } = useParams<{ chatId: string }>();
 
   const { data: friends } = useSuspenseQuery(
-    trpc.profile.getTestFriends.queryOptions({
+    trpc.friends.friendList.queryOptions({
       limit: 10,
       cursor: 0,
     }),

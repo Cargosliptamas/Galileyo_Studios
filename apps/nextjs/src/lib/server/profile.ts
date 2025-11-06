@@ -1,12 +1,13 @@
 "use server";
 
 import type { phoneNumber as phoneNumberSchema } from "@galileyo/db/schema";
-import { and, eq } from "@galileyo/db";
+import { and, eq, or } from "@galileyo/db";
 import { db } from "@galileyo/db/client";
 import {
   follower,
   followerList,
   influencerPage as influencerPageSchema,
+  memberRequest,
   subscription as subscriptionSchema,
   user,
   userSubscription,
@@ -174,6 +175,26 @@ export async function getUserProfile(id: number, authenticatedUser?: string) {
     where: eq(user.id, id),
     with: {
       userFriends_idFriend: true,
+      memberRequests_idUser: {
+        where: and(
+          eq(memberRequest.type, 5),
+          eq(memberRequest.isActive, 1),
+          or(
+            eq(memberRequest.idUser, authenticatedUserId ?? 0),
+            eq(memberRequest.idUserFrom, authenticatedUserId ?? 0),
+          ),
+        ),
+      },
+      memberRequests_idUserFrom: {
+        where: and(
+          eq(memberRequest.type, 5),
+          eq(memberRequest.isActive, 1),
+          or(
+            eq(memberRequest.idUser, authenticatedUserId ?? 0),
+            eq(memberRequest.idUserFrom, authenticatedUserId ?? 0),
+          ),
+        ),
+      },
       phoneNumbers: true,
     },
   });
@@ -185,9 +206,21 @@ export async function getUserProfile(id: number, authenticatedUser?: string) {
   const isDeleted = data.status === 3;
 
   const isFriend = data.userFriends_idFriend.some(
-    (friend) => friend.idFriend === authenticatedUserId,
+    (friend) =>
+      friend.idFriend === authenticatedUserId ||
+      friend.idUser === authenticatedUserId,
   );
   const ownProfile = id === authenticatedUserId;
+
+  const isFriendRequested = data.memberRequests_idUser.some(
+    (request) =>
+      request.idUser === authenticatedUserId ||
+      request.idUserFrom === authenticatedUserId,
+  );
+
+  const isFriendRequestAcceptable = data.memberRequests_idUserFrom.some(
+    (request) => request.idUser === authenticatedUserId,
+  );
 
   const isPhoneVisible =
     ownProfile ||
@@ -236,5 +269,8 @@ export async function getUserProfile(id: number, authenticatedUser?: string) {
     address,
     phoneVisible: isPhoneVisible,
     addressVisible: isAddressVisible,
+    isFriend,
+    isFriendRequested,
+    isFriendRequestAcceptable,
   };
 }

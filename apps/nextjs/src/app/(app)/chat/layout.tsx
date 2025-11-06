@@ -20,7 +20,7 @@ export default async function Layout({
   }
 
   prefetch(
-    trpc.profile.getTestFriends.queryOptions({
+    trpc.friends.friendList.queryOptions({
       limit: 10,
       cursor: 0,
     }),

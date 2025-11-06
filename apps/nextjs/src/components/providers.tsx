@@ -4,6 +4,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@galileyo/ui/theme";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { CallProvider } from "./chat/call-provider";
+import { ChatProvider } from "./chat/chat-provider";
 import { PushNotificationProvider } from "./layout/push-notification-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -17,9 +19,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <TRPCReactProvider>
-        <ReactQueryDevtools />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
         <NuqsAdapter>
-          <PushNotificationProvider>{children}</PushNotificationProvider>
+          <CallProvider>
+            <ChatProvider>
+              <PushNotificationProvider>{children}</PushNotificationProvider>
+            </ChatProvider>
+          </CallProvider>
         </NuqsAdapter>
       </TRPCReactProvider>
     </ThemeProvider>

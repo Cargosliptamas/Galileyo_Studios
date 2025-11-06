@@ -1,4 +1,4 @@
-import "server-only";
+// import "server-only";
 
 import { cache } from "react";
 import { headers } from "next/headers";
@@ -19,7 +19,7 @@ const baseUrl =
 
 export const auth = initAuth({
   baseUrl,
-  productionUrl: `https://${env.VERCEL_PROJECT_PRODUCTION_URL ?? "turbo.t3.gg"}`,
+  productionUrl: `https://${env.VERCEL_PROJECT_PRODUCTION_URL ?? "galileyo.com"}`,
   secret: env.AUTH_SECRET,
   emailOptions: {
     sendMagicLink: async ({ email, token, url }) =>

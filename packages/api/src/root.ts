@@ -1,6 +1,7 @@
 import { alertsRouter } from "./router/alerts";
 import { authRouter } from "./router/auth";
 import { bookmarkRouter } from "./router/bookmark";
+import { chatRouter } from "./router/chat";
 import { commentRouter } from "./router/comment";
 import { feedRouter } from "./router/feed";
 import { friendsRouter } from "./router/friends";
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   alerts: alertsRouter,
   auth: authRouter,
   bookmark: bookmarkRouter,
+  chat: chatRouter,
   comment: commentRouter,
   feed: feedRouter,
   friends: friendsRouter,

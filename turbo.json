@@ -69,7 +69,9 @@
     "EMAIL_FROM",
     "NEXT_PUBLIC_API_URL",
     "PORT",
-    "ZYTE_API_KEY"
+    "ZYTE_API_KEY",
+    "REDIS_URL",
+    "NEXT_PUBLIC_WS_PORT"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

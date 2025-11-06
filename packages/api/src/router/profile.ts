@@ -1,9 +1,5 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod/v4";
-
-// import { desc, eq } from "@galileyo/db";
-// import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
 import { protectedProcedure, publicProcedure } from "../trpc";
 import {
@@ -283,58 +279,6 @@ export const profileRouter = {
           code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
-      }
-
-      return result.data;
-    }),
-  getTestFriends: protectedProcedure
-    .input(
-      z.object({
-        limit: z.number().default(1),
-        cursor: z.number().default(0),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/customer/friends`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${ctx.session.session.token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            page: input.cursor,
-            page_size: input.limit,
-          }),
-        },
-      );
-
-      const result = (await request.json()) as {
-        status: "success" | "error";
-        data: {
-          search: string | null;
-          list: {
-            id: number;
-            full_name: string;
-            first_name: string;
-            last_name: string;
-            photo: string;
-            country: string;
-            state: string;
-            zip: string;
-            is_phone_visible: boolean;
-            is_address_visible: boolean;
-            is_deleted: boolean;
-          }[];
-          count: string;
-          page: number;
-          page_size: number;
-        };
-      };
-
-      if (result.status !== "success") {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 
       return result.data;
