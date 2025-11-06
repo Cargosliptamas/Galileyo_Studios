@@ -37,6 +37,10 @@ const getQueryClient = () => {
 export const { useTRPC, TRPCProvider } = createTRPCContext<AppRouter>();
 
 const getWsUrl = () => {
+  if (env.NEXT_PUBLIC_WS_FULL_URL) {
+    return env.NEXT_PUBLIC_WS_FULL_URL;
+  }
+
   if (typeof window !== "undefined") {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const host = window.location.hostname;

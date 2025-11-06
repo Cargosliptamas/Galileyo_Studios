@@ -43,6 +43,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ZYTE_ENABLED: z.coerce.boolean().default(false),
     NEXT_PUBLIC_WS_PORT: z.coerce.number().default(3001),
+    NEXT_PUBLIC_WS_FULL_URL: z.string().optional(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -56,6 +57,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_ZYTE_ENABLED: process.env.NEXT_PUBLIC_ZYTE_ENABLED,
     NEXT_PUBLIC_WS_PORT: process.env.NEXT_PUBLIC_WS_PORT,
+    NEXT_PUBLIC_WS_FULL_URL: process.env.NEXT_PUBLIC_WS_FULL_URL,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
