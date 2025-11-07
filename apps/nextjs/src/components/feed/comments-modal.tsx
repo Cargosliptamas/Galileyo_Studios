@@ -18,6 +18,7 @@ import {
 import type { Comment as CommentType, FeedItem } from "@galileyo/api/schemas";
 // import { Card, CardContent } from '@galileyo/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
+import { Button } from "@galileyo/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@galileyo/ui/dropdown-menu";
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch,
+} from "@galileyo/ui/emoji-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
@@ -185,9 +193,26 @@ function CommentComponent({
                 />
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <button className="text-slate-400 transition-colors hover:text-cyan-400">
-                      <Smile className="h-4 w-4" />
-                    </button>
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Smile className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-fit p-0">
+                        <EmojiPicker
+                          className="h-[342px]"
+                          locale="en"
+                          onEmojiSelect={({ emoji }) => {
+                            setReplyText(`${replyText}${emoji}`);
+                          }}
+                        >
+                          <EmojiPickerSearch />
+                          <EmojiPickerContent />
+                          <EmojiPickerFooter />
+                        </EmojiPicker>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -440,9 +465,26 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
             />
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <button className="text-slate-500 transition-colors hover:text-cyan-500 dark:text-slate-400 dark:hover:text-cyan-400">
-                  <Smile className="h-5 w-5" />
-                </button>
+                <Popover modal={true}>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Smile className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-fit p-0">
+                    <EmojiPicker
+                      className="h-[342px]"
+                      locale="en"
+                      onEmojiSelect={({ emoji }) => {
+                        setNewComment((prev) => `${prev}${emoji}`);
+                      }}
+                    >
+                      <EmojiPickerSearch />
+                      <EmojiPickerContent />
+                      <EmojiPickerFooter />
+                    </EmojiPicker>
+                  </PopoverContent>
+                </Popover>
                 <span className="text-sm text-slate-500">
                   {newComment.length}/280
                 </span>
