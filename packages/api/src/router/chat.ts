@@ -1,7 +1,16 @@
 import { on } from "node:events";
 import type { TRPCRouterRecord } from "@trpc/server";
+import { UTCDate } from "@date-fns/utc";
 import { tracked, TRPCError } from "@trpc/server";
+import { format } from "date-fns";
 import { z } from "zod/v4";
+
+import { and, eq, inArray } from "@galileyo/db";
+import {
+  conversationMessage,
+  conversation as conversationTable,
+  conversationUser,
+} from "@galileyo/db/schema";
 
 import type { CallSignalEvent, ChatMessageEvent } from "../lib/redis";
 import { pub, sub } from "../lib/redis";
@@ -89,6 +98,8 @@ export const chatRouter = {
               id: number;
               id_user: number;
               is_my: boolean;
+              is_system: number;
+              metadata: ChatMessageEvent["metadata"];
               message: string;
               files: string[];
               is_viewed: boolean;
@@ -149,6 +160,8 @@ export const chatRouter = {
             id: number;
             id_user: number;
             is_my: boolean;
+            is_system: number;
+            metadata: ChatMessageEvent["metadata"];
             message: string;
             files: string[];
             is_viewed: boolean;
@@ -172,15 +185,14 @@ export const chatRouter = {
         });
       }
 
-      return result.data;
-      // return {
-      //   ...result.data,
-      //   list: result.data.list.map((message) => ({
-      //     ...message,
-      //     received_at: new Date(message.received_at).toISOString(),
-      //     created_at: new Date(message.created_at).toISOString(),
-      //   })),
-      // };
+      // return result.data;
+      return {
+        ...result.data,
+        list: result.data.list.map((message) => ({
+          ...message,
+          is_system: message.is_system === 1,
+        })),
+      };
     }),
 
   sendMessage: protectedProcedure
@@ -224,6 +236,8 @@ export const chatRouter = {
           id_conversation: number;
           id_user: number;
           is_my: boolean;
+          is_system: number;
+          metadata: ChatMessageEvent["metadata"];
           message: string;
           files: string[];
           is_viewed: boolean;
@@ -263,6 +277,7 @@ export const chatRouter = {
             JSON.stringify({
               ...result.data,
               is_my: false,
+              is_system: result.data.is_system === 1,
             }),
           );
         }
@@ -307,6 +322,8 @@ export const chatRouter = {
             id: number;
             id_user: number;
             is_my: boolean;
+            is_system: number;
+            metadata: ChatMessageEvent["metadata"];
             message: string;
             files: string[];
             is_viewed: boolean;
@@ -330,7 +347,13 @@ export const chatRouter = {
         });
       }
 
-      return result.data;
+      return {
+        ...result.data,
+        list: result.data.list.map((message) => ({
+          ...message,
+          is_system: message.is_system === 1,
+        })),
+      };
     }),
   getFriendChat: protectedProcedure
     .input(
@@ -365,6 +388,8 @@ export const chatRouter = {
             id: number;
             id_user: number;
             is_my: boolean;
+            is_system: number;
+            metadata: ChatMessageEvent["metadata"];
             message: string;
             files: string[];
             is_viewed: boolean;
@@ -388,7 +413,13 @@ export const chatRouter = {
         });
       }
 
-      return result.data;
+      return {
+        ...result.data,
+        list: result.data.list.map((message) => ({
+          ...message,
+          is_system: message.is_system === 1,
+        })),
+      };
     }),
 
   onCallSignal: protectedProcedure.subscription(async function* (opts) {
@@ -433,10 +464,70 @@ export const chatRouter = {
         toUserId: z.union([z.number(), z.string()]),
         callType: z.enum(["video", "voice"]),
         signal: z.custom<AnyObject>().optional(),
+        metadata: z
+          .object({
+            isAnswered: z.boolean(),
+            time: z.number(),
+          })
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const toChannel = callChannelId(input.toUserId.toString());
+
+      if (input.type === "call-end" && input.metadata) {
+        try {
+          const conversations = await ctx.db
+            .select()
+            .from(conversationTable)
+            .innerJoin(
+              conversationUser,
+              eq(conversationTable.id, conversationUser.idConversation),
+            )
+            .where(eq(conversationUser.idUser, Number(ctx.session.user.id)));
+
+          const conversationIds = conversations.map(
+            (conversation) => conversation.conversation.id,
+          );
+
+          // find the conversation for the other user within the conversations
+          const otherUserConversations = await ctx.db
+            .select()
+            .from(conversationTable)
+            .innerJoin(
+              conversationUser,
+              eq(conversationTable.id, conversationUser.idConversation),
+            )
+            .where(
+              and(
+                eq(conversationUser.idUser, Number(input.toUserId)),
+                inArray(conversationTable.id, conversationIds),
+              ),
+            );
+
+          const conversation = otherUserConversations[0]?.conversation;
+
+          if (!conversation) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Conversation not found",
+            });
+          }
+
+          await ctx.db.insert(conversationMessage).values({
+            idConversation: conversation.id,
+            idUser: Number(ctx.session.user.id),
+            message: "call_ended",
+            isSystem: 1,
+            metadata: input.metadata,
+            createdAt: format(new UTCDate(), "yyyy-MM-dd HH:mm:ss"),
+            receivedAt: format(new UTCDate(), "yyyy-MM-dd HH:mm:ss"),
+            token: crypto.randomUUID(),
+          });
+        } catch (error) {
+          console.error("error inserting call end message", error);
+        }
+      }
 
       try {
         await pub.publish(

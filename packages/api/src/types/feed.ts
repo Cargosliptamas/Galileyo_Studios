@@ -30,6 +30,7 @@ export interface BaseFeedItem {
   is_owner: boolean | undefined;
   show_reactions: boolean | undefined;
   show_comments: boolean | undefined;
+  id_user: number | null;
 }
 
 export interface FollowerListItem extends BaseFeedItem {

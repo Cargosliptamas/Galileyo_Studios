@@ -14,7 +14,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useSubscription } from "@trpc/tanstack-react-query";
-import { Minus, Phone, Video, X } from "lucide-react";
+import { Minus, Phone, PhoneMissed, Video, X } from "lucide-react";
 
 import {
   cn,
@@ -36,6 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ScrollArea } from "@galileyo/ui/scroll-area";
 
 import { authClient } from "~/auth/client";
+import { formatDuration } from "~/lib/formatter";
 import { getUserImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "../feed/user-avatar";
@@ -758,6 +759,104 @@ function ChatWindowComponent({
   );
 }
 
+function ChatMessageTimestamp({
+  timestamp,
+  isOwnMessage = false,
+  isSystemMessage = false,
+}: {
+  timestamp: Date;
+  isOwnMessage?: boolean;
+  isSystemMessage?: boolean;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <p
+            className={cn(
+              "mt-1 text-xs text-muted-foreground",
+              isOwnMessage && "text-primary-foreground/70",
+              isSystemMessage && "mt-0 text-end text-muted-foreground",
+            )}
+          >
+            {new Intl.DateTimeFormat("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              // hour12: true,
+            }).format(timestamp)}
+          </p>
+        </TooltipTrigger>
+        <TooltipContent className="z-[10000]">
+          {new Intl.DateTimeFormat("en-US", {
+            dateStyle: "short",
+            timeStyle: "short",
+          }).format(timestamp)}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+function SystemMessageContainer({
+  children,
+  timestamp,
+}: {
+  children: React.ReactNode | React.ReactNode[];
+  timestamp: Date;
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-2 rounded-lg bg-muted p-2 text-muted-foreground">
+        {children}
+      </div>
+      <ChatMessageTimestamp
+        timestamp={new Date(timestamp)}
+        isSystemMessage={true}
+      />
+    </>
+  );
+}
+
+function SystemMessage({
+  message,
+  timestamp,
+  metadata,
+}: {
+  message: string;
+  timestamp: Date;
+  metadata?: {
+    isAnswered: boolean;
+    time: number;
+  } | null;
+}) {
+  if (message === "call_ended") {
+    return (
+      <SystemMessageContainer timestamp={timestamp}>
+        {metadata?.isAnswered ? (
+          <p className="text-sm">
+            Call ended. Duration: {formatDuration(metadata.time)}
+          </p>
+        ) : (
+          <div className="flex items-center gap-2">
+            <PhoneMissed className="size-4 text-red-500" />
+            <span className="text-sm">Unanswered call</span>
+          </div>
+        )}
+      </SystemMessageContainer>
+    );
+  }
+
+  if (message === "added_as_friend") {
+    return (
+      <SystemMessageContainer timestamp={timestamp}>
+        <p className="text-sm">You are now friends</p>
+      </SystemMessageContainer>
+    );
+  }
+
+  return null;
+}
+
 export function ChatMessages({
   // conversationId,
   messages,
@@ -773,6 +872,11 @@ export function ChatMessages({
     id: number;
     id_user: number;
     is_my: boolean;
+    is_system: boolean;
+    metadata?: {
+      isAnswered: boolean;
+      time: number;
+    } | null;
     message: string;
     files: string[];
     is_viewed: boolean;
@@ -944,6 +1048,19 @@ export function ChatMessages({
         ) : (
           sortedMessages.map((message) => {
             const isOwnMessage = message.is_my;
+            const isSystemMessage = message.is_system;
+
+            if (isSystemMessage) {
+              return (
+                <SystemMessage
+                  key={message.id}
+                  message={message.message}
+                  timestamp={new Date(message.created_at)}
+                  metadata={message.metadata}
+                />
+              );
+            }
+
             return (
               <div
                 key={message.id}
@@ -965,32 +1082,10 @@ export function ChatMessages({
                 >
                   <p className="text-sm">{message.message}</p>
 
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <p
-                          className={cn(
-                            "mt-1 text-xs",
-                            isOwnMessage
-                              ? "text-primary-foreground/70"
-                              : "text-muted-foreground",
-                          )}
-                        >
-                          {new Intl.DateTimeFormat("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            // hour12: true,
-                          }).format(new Date(message.received_at))}
-                        </p>
-                      </TooltipTrigger>
-                      <TooltipContent className="z-[10000]">
-                        {new Intl.DateTimeFormat("en-US", {
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        }).format(new Date(message.received_at))}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ChatMessageTimestamp
+                    timestamp={new Date(message.created_at)}
+                    isOwnMessage={isOwnMessage}
+                  />
                 </div>
               </div>
             );

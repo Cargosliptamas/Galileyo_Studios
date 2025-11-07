@@ -513,6 +513,8 @@ export const conversationMessage = mysqlTable(
       onUpdate: "restrict",
     }),
     message: text(),
+    isSystem: tinyint("is_system").default(0).notNull(),
+    metadata: json("metadata"),
     createdAt: datetime("created_at", { mode: "string" }).notNull(),
     updatedAt: datetime("updated_at", { mode: "string" }),
     receivedAt: datetime("received_at", { mode: "string" }),

@@ -441,9 +441,12 @@ export default function FeedCard({
       return `/profile/by-subscription/${item.id_subscription}`;
     }
 
-    // return `/profile/${item.id}`;
+    if (item.id_user) {
+      return `/profile/${item.id_user}`;
+    }
+
     return undefined;
-  }, [isMocked, item.id]);
+  }, [isMocked, item.id, item.id_user]);
 
   const hasActions = useMemo(() => {
     return item.type !== "financial" && item.type !== "not_sended_yet";
@@ -533,12 +536,14 @@ export default function FeedCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem
-                  onClick={handleSubscription}
-                  disabled={isMocked || setSubscriptionMutation.isPending}
-                >
-                  {item.is_subscribed ? "Unfollow" : "Follow"}
-                </DropdownMenuItem>
+                {item.type !== "user" && (
+                  <DropdownMenuItem
+                    onClick={handleSubscription}
+                    disabled={isMocked || setSubscriptionMutation.isPending}
+                  >
+                    {item.is_subscribed ? "Unfollow" : "Follow"}
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={handleMute}
                   disabled={isMocked || muteMutation.isPending}

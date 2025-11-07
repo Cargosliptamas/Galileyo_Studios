@@ -33,6 +33,7 @@ export interface CallState {
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
   error: string | null;
+  startTime: number | null;
 }
 
 export interface CallContextType {
@@ -60,6 +61,24 @@ export interface CallContextType {
 
 const CallContext = createContext<CallContextType | null>(null);
 
+function getUserMediaConstraints(callType: CallType): MediaStreamConstraints {
+  const isVideo = callType === "video";
+
+  const constraints: MediaStreamConstraints = {
+    video: isVideo,
+    audio: true,
+  };
+
+  // if (isVideo) {
+  //   constraints.video = {
+  //     width: { min: 1024, ideal: 1920, max: 2560 },
+  //     height: { min: 576, ideal: 1080, max: 1440 },
+  //   };
+  // }
+
+  return constraints;
+}
+
 export function useCall() {
   const context = useContext(CallContext);
   if (!context) {
@@ -81,6 +100,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     localStream: null,
     remoteStream: null,
     error: null,
+    startTime: null,
   }));
 
   const [remoteProfile, setRemoteProfile] = useState<{
@@ -93,6 +113,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const remoteStreamRef = useRef<MediaStream | null>(null);
   const isInitiatorRef = useRef<boolean>(false);
   const endCallRef = useRef<(() => void) | null>(null);
+  const isEndingCallRef = useRef<boolean>(false);
   const [pendingSignal, setPendingSignal] = useState<{
     type: "offer" | "answer" | "ice-candidate" | "call-init" | "call-end";
     signal?: SignalData | null;
@@ -120,13 +141,30 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Send call end signal
-    if (currentUserId && callState.remoteUserId) {
-      sendCallSignal.mutate({
-        type: "call-end",
-        // fromUserId: currentUserId,
-        toUserId: callState.remoteUserId,
-        callType: callState.callType ?? "voice",
-      });
+    if (currentUserId && callState.remoteUserId && !isEndingCallRef.current) {
+      isEndingCallRef.current = true;
+
+      sendCallSignal.mutate(
+        {
+          type: "call-end",
+          // fromUserId: currentUserId,
+          toUserId: callState.remoteUserId,
+          callType: callState.callType ?? "voice",
+          metadata: callState.isInitiator
+            ? {
+                isAnswered: callState.isCallActive,
+                time: callState.isCallActive
+                  ? Date.now() - (callState.startTime ?? 0)
+                  : 0,
+              }
+            : undefined,
+        },
+        {
+          onSettled: () => {
+            isEndingCallRef.current = false;
+          },
+        },
+      );
     }
 
     setCallState({
@@ -141,11 +179,14 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       localStream: null,
       remoteStream: null,
       error: null,
+      startTime: null,
     });
   }, [
     currentUserId,
+    callState.isInitiator,
     callState.callType,
     callState.remoteUserId,
+    // callState.isCallActive,
     trpc,
     sendCallSignal,
   ]);
@@ -211,6 +252,10 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
             peerRef.current.signal(data.signal);
             break;
           case "answer":
+            setCallState((prev) => ({
+              ...prev,
+              startTime: Date.now(),
+            }));
             peerRef.current.signal(data.signal);
             break;
           case "ice-candidate":
@@ -268,6 +313,11 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         });
 
         peer.on("stream", (remoteStream: MediaStream) => {
+          if (callType === "voice") {
+            const audio = new Audio();
+            audio.srcObject = remoteStream;
+            void audio.play();
+          }
           remoteStreamRef.current = remoteStream;
           setCallState((prev) => ({
             ...prev,
@@ -301,7 +351,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         resolve(peer);
       });
     },
-    [currentUserId, callState.remoteUserId, trpc, sendCallSignal],
+    [
+      currentUserId,
+      callState.remoteUserId,
+      callState.callType,
+      trpc,
+      sendCallSignal,
+    ],
   );
 
   const startCall = useCallback(
@@ -314,18 +370,16 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       remoteUserId: number;
       remoteProfile: { name: string; photo: string };
     }) => {
-      if (!currentUserId) return;
+      if (!currentUserId) {
+        return;
+      }
       // setRemoteUserId(remoteUserId);
       setRemoteProfile(remoteProfile);
 
       try {
-        // Request media access
-        const constraints: MediaStreamConstraints = {
-          video: callType === "video",
-          audio: true,
-        };
-
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const stream = await navigator.mediaDevices.getUserMedia(
+          getUserMediaConstraints(callType),
+        );
         localStreamRef.current = stream;
 
         setCallState((prev) => ({
@@ -402,19 +456,16 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Request media access
-      const constraints: MediaStreamConstraints = {
-        video: callState.callType === "video",
-        audio: true,
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const stream = await navigator.mediaDevices.getUserMedia(
+        getUserMediaConstraints(callState.callType),
+      );
       localStreamRef.current = stream;
 
       setCallState((prev) => ({
         ...prev,
         localStream: stream,
         isIncomingCall: false,
+        startTime: Date.now(),
       }));
 
       // Initialize peer as answerer

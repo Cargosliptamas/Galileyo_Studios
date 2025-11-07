@@ -11,6 +11,11 @@ export interface ChatMessageEvent {
   id_conversation: number;
   id_user: number;
   is_my: boolean;
+  is_system: boolean;
+  metadata?: {
+    isAnswered: boolean;
+    time: number;
+  } | null;
   message: string;
   files: string[];
   is_viewed: boolean;

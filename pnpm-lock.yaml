@@ -268,9 +268,12 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       flags:
-        specifier: ^4.0.1
-        version: 4.0.1(@opentelemetry/api@1.9.0)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^4.0.2
+        version: 4.0.2(@opentelemetry/api@1.9.0)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -401,6 +404,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@date-fns/utc':
+        specifier: ^2.1.1
+        version: 2.1.1
       '@galileyo/auth':
         specifier: workspace:*
         version: link:../auth
@@ -413,6 +419,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.4.0(typescript@5.8.3)
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       ioredis:
         specifier: ^5.8.2
         version: 5.8.2
@@ -1704,6 +1713,9 @@ packages:
 
   '@date-fns/tz@1.2.0':
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@date-fns/utc@2.1.1':
+    resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -6740,8 +6752,8 @@ packages:
     resolution: {integrity: sha512-2kCCtc+JvcZ86IGAz3Z2Y0A1baIz9fL31pH/0S1IqZr9Iwnjq8izfPtrCyQKO6TLMPELLsQMre7VDqeIKCsHkA==}
     engines: {node: '>=18'}
 
-  flags@4.0.1:
-    resolution: {integrity: sha512-nJNY97LoI+BDNCSnGIEvBAxYkRYeRuMZ3KtdjCj60quGH3cnyjnSQfw9vB/kvb3+wAtdn2sm5t+jO6dy5tpi1w==}
+  flags@4.0.2:
+    resolution: {integrity: sha512-qNMPc10TKe/5pA0evWxS0vDm3AMpicB7uf6e/+828chNAWUoVziRJfyOcBWwadl4zBhmTfPz+hxTVpNKF7+/PA==}
     peerDependencies:
       '@opentelemetry/api': ^1.7.0
       '@sveltejs/kit': '*'
@@ -12128,6 +12140,8 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.9
 
   '@date-fns/tz@1.2.0': {}
+
+  '@date-fns/utc@2.1.1': {}
 
   '@drizzle-team/brocli@0.10.2': {}
 
@@ -18006,7 +18020,7 @@ snapshots:
       semver-regex: 4.0.5
       super-regex: 1.0.0
 
-  flags@4.0.1(@opentelemetry/api@1.9.0)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  flags@4.0.2(@opentelemetry/api@1.9.0)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@edge-runtime/cookies': 5.0.2
       jose: 5.10.0

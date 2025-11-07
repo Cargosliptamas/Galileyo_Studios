@@ -22,6 +22,7 @@ export function ActiveCallDialog() {
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
   const pipRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
     isDragging: boolean;
