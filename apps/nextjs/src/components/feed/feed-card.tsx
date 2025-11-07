@@ -506,7 +506,7 @@ export default function FeedCard({
               name={item.title}
               image={getUserAvatarIcon(item)}
               // isVerified={isVerified}
-              isVerified={false}
+              isVerified={isInfluencer}
               isInfluencer={isInfluencer}
               href={profileLink}
               // href={isMocked ? undefined : `/profile/${item.id}`}
