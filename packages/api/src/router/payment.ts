@@ -345,6 +345,7 @@ export const paymentRouter = {
           list: {
             id: number;
             current: boolean;
+            is_scheduled: boolean;
             name: string;
             description: string | null;
             price: number;

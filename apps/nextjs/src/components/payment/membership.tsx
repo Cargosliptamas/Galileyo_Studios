@@ -68,6 +68,10 @@ export function Membership({ user }: { user: User }) {
     return plans.list.find((plan) => plan.current);
   }, [plans]);
 
+  const scheduledPlan = useMemo(() => {
+    return plans.list.find((plan) => plan.is_scheduled);
+  }, [plans]);
+
   const newPlans = useMemo(() => {
     return plans.list;
     // return plans.list.filter((plan) => plan.is_new_plan);
@@ -120,6 +124,12 @@ export function Membership({ user }: { user: User }) {
             isCancelled={plans.is_cancelled}
             canReactivate={plans.can_reactivate}
           />
+          {scheduledPlan && (
+            <div className="flex items-center justify-center gap-2">
+              Change to <strong>{scheduledPlan.name}</strong> plan to occur at
+              next billing cycle
+            </div>
+          )}
           <div className="flex items-center justify-center gap-2">
             <Dialog open={showSwitchPlan} onOpenChange={setShowSwitchPlan}>
               <DialogTrigger asChild>

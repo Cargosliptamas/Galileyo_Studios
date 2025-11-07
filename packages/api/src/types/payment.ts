@@ -62,6 +62,7 @@ export const PlanSchema = z.object({
   price: z.number(),
   settings: z.record(z.string(), z.string().or(z.number())),
   is_new_plan: z.boolean(),
+  is_scheduled: z.boolean().optional().nullable(),
 });
 
 export type PlanType = z.infer<typeof PlanSchema>;
