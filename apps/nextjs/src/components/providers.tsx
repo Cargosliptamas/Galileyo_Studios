@@ -3,6 +3,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { ThemeProvider } from "@galileyo/ui/theme";
 
+import { AbilityProvider } from "~/hooks/use-ability";
 import { TRPCReactProvider } from "~/trpc/react";
 import { CallProvider } from "./chat/call-provider";
 import { ChatProvider } from "./chat/chat-provider";
@@ -21,11 +22,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <TRPCReactProvider>
         <ReactQueryDevtools buttonPosition="bottom-left" />
         <NuqsAdapter>
-          <CallProvider>
-            <ChatProvider>
-              <PushNotificationProvider>{children}</PushNotificationProvider>
-            </ChatProvider>
-          </CallProvider>
+          <AbilityProvider>
+            <CallProvider>
+              <ChatProvider>
+                <PushNotificationProvider>{children}</PushNotificationProvider>
+              </ChatProvider>
+            </CallProvider>
+          </AbilityProvider>
         </NuqsAdapter>
       </TRPCReactProvider>
     </ThemeProvider>

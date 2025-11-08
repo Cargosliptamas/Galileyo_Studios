@@ -283,4 +283,35 @@ export const profileRouter = {
 
       return result.data;
     }),
+  getAbilities: protectedProcedure.query(async ({ ctx }) => {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/customer/get-abilities`,
+      {
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+        },
+      },
+    );
+
+    const result = (await request.json()) as {
+      status: "success" | "error";
+      data: {
+        action: string;
+        subject: string;
+      }[];
+      error: {
+        message: string;
+        code: string | number | null;
+      };
+    };
+
+    if (result.status !== "success") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: result.error.message,
+      });
+    }
+
+    return result.data;
+  }),
 } satisfies TRPCRouterRecord;

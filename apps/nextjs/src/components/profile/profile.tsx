@@ -3,14 +3,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { differenceInSeconds, format } from "date-fns";
 import {
   ArrowLeftIcon,
   Battery,
   Bell,
+  CalendarIcon,
   Clock,
+  CopyIcon,
   Download,
   Key,
   Laptop,
@@ -20,6 +24,7 @@ import {
   Monitor,
   MoreHorizontal,
   Plus,
+  RectangleEllipsis,
   Save,
   Shield,
   Smartphone,
@@ -33,13 +38,22 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "lucide-react";
+import { z } from "zod";
 
 import {
   ChangePasswordSchema,
   PrivacySchema,
   ProfileGeneralSchema,
 } from "@galileyo/api/schemas";
-import { ScrollArea, ScrollBar } from "@galileyo/ui";
+import {
+  Calendar,
+  cn,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ScrollArea,
+  ScrollBar,
+} from "@galileyo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
@@ -51,6 +65,7 @@ import {
 } from "@galileyo/ui/cropper";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -98,6 +113,8 @@ import { Textarea } from "@galileyo/ui/textarea";
 import { toast } from "@galileyo/ui/toast";
 
 import { updateProfilePicture } from "~/app/actions";
+import { authClient } from "~/auth/client";
+import { Can } from "~/hooks/use-ability";
 import { useFileUpload } from "~/hooks/use-file-upload";
 import { isVisibleError } from "~/lib/visible-error";
 import { useTRPC } from "~/trpc/react";
@@ -182,7 +199,18 @@ interface Device {
   signalStrength: "excellent" | "good" | "fair" | "poor";
 }
 
+const API_KEY_QUERY_KEY = ["profile", "api-keys"];
+
+const ApiKeySchema = z.object({
+  name: z.string().min(1),
+  expiresAt: z.date().optional(),
+});
+
 export function Profile() {
+  const [isCreateApiKeyDialogOpen, setIsCreateApiKeyDialogOpen] =
+    useState(false);
+  const [newApiKey, setNewApiKey] = useState<string | null>(null);
+
   const trpc = useTRPC();
   const {
     subscription,
@@ -190,6 +218,71 @@ export function Profile() {
     unsubscribeFromPush,
     isSubscriptionLoading,
   } = usePushNotification();
+
+  const { data: apiKeys } = useQuery({
+    queryKey: API_KEY_QUERY_KEY,
+    queryFn: async () => {
+      const { data, error } = await authClient.apiKey.list();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    },
+  });
+
+  const createApiKeyForm = useForm({
+    schema: ApiKeySchema,
+    defaultValues: {
+      name: "",
+      expiresAt: undefined,
+    },
+  });
+
+  const createApiKey = useMutation({
+    mutationKey: API_KEY_QUERY_KEY,
+    mutationFn: async (input: z.infer<typeof ApiKeySchema>) => {
+      const { data, error } = await authClient.apiKey.create({
+        ...input,
+        expiresIn: input.expiresAt
+          ? differenceInSeconds(input.expiresAt, new Date())
+          : undefined,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      setIsCreateApiKeyDialogOpen(false);
+      setNewApiKey(data.key);
+
+      return data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: API_KEY_QUERY_KEY });
+      toast.success("API key created successfully");
+      createApiKeyForm.reset();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to create API key");
+    },
+  });
+
+  const deleteApiKey = useMutation({
+    mutationKey: API_KEY_QUERY_KEY,
+    mutationFn: async (id: string) => {
+      const { data } = await authClient.apiKey.delete({ keyId: id });
+      return data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: API_KEY_QUERY_KEY });
+      toast.success("API key deleted successfully");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to delete API key");
+    },
+  });
 
   const { data: currentUser } = useSuspenseQuery(
     trpc.profile.getProfile.queryOptions(),
@@ -830,10 +923,221 @@ export function Profile() {
 
           {/* Security Settings */}
           <TabsContent value="security" className="space-y-6">
+            <Can I="manage" a="influencer-impersonation">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Lock className="h-5 w-5" />
+                    API Keys
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>API Keys</Label>
+                    </div>
+
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Key</TableHead>
+                          <TableHead>Created At</TableHead>
+                          <TableHead>Expires At</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {apiKeys?.map((apiKey) => (
+                          <TableRow key={apiKey.id}>
+                            <TableCell>{apiKey.name}</TableCell>
+                            <TableCell>{apiKey.start}</TableCell>
+                            <TableCell>
+                              {new Date(apiKey.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              {apiKey.expiresAt
+                                ? new Date(
+                                    apiKey.expiresAt,
+                                  ).toLocaleDateString()
+                                : "-"}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => {
+                                  deleteApiKey.mutate(apiKey.id);
+                                }}
+                                disabled={deleteApiKey.isPending}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+
+                    <div className="flex justify-end">
+                      <Button
+                        className="flex items-center gap-2"
+                        onClick={() => setIsCreateApiKeyDialogOpen(true)}
+                      >
+                        <Plus className="h-4 w-4" />
+                        Create API Key
+                      </Button>
+                    </div>
+
+                    <Dialog
+                      modal
+                      open={!!newApiKey}
+                      onOpenChange={() => setNewApiKey(null)}
+                    >
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>API Key Created</DialogTitle>
+                          <DialogDescription>
+                            Your API key has been created successfully. The key
+                            is only shown once, so make sure to copy it now.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="mt-4 space-y-4">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                              <Key className="h-4 w-4" />
+                              <span className="text-sm font-medium">
+                                API Key
+                              </span>
+                            </div>
+
+                            <div className="flex max-w-sm flex-col items-center gap-2">
+                              <div className="max-w-sm overflow-scroll whitespace-pre-wrap rounded-md bg-slate-100 p-4 text-sm dark:bg-slate-800">
+                                {newApiKey}
+                              </div>
+
+                              <Button
+                                className="flex items-center gap-2"
+                                onClick={() => {
+                                  void navigator.clipboard.writeText(
+                                    newApiKey ?? "",
+                                  );
+                                  toast.success("API key copied to clipboard");
+                                }}
+                              >
+                                <CopyIcon className="h-4 w-4" />
+                                Copy
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Close</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Dialog
+                      open={isCreateApiKeyDialogOpen}
+                      onOpenChange={setIsCreateApiKeyDialogOpen}
+                    >
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Create API Key</DialogTitle>
+                        </DialogHeader>
+                        <Form {...createApiKeyForm}>
+                          <form
+                            className="space-y-4"
+                            onSubmit={createApiKeyForm.handleSubmit((data) => {
+                              createApiKey.mutate(data);
+                            })}
+                          >
+                            <FormField
+                              control={createApiKeyForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} placeholder="Name" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={createApiKeyForm.control}
+                              name="expiresAt"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-col gap-2">
+                                  <FormLabel>Expires At</FormLabel>
+                                  <FormControl>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant={"outline"}
+                                          className={cn(
+                                            "w-full justify-start text-left font-normal",
+                                            !field.value &&
+                                              "text-muted-foreground",
+                                          )}
+                                        >
+                                          <CalendarIcon />
+                                          {field.value ? (
+                                            format(field.value, "PPP")
+                                          ) : (
+                                            <span>Pick a date</span>
+                                          )}
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent>
+                                        <Calendar
+                                          mode="single"
+                                          selected={field.value}
+                                          onSelect={(d) => field.onChange(d)}
+                                        />
+                                      </PopoverContent>
+                                    </Popover>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </form>
+                        </Form>
+
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsCreateApiKeyDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={createApiKey.isPending}
+                            onClick={() =>
+                              createApiKey.mutate(createApiKeyForm.getValues())
+                            }
+                          >
+                            {createApiKey.isPending
+                              ? "Creating..."
+                              : "Create API Key"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardContent>
+              </Card>
+            </Can>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <Lock className="h-5 w-5" />
+                  <RectangleEllipsis className="h-5 w-5" />
                   Change Password
                 </CardTitle>
               </CardHeader>

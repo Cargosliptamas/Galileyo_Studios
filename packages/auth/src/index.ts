@@ -2,7 +2,7 @@ import type { BetterAuthOptions } from "better-auth";
 import { expo } from "@better-auth/expo";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { magicLink, oAuthProxy } from "better-auth/plugins";
+import { apiKey, magicLink, oAuthProxy } from "better-auth/plugins";
 
 import { db } from "@galileyo/db/client";
 import * as schema from "@galileyo/db/schema";
@@ -87,6 +87,13 @@ export function initAuth(options: {
     secret: options.secret,
     emailAndPassword: options.emailAndPassword,
     plugins: [
+      apiKey({
+        schema: {
+          apikey: {
+            modelName: "api_key",
+          },
+        },
+      }),
       magicLink({
         disableSignUp: true,
         sendMagicLink: (data) => options.emailOptions.sendMagicLink(data),

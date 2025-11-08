@@ -2182,3 +2182,5 @@ export const zipUs = mysqlTable(
     primaryKey({ columns: [table.id], name: "zip_us_id" }),
   ],
 );
+
+export * from "./auth-schema";
