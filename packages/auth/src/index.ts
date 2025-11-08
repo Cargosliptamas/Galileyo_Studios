@@ -88,6 +88,10 @@ export function initAuth(options: {
     emailAndPassword: options.emailAndPassword,
     plugins: [
       apiKey({
+        disableKeyHashing: true,
+        rateLimit: {
+          enabled: false,
+        },
         schema: {
           apikey: {
             modelName: "api_key",
