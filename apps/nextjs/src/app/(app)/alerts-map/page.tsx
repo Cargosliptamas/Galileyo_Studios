@@ -10,7 +10,7 @@ export default async function AlertsMapPage() {
     return redirect("/login");
   }
 
-  prefetch(trpc.alerts.list.queryOptions());
+  prefetch(trpc.alerts.list.queryOptions({}));
 
   return (
     <HydrateClient>

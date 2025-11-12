@@ -15,6 +15,7 @@ import { toast } from "@galileyo/ui/toast";
 
 import { authClient } from "~/auth/client";
 import { AppIcon } from "../app-icon";
+import { PasswordInput } from "../ui/password-input";
 
 // import { PasswordInput } from "../ui/password-input";
 
@@ -23,7 +24,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordLogin, setIsPasswordLogin] = useState(false);
   // const [rememberMe, setRememberMe] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -40,44 +42,63 @@ export function LoginForm({
       setIsLoading(true);
       setErrors({});
 
-      const { data, error } = await authClient.signIn.magicLink({
-        /**
-         * The user email
-         */
-        email: email,
-        /**
-         * A URL to redirect to after the user verifies their email (optional)
-         */
-        callbackURL: "/dashboard",
-      });
+      let result:
+        | {
+            data: { status: boolean } | null;
+            error: { code?: string; message?: string } | null;
+          }
+        | undefined = undefined;
 
-      if (error) {
+      if (isPasswordLogin) {
+        result = await authClient.signIn.password({
+          email,
+          password,
+        });
+      } else {
+        result = await authClient.signIn.magicLink({
+          email: email,
+          callbackURL: "/dashboard",
+        });
+      }
+
+      if (result.error) {
+        console.log(result.error);
         let errorMessage: string | null = null;
 
-        if (error.code === "USER_NOT_FOUND") {
+        if (result.error.code === "USER_NOT_FOUND") {
           setErrors({
             email: "Invalid email address",
           });
           errorMessage = "Invalid email address";
         }
 
-        if (error.code === "VALIDATION_ERROR") {
+        if (result.error.code === "VALIDATION_ERROR") {
           setErrors({
             email: "Invalid email address",
           });
           errorMessage = "Invalid email address";
+        }
+
+        if (result.error.code === "INVALID_CREDENTIALS") {
+          setErrors({
+            email: "Invalid email address",
+            password: "Invalid password",
+          });
+          errorMessage = "Invalid email address or password";
         }
 
         toast.error(errorMessage ?? "Something went wrong");
       }
 
-      if (data?.status) {
+      if (result.data?.status && !isPasswordLogin) {
         setIsSuccess(true);
+      } else if (result.data?.status && isPasswordLogin) {
+        window.location.href = "/dashboard";
       }
 
       setIsLoading(false);
     },
-    [email],
+    [email, isPasswordLogin, password],
   );
 
   // const handleSubmit = useCallback(
@@ -173,27 +194,35 @@ export function LoginForm({
                     <p className="text-sm text-red-500">{errors.email}</p>
                   )}
                 </div>
-                {/* <div className="grid gap-3">
-                  <PasswordInput
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={errors.password ? "border-red-500" : ""}
-                  />
-                  {errors.password && (
-                    <p className="text-sm text-red-500">{errors.password}</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 justify-between">
-                  <Label htmlFor="rememberMe">Remember me</Label>
-                  <Switch
-                    id="rememberMe"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked)}
-                  />
-                </div> */}
+                {isPasswordLogin && (
+                  <div className="grid gap-3">
+                    <PasswordInput
+                      containerClassName="grid gap-3"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={errors.password ? "border-red-500" : ""}
+                    />
+                    {errors.password && (
+                      <p className="text-sm text-red-500">{errors.password}</p>
+                    )}
+                  </div>
+                )}
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  Login
+                  {isPasswordLogin ? "Login" : "Continue with Magic Link"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  disabled={isLoading}
+                  onClick={() => setIsPasswordLogin(!isPasswordLogin)}
+                >
+                  {isPasswordLogin
+                    ? "Continue with Magic Link"
+                    : "Login with Password"}
                 </Button>
               </>
             )}

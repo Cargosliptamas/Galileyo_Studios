@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@galileyo/utils": "workspace:*",
     "@react-email/components": "catalog:",
     "react-email": "4.1.0"
   },

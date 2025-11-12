@@ -54,7 +54,23 @@ const getWsUrl = () => {
   return `${protocol}://${baseHost}`;
 };
 
-const wsClient = createWSClient({ url: getWsUrl() });
+type WsClientType = ReturnType<typeof createWSClient>;
+let wsClient: WsClientType | null = null;
+
+function getOrCreateWsClient(): WsClientType {
+  if (!env.NEXT_PUBLIC_WEBHOOKS_ENABLED) {
+    // This is requeired for type safety. The condition is already checked in the splitLink.
+    return wsClient as unknown as WsClientType;
+  }
+
+  if (wsClient) {
+    return wsClient;
+  }
+
+  wsClient = createWSClient({ url: getWsUrl() });
+
+  return wsClient;
+}
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
@@ -68,9 +84,10 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
             (op.direction === "down" && op.result instanceof Error),
         }),
         splitLink({
-          condition: (op) => op.type === "subscription",
+          condition: (op) =>
+            op.type === "subscription" && env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
           true: wsLink({
-            client: wsClient,
+            client: getOrCreateWsClient(),
             transformer: SuperJSON,
           }),
           false: splitLink({

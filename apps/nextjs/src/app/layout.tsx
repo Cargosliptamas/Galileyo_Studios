@@ -7,6 +7,7 @@ import { Providers } from "~/components/providers";
 
 import "~/app/globals.css";
 
+import { getSession } from "~/auth/server";
 import { env } from "~/env";
 import { fontVariables } from "~/lib/fonts";
 
@@ -48,7 +49,9 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default async function RootLayout(props: { children: React.ReactNode }) {
+  const session = await getSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <meta name="apple-mobile-web-app-title" content="Galileyo" />
@@ -58,10 +61,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           fontVariables,
         )}
       >
-        <Providers>{props.children}</Providers>
-        {/* <div className="sticky bottom-0 right-4 z-50">
-          <ThemeToggle />
-        </div> */}
+        <Providers hasSession={!!session}>{props.children}</Providers>
         <Toaster />
       </body>
     </html>

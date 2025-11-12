@@ -55,7 +55,11 @@ export function UserAvatar({
               size === "large" && "h-16 w-16",
             )}
           >
-            <AvatarImage src={image ?? ""} alt={name} />
+            <AvatarImage
+              src={image ?? ""}
+              alt={name}
+              className="bg-slate-700"
+            />
             <AvatarFallback className="select-none bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-white">
               {name
                 .split(" ")

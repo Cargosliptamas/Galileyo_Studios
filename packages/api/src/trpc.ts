@@ -11,7 +11,8 @@ import superjson from "superjson";
 import { z, ZodError } from "zod/v4";
 
 import type { Auth } from "@galileyo/auth";
-import { db } from "@galileyo/db/client";
+
+// import { db } from "@galileyo/db/client";
 
 /**
  * 1. CONTEXT
@@ -38,7 +39,7 @@ export const createTRPCContext = async (opts: {
   return {
     authApi,
     session,
-    db,
+    // db,
   };
 };
 /**

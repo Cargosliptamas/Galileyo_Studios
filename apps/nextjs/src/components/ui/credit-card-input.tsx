@@ -366,6 +366,7 @@ function CreditCard({
   onChange,
   onValidationChange,
   className,
+  creditCardClassName,
   ref,
   cardSize = "medium",
   cvvLabel = "CVC",
@@ -375,7 +376,7 @@ function CreditCard({
   isCardHolderNameEnabled = true,
   fixCardType,
   children,
-}: CreditCardProps) {
+}: CreditCardProps & { creditCardClassName?: string }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -552,6 +553,7 @@ function CreditCard({
         className={cn(
           "relative [perspective:1000px]",
           currentSizeConfig.cardHeight,
+          creditCardClassName,
         )}
       >
         <motion.div

@@ -1,5 +1,5 @@
 import type { InfiniteData, QueryKey } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
@@ -14,16 +14,24 @@ import {
   Satellite,
   TrendingDown,
   TrendingUp,
+  XIcon,
 } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
 import type {
   FeedItem,
   FinancialItem,
   InfluencerItem,
 } from "@galileyo/api/schemas";
-import { cn } from "@galileyo/ui";
+import { cn, Skeleton } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@galileyo/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,8 +50,10 @@ import { toast } from "@galileyo/ui/toast";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { useFeedSubscription } from "~/hooks/use-feed-subscription";
 import { useReportModal } from "~/hooks/use-report-modal";
+import { detectLinks } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
 import ImageWithAuth from "../image-with-auth";
+import FeedThirdPartyContent from "./feed-third-party-contet";
 import { UserAvatar } from "./user-avatar";
 
 function formatPrice(price: string | number | null | undefined) {
@@ -106,9 +116,21 @@ export default function FeedCard({
   getQueryKeys: () => QueryKey;
   getQueryKeysOnError: () => QueryKey;
 }) {
+  const { ref, inView } = useInView();
+  const [wasInView, setWasInView] = useState(false);
+
   const trpc = useTRPC();
   const { mutation: setSubscriptionMutation, setSubscription } =
-    useFeedSubscription();
+    useFeedSubscription({
+      onSuccess: (isSubscribing) => {
+        if (isSubscribing) {
+          toast.success("Subscription updated");
+        } else {
+          toast.success("Subscription removed");
+        }
+        void queryClient.invalidateQueries(trpc.feed.pathFilter());
+      },
+    });
 
   const { openModal } = useCommentsModal();
   const { open: openReportModal } = useReportModal();
@@ -380,6 +402,8 @@ export default function FeedCard({
         return null;
       case "user":
         return (item as InfluencerItem).image ?? null;
+      case "emergency":
+        return "/galileyo_new_logo_square.png";
       default:
         return null;
     }
@@ -425,7 +449,7 @@ export default function FeedCard({
   );
 
   const profileLink = useMemo(() => {
-    if (isMocked || item.type === "financial") {
+    if (isMocked || item.type === "financial" || item.type === "emergency") {
       return undefined;
     }
 
@@ -449,7 +473,11 @@ export default function FeedCard({
   }, [isMocked, item.id, item.id_user]);
 
   const hasActions = useMemo(() => {
-    return item.type !== "financial" && item.type !== "not_sended_yet";
+    return (
+      item.type !== "financial" &&
+      item.type !== "not_sended_yet" &&
+      item.type !== "emergency"
+    );
   }, [item]);
 
   const isInfluencer = item.type === "influencer";
@@ -460,6 +488,46 @@ export default function FeedCard({
   const feedImageUrls = useMemo(() => {
     return getFeedImageUrls(item);
   }, [item]);
+
+  const [zoomedImageIndex, setZoomedImageIndex] = useState<number | null>(null);
+
+  // Keyboard navigation for image zoom
+  useEffect(() => {
+    if (zoomedImageIndex === null) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setZoomedImageIndex(null);
+      } else if (event.key === "ArrowLeft" && feedImageUrls.length > 1) {
+        event.preventDefault();
+        setZoomedImageIndex(
+          zoomedImageIndex > 0
+            ? zoomedImageIndex - 1
+            : feedImageUrls.length - 1,
+        );
+      } else if (event.key === "ArrowRight" && feedImageUrls.length > 1) {
+        event.preventDefault();
+        setZoomedImageIndex(
+          zoomedImageIndex < feedImageUrls.length - 1
+            ? zoomedImageIndex + 1
+            : 0,
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [zoomedImageIndex, feedImageUrls.length]);
+
+  useEffect(() => {
+    if (inView) {
+      setWasInView(true);
+    }
+  }, [inView]);
 
   const getTotalReactions = () => {
     return item.reactions.reduce((acc, reaction) => acc + reaction.cnt, 0);
@@ -479,10 +547,10 @@ export default function FeedCard({
 
   const handleSubscription = useCallback(() => {
     setSubscription({
-      id: Number(item.id),
+      id: Number(item.id_subscription ?? item.id),
       subscribed: !item.is_subscribed,
     });
-  }, [item.id, item.is_subscribed, setSubscription]);
+  }, [item.id, item.id_subscription, item.is_subscribed, setSubscription]);
 
   const handleMute = useCallback(() => {
     if ("id_subscription" in item && item.id_subscription) {
@@ -496,9 +564,16 @@ export default function FeedCard({
     openReportModal(item);
   }, [item, openReportModal]);
 
+  const { text, links } = useMemo(() => {
+    return detectLinks(item.body, false);
+  }, [item.body]);
+
   return (
     // <Card className="max-w-3xl mx-auto">
-    <Card className="transform border-slate-200 bg-white/50 transition-all duration-300 hover:scale-[1.01] hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
+    <Card
+      ref={ref}
+      className="transform border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
@@ -528,7 +603,7 @@ export default function FeedCard({
             </UserAvatar>
           </div>
 
-          {!item.is_owner && (
+          {!item.is_owner && item.type !== "emergency" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -536,7 +611,7 @@ export default function FeedCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {item.type !== "user" && (
+                {item.type !== "aa" && (
                   <DropdownMenuItem
                     onClick={handleSubscription}
                     disabled={isMocked || setSubscriptionMutation.isPending}
@@ -566,252 +641,364 @@ export default function FeedCard({
         {getPostTypeIcon(item.type, item.emergency_level ?? undefined)}
       </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Post Content */}
-        {item.type !== "financial" && (
-          <p className="mb-4 leading-relaxed">{item.body}</p>
-        )}
+      {inView || wasInView ? (
+        <CardContent className="pt-0">
+          {/* Post Content */}
+          {item.type !== "financial" && (
+            <p className="mb-4 break-words leading-relaxed">{text}</p>
+          )}
 
-        {/* Post Image */}
-        {feedImageUrls.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {feedImageUrls.map((url, index) => (
-              <ImageWithAuth
-                key={`feed-image-${item.id}-${index}`}
-                url={url}
-                alt="Post content"
-                className="h-auto w-full object-cover"
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Satellite Info */}
-        {/* {1 == 1 && (
-          <div className="mb-4 p-3 bg-slate-900/50 border border-slate-600 rounded-lg">
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-cyan-400" />
-                <span className="text-slate-300">Coverage: </span>
-                <span className="text-cyan-400 font-medium">{100}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-400" />
-                <span className="text-slate-300">Signal: </span>
-                <span className="text-green-400 font-medium">{32}</span>
-              </div>
+          {/* Post Image */}
+          {feedImageUrls.length > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              {feedImageUrls.map((url, index) => (
+                <button
+                  key={`feed-image-${item.id}-${index}`}
+                  onClick={() => setZoomedImageIndex(index)}
+                  className="cursor-pointer overflow-hidden rounded-lg transition-transform hover:scale-105"
+                  type="button"
+                >
+                  <ImageWithAuth
+                    url={url}
+                    alt="Post content"
+                    className="h-auto w-full object-cover"
+                  />
+                </button>
+              ))}
             </div>
-          </div>
-        )} */}
+          )}
 
-        {item.type === "financial" && (
-          <div className="">
-            {(item as unknown as FinancialItem).ticker && (
-              <div className="mb-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-                {(item as unknown as FinancialItem).ticker}
-              </div>
-            )}
-            <div className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">
-              {formatPrice((item as unknown as FinancialItem).price)}
-            </div>
-            <div
-              className={`flex items-center gap-1 text-sm font-medium ${
-                (item as unknown as FinancialItem).percent >= 0
-                  ? "text-green-400"
-                  : "text-red-400"
-              }`}
-            >
-              {(item as unknown as FinancialItem).percent >= 0 ? (
-                <TrendingUp className="h-4 w-4" />
-              ) : (
-                <TrendingDown className="h-4 w-4" />
-              )}
-              <span>
-                {(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
-                {(item as unknown as FinancialItem).percent.toFixed(2)}
-              </span>
-              <span>
-                ({(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
-                {(item as unknown as FinancialItem).percent.toFixed(2)}%)
-              </span>
-            </div>
-          </div>
-        )}
+          <FeedThirdPartyContent links={links} />
 
-        {hasActions && (
-          <>
-            <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
-
-            {/* Post Actions */}
-            <div className="grid grid-cols-3 items-baseline justify-between">
-              <div className="col-span-3 flex">
-                {item.reactions.length > 0 && (
-                  <div className="mt-1 flex items-center gap-1">
-                    {item.reactions.map((reaction) => (
-                      <div
-                        key={reaction.id}
-                        className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
-                      >
-                        <span>
-                          {
-                            reactionOptions.find((r) => r.id === reaction.id)
-                              ?.emoji
-                          }
-                        </span>
-                        <span>{formatNumber(reaction.cnt)}</span>
-                      </div>
-                    ))}
+          {/* Satellite Info */}
+          {/* {1 == 1 && (
+              <div className="mb-4 p-3 bg-slate-900/50 border border-slate-600 rounded-lg">
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-cyan-400" />
+                    <span className="text-slate-300">Coverage: </span>
+                    <span className="text-cyan-400 font-medium">{100}</span>
                   </div>
-                )}
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-green-400" />
+                    <span className="text-slate-300">Signal: </span>
+                    <span className="text-green-400 font-medium">{32}</span>
+                  </div>
+                </div>
               </div>
-              <div className="col-span-2 flex items-center gap-6">
-                <HoverCard openDelay={300}>
-                  <HoverCardTrigger asChild>
-                    {/* <div className="flex flex-col items-center gap-2"> */}
-                    <Button
-                      disabled={isMocked || !item.show_reactions}
-                      variant="ghost"
-                      // size="icon"
-                      className={cn(
-                        "flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400",
-                        // pendingReaction ? "animate-pulse" : "",
-                      )}
-                      onClick={() => {
-                        if (pendingReaction) {
-                          handleReactionClick(pendingReaction);
-                          return;
-                        }
+            )} */}
 
-                        const reaction = reactionOptions.find(
-                          (r) => r.id === userReaction?.id,
-                        );
+          {item.type === "financial" && (
+            <div className="">
+              {(item as unknown as FinancialItem).ticker && (
+                <div className="mb-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {(item as unknown as FinancialItem).ticker}
+                </div>
+              )}
+              <div className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">
+                {formatPrice((item as unknown as FinancialItem).price)}
+              </div>
+              <div
+                className={`flex items-center gap-1 text-sm font-medium ${
+                  (item as unknown as FinancialItem).percent >= 0
+                    ? "text-green-400"
+                    : "text-red-400"
+                }`}
+              >
+                {(item as unknown as FinancialItem).percent >= 0 ? (
+                  <TrendingUp className="h-4 w-4" />
+                ) : (
+                  <TrendingDown className="h-4 w-4" />
+                )}
+                <span>
+                  {(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
+                  {(item as unknown as FinancialItem).percent.toFixed(2)}
+                </span>
+                <span>
+                  ({(item as unknown as FinancialItem).percent >= 0 ? "+" : ""}
+                  {(item as unknown as FinancialItem).percent.toFixed(2)}%)
+                </span>
+              </div>
+            </div>
+          )}
 
-                        if (reaction) {
-                          handleReactionClick(reaction.type);
-                        } else {
-                          handleReactionClick("love");
-                        }
-                      }}
-                    >
-                      {/* <Heart className="h-5 w-5" /> */}
-                      {userReaction || pendingReaction ? (
-                        <div className="flex max-h-5 max-w-5 items-center gap-1 text-xl">
-                          {
-                            reactionOptions.find(
-                              (r) =>
-                                r.id === (pendingReaction ?? userReaction?.id),
-                            )?.emoji
-                          }
-                        </div>
-                      ) : (
-                        <Heart className="h-5 w-5" />
-                      )}
-                      <div className="text-sm font-medium">
-                        {formatNumber(getTotalReactions())}
-                      </div>
-                    </Button>
-                    {/* {item.reactions.length > 0 && (
-                        <div className="mt-1 flex items-center gap-1">
-                          {item.reactions.map((reaction) => (
-                            <div
-                              key={reaction.id}
-                              className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
-                            >
-                              <span>
-                                {
-                                  reactionOptions.find(
-                                    (r) => r.id === reaction.id,
-                                  )?.emoji
-                                }
-                              </span>
-                              <span>{formatNumber(reaction.cnt)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )} */}
-                    {/* </div> */}
-                  </HoverCardTrigger>
-                  <HoverCardContent
-                    className="w-full bg-white dark:bg-slate-900"
-                    side="top"
-                    align="start"
-                  >
-                    <div className="flex items-center gap-2">
-                      {reactionOptions.map((reaction) => (
-                        <Button
-                          disabled={isMocked}
-                          variant="ghost"
-                          size="icon"
-                          key={reaction.type}
-                          onClick={() => handleReactionClick(reaction.type)}
-                          aria-label={reaction.label}
+          {hasActions && (
+            <>
+              <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
+
+              {/* Post Actions */}
+              <div className="grid grid-cols-3 items-baseline justify-between">
+                <div className="col-span-3 flex">
+                  {item.reactions.length > 0 && (
+                    <div className="mt-1 flex items-center gap-1">
+                      {item.reactions.map((reaction) => (
+                        <div
+                          key={reaction.id}
+                          className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
                         >
-                          {reaction.emoji}
-                        </Button>
+                          <span>
+                            {
+                              reactionOptions.find((r) => r.id === reaction.id)
+                                ?.emoji
+                            }
+                          </span>
+                          <span>{formatNumber(reaction.cnt)}</span>
+                        </div>
                       ))}
                     </div>
-                  </HoverCardContent>
-                </HoverCard>
+                  )}
+                </div>
+                <div className="col-span-2 flex items-center gap-6">
+                  <HoverCard openDelay={300}>
+                    <HoverCardTrigger asChild>
+                      {/* <div className="flex flex-col items-center gap-2"> */}
+                      <Button
+                        disabled={isMocked || !item.show_reactions}
+                        variant="ghost"
+                        // size="icon"
+                        className={cn(
+                          "flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400",
+                          // pendingReaction ? "animate-pulse" : "",
+                        )}
+                        onClick={() => {
+                          if (pendingReaction) {
+                            handleReactionClick(pendingReaction);
+                            return;
+                          }
 
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
-                  onClick={() => openModal(item)}
-                  disabled={isMocked || !item.show_comments}
-                  data-phid="show-comments"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    {formatNumber(item.comment_quantity)}
-                  </span>
-                </Button>
+                          const reaction = reactionOptions.find(
+                            (r) => r.id === userReaction?.id,
+                          );
 
-                {/* <Button
-                  variant="ghost"
-                  className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
-                  disabled={isMocked}
-                >
-                  <Share className="h-5 w-5" />
-                  <span className="text-sm font-medium">{formatNumber(0)}</span>
-                </Button> */}
-              </div>
+                          if (reaction) {
+                            handleReactionClick(reaction.type);
+                          } else {
+                            handleReactionClick("love");
+                          }
+                        }}
+                      >
+                        {/* <Heart className="h-5 w-5" /> */}
+                        {userReaction || pendingReaction ? (
+                          <div className="flex max-h-5 max-w-5 items-center gap-1 text-xl">
+                            {
+                              reactionOptions.find(
+                                (r) =>
+                                  r.id ===
+                                  (pendingReaction ?? userReaction?.id),
+                              )?.emoji
+                            }
+                          </div>
+                        ) : (
+                          <Heart className="h-5 w-5" />
+                        )}
+                        <div className="text-sm font-medium">
+                          {formatNumber(getTotalReactions())}
+                        </div>
+                      </Button>
+                      {/* {item.reactions.length > 0 && (
+                            <div className="mt-1 flex items-center gap-1">
+                              {item.reactions.map((reaction) => (
+                                <div
+                                  key={reaction.id}
+                                  className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
+                                >
+                                  <span>
+                                    {
+                                      reactionOptions.find(
+                                        (r) => r.id === reaction.id,
+                                      )?.emoji
+                                    }
+                                  </span>
+                                  <span>{formatNumber(reaction.cnt)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )} */}
+                      {/* </div> */}
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      className="w-full bg-white dark:bg-slate-900"
+                      side="top"
+                      align="start"
+                    >
+                      <div className="flex items-center gap-2">
+                        {reactionOptions.map((reaction) => (
+                          <Button
+                            disabled={isMocked}
+                            variant="ghost"
+                            size="icon"
+                            key={reaction.type}
+                            onClick={() => handleReactionClick(reaction.type)}
+                            aria-label={reaction.label}
+                          >
+                            {reaction.emoji}
+                          </Button>
+                        ))}
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
 
-              <div className="flex items-end justify-end gap-2">
-                {item.id && (
                   <Button
                     variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      item.is_bookmarked
-                        ? handleDeleteBookmark()
-                        : handleBookmark()
-                    }
-                    disabled={
-                      isMocked ||
-                      createBookmark.isPending ||
-                      deleteBookmark.isPending
-                    }
-                    data-phid="bookmark-post"
-                    className={`p-2 transition-colors ${
-                      (item.is_bookmarked ?? false)
-                        ? "text-yellow-400 hover:text-yellow-300"
-                        : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
-                    }`}
+                    className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
+                    onClick={() => openModal(item)}
+                    disabled={isMocked || !item.show_comments}
+                    data-phid="show-comments"
                   >
-                    {createBookmark.isPending || deleteBookmark.isPending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <Bookmark
-                        className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
-                      />
-                    )}
+                    <MessageCircle className="h-5 w-5" />
+                    <span className="text-sm font-medium">
+                      {formatNumber(item.comment_quantity)}
+                    </span>
                   </Button>
-                )}
+
+                  {/* <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
+                      disabled={isMocked}
+                    >
+                      <Share className="h-5 w-5" />
+                      <span className="text-sm font-medium">{formatNumber(0)}</span>
+                    </Button> */}
+                </div>
+
+                <div className="flex items-end justify-end gap-2">
+                  {item.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        item.is_bookmarked
+                          ? handleDeleteBookmark()
+                          : handleBookmark()
+                      }
+                      disabled={
+                        isMocked ||
+                        createBookmark.isPending ||
+                        deleteBookmark.isPending
+                      }
+                      data-phid="bookmark-post"
+                      className={`p-2 transition-colors ${
+                        (item.is_bookmarked ?? false)
+                          ? "text-yellow-400 hover:text-yellow-300"
+                          : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+                      }`}
+                    >
+                      {createBookmark.isPending || deleteBookmark.isPending ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <Bookmark
+                          className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+                        />
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
+            </>
+          )}
+        </CardContent>
+      ) : (
+        <CardContent className="pt-0">
+          <Skeleton className="h-64 w-64" />
+        </CardContent>
+      )}
+
+      {/* Image Zoom Dialog */}
+      <Dialog
+        open={zoomedImageIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setZoomedImageIndex(null);
+          }
+        }}
+      >
+        <DialogContent className="h-auto max-h-[95vh] w-auto max-w-[95vw] border-none bg-transparent p-0 [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+          </DialogHeader>
+          {zoomedImageIndex !== null && (
+            <div className="relative flex h-full w-full items-center justify-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-4"
+                onClick={() => setZoomedImageIndex(null)}
+              >
+                <XIcon className="h-5 w-5" />
+              </Button>
+
+              <ImageWithAuth
+                url={feedImageUrls[zoomedImageIndex] ?? ""}
+                alt="Post image"
+                className="object-fit max-h-full w-full"
+                skeletonClassName="w-96 h-96"
+              />
+
+              {feedImageUrls.length > 1 && (
+                <>
+                  <button
+                    onClick={() => {
+                      setZoomedImageIndex(
+                        zoomedImageIndex > 0
+                          ? zoomedImageIndex - 1
+                          : feedImageUrls.length - 1,
+                      );
+                    }}
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                    type="button"
+                    aria-label="Previous image"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-6 w-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 19.5L8.25 12l7.5-7.5"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setZoomedImageIndex(
+                        zoomedImageIndex < feedImageUrls.length - 1
+                          ? zoomedImageIndex + 1
+                          : 0,
+                      );
+                    }}
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                    type="button"
+                    aria-label="Next image"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-6 w-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
+                    </svg>
+                  </button>
+                  <div className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+                    {zoomedImageIndex + 1} / {feedImageUrls.length}
+                  </div>
+                </>
+              )}
             </div>
-          </>
-        )}
-      </CardContent>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

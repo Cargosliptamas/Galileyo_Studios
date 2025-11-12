@@ -6,12 +6,13 @@ import {
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
   Text,
 } from "@react-email/components";
+
+import { LogoSection } from "./common/logo-section";
 
 interface SendMagicLinkEmailProps {
   url?: string;
@@ -21,116 +22,174 @@ export const SendMagicLinkEmail = ({ url }: SendMagicLinkEmailProps) => (
   <Html>
     <Head />
     <Body style={main}>
-      <Preview>Your login code for Linear</Preview>
+      <Preview>Sign in to your Galileyo account</Preview>
       <Container style={container}>
-        <Img
-          src={`https://galileyo.com/assets/f79669c4/img/logo-galileyo.png`}
-          // width="100"
-          // height="100"
-          alt="Galileyo"
-          style={logo}
-        />
-        <Heading style={heading}>Your login link for Galileyo</Heading>
-        <Section style={buttonContainer}>
-          <Button style={button} href={url}>
-            Login to Galileyo
-          </Button>
+        <LogoSection />
+
+        <Section style={content}>
+          <Heading style={heading}>Sign in to your account</Heading>
+          <Text style={paragraph}>
+            Click the button below to securely sign in to your Galileyo account.
+            This link will expire in 5 minutes for your security.
+          </Text>
+
+          <Section style={buttonContainer}>
+            <Button style={button} href={url}>
+              Sign in to Galileyo
+            </Button>
+          </Section>
+
+          <Section style={linkContainer}>
+            <Text style={linkText}>
+              Or copy and paste this link into your browser:
+            </Text>
+            <Link href={url} style={link}>
+              {url}
+            </Link>
+          </Section>
         </Section>
-        <Text style={paragraph}>
-          This link will only be valid for the next 5 minutes. If the button
-          does not work, you can copy and paste the link directly into your
-          browser.
-        </Text>
-        <Text style={paragraph}>{url}</Text>
-        <Text style={paragraph}>
-          If you did not request this login link, you can ignore this email.
-        </Text>
-        <Text style={paragraph}>
-          If you have any questions, please contact us at{" "}
-          <Link href="mailto:support@galileyo.com">support@galileyo.com</Link>.
-        </Text>
+
         <Hr style={hr} />
-        <Link href="http://localhost:3000" style={reportLink}>
-          Galileyo
-        </Link>
+
+        <Section style={footer}>
+          <Text style={footerText}>
+            If you didn't request this sign-in link, you can safely ignore this
+            email. Your account remains secure.
+          </Text>
+          <Text style={footerText}>
+            Need help? Contact us at{" "}
+            <Link href="mailto:support@galileyo.com" style={footerLink}>
+              support@galileyo.com
+            </Link>
+          </Text>
+          <Text style={footerCopyright}>
+            © {new Date().getFullYear()} Galileyo. All rights reserved.
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
 );
 
 SendMagicLinkEmail.PreviewProps = {
-  validationCode: "tt226-5398x",
+  url: "https://galileyo.com/auth/verify?token=tt226-5398x",
 } as SendMagicLinkEmailProps;
 
 export default SendMagicLinkEmail;
 
-const logo = {
-  borderRadius: 21,
-  width: 42,
-  height: 42,
-};
-
 const main = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f6f9fc",
   fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {
+  backgroundColor: "#ffffff",
   margin: "0 auto",
-  padding: "20px 0 48px",
-  maxWidth: "560px",
+  padding: "0",
+  marginBottom: "64px",
+  maxWidth: "600px",
+  borderRadius: "8px",
+  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+};
+
+const content = {
+  padding: "40px 40px 32px",
 };
 
 const heading = {
-  fontSize: "24px",
+  fontSize: "28px",
   letterSpacing: "-0.5px",
-  lineHeight: "1.3",
-  fontWeight: "400",
-  color: "#484848",
-  padding: "17px 0 0",
+  lineHeight: "1.2",
+  fontWeight: "600",
+  color: "#111827",
+  margin: "0 0 16px",
+  textAlign: "center" as const,
 };
 
 const paragraph = {
-  margin: "0 0 15px",
-  fontSize: "15px",
-  lineHeight: "1.4",
-  color: "#3c4149",
+  margin: "0 0 24px",
+  fontSize: "16px",
+  lineHeight: "1.6",
+  color: "#4b5563",
+  textAlign: "center" as const,
 };
 
 const buttonContainer = {
-  padding: "27px 0 27px",
+  padding: "32px 0",
+  textAlign: "center" as const,
 };
 
 const button = {
   backgroundColor: "#5e6ad2",
-  borderRadius: "3px",
+  borderRadius: "6px",
   fontWeight: "600",
-  color: "#fff",
-  fontSize: "15px",
+  color: "#ffffff",
+  fontSize: "16px",
   textDecoration: "none",
   textAlign: "center" as const,
-  display: "block",
-  padding: "11px 23px",
+  display: "inline-block",
+  padding: "14px 32px",
+  boxShadow: "0 2px 4px rgba(94, 106, 210, 0.2)",
 };
 
-const reportLink = {
+const linkContainer = {
+  padding: "24px 0",
+  backgroundColor: "#f9fafb",
+  borderRadius: "6px",
+  margin: "0",
+};
+
+const linkText = {
+  margin: "0 0 8px",
   fontSize: "14px",
-  color: "#b4becc",
+  lineHeight: "1.5",
+  color: "#6b7280",
+  textAlign: "center" as const,
+  padding: "0 20px",
+};
+
+const link = {
+  fontSize: "13px",
+  lineHeight: "1.5",
+  color: "#5e6ad2",
+  textDecoration: "underline",
+  wordBreak: "break-all" as const,
+  textAlign: "center" as const,
+  display: "block",
+  padding: "0 20px",
 };
 
 const hr = {
-  borderColor: "#dfe1e4",
-  margin: "42px 0 26px",
+  borderColor: "#e5e7eb",
+  margin: "0",
+  borderWidth: "1px 0 0",
 };
 
-// const code = {
-//   fontFamily: 'monospace',
-//   fontWeight: '700',
-//   padding: '1px 4px',
-//   backgroundColor: '#dfe1e4',
-//   letterSpacing: '-0.3px',
-//   fontSize: '21px',
-//   borderRadius: '4px',
-//   color: '#3c4149',
-// };
+const footer = {
+  padding: "32px 40px",
+  backgroundColor: "#f9fafb",
+  borderBottomLeftRadius: "8px",
+  borderBottomRightRadius: "8px",
+};
+
+const footerText = {
+  margin: "0 0 12px",
+  fontSize: "14px",
+  lineHeight: "1.6",
+  color: "#6b7280",
+  textAlign: "center" as const,
+};
+
+const footerLink = {
+  color: "#5e6ad2",
+  textDecoration: "underline",
+};
+
+const footerCopyright = {
+  margin: "24px 0 0",
+  fontSize: "12px",
+  lineHeight: "1.5",
+  color: "#9ca3af",
+  textAlign: "center" as const,
+};

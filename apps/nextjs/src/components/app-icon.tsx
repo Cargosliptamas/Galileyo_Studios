@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 export function AppIcon({ useDark }: { useDark?: boolean }) {
   const { theme } = useTheme();
 
-  if (theme === "light" && !useDark) {
+  if (theme === "light" || useDark === false) {
     return (
       <Image
         src="/galileyo_new_logo_light.png"

@@ -32,7 +32,13 @@ export function useAbility() {
   return useCaslAbility(AbilityContext);
 }
 
-export function AbilityProvider({ children }: { children: React.ReactNode }) {
+export function AbilityProvider({
+  children,
+  hasSession,
+}: {
+  children: React.ReactNode;
+  hasSession: boolean;
+}) {
   // const ability = createMongoAbility<AbilityType>([]);
   const [ability, setAbility] = useState<AbilityType>(
     createMongoAbility<AbilityType>([]),
@@ -41,6 +47,7 @@ export function AbilityProvider({ children }: { children: React.ReactNode }) {
   const trpc = useTRPC();
   const { data: abilities } = useQuery({
     ...trpc.profile.getAbilities.queryOptions(),
+    enabled: hasSession,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

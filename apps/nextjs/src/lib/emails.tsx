@@ -3,6 +3,9 @@ import nodemailer from "nodemailer";
 
 import { SendMagicLinkEmail } from "@galileyo/emails/emails/send-magic-link";
 
+// import { WelcomeEmail } from "@galileyo/emails/emails/welcome";
+// import { PasswordResetEmail } from "@galileyo/emails/emails/password-reset";
+
 import { env } from "~/env";
 
 // import { env } from '~/env';

@@ -163,20 +163,26 @@ export async function SiteFooter() {
             <ThemeToggle />
           </p>
           <div className="mt-4 flex items-center gap-4 sm:mt-0">
-            <Button variant="ghost" className="flex items-center gap-1" asChild>
-              <Link href={status.url} target="_blank">
-                <div
-                  className={`h-2 w-2 animate-pulse rounded-full ${status.status === "UP" ? "bg-green-400" : status.status === "HASISSUES" ? "bg-yellow-400" : "bg-red-400"}`}
-                ></div>
-                <span className="text-sm text-green-400">
-                  {status.status === "UP"
-                    ? "All systems operational"
-                    : status.status === "HASISSUES"
-                      ? "Some systems are experiencing issues"
-                      : "Some systems are under maintenance"}
-                </span>
-              </Link>
-            </Button>
+            {status !== null && (
+              <Button
+                variant="ghost"
+                className="flex items-center gap-1"
+                asChild
+              >
+                <Link href={status.url} target="_blank">
+                  <div
+                    className={`h-2 w-2 animate-pulse rounded-full ${status.status === "UP" ? "bg-green-400" : status.status === "HASISSUES" ? "bg-yellow-400" : "bg-red-400"}`}
+                  ></div>
+                  <span className="text-sm text-green-400">
+                    {status.status === "UP"
+                      ? "All systems operational"
+                      : status.status === "HASISSUES"
+                        ? "Some systems are experiencing issues"
+                        : "Some systems are under maintenance"}
+                  </span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>

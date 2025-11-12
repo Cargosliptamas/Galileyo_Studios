@@ -6,7 +6,6 @@ import { commentRouter } from "./router/comment";
 import { feedRouter } from "./router/feed";
 import { friendsRouter } from "./router/friends";
 import { paymentRouter } from "./router/payment";
-import { postRouter } from "./router/post";
 import { profileRouter } from "./router/profile";
 import { scraperRouter } from "./router/scraper";
 import { searchRouter } from "./router/search";
@@ -20,7 +19,6 @@ export const appRouter = createTRPCRouter({
   comment: commentRouter,
   feed: feedRouter,
   friends: friendsRouter,
-  post: postRouter,
   payment: paymentRouter,
   profile: profileRouter,
   scraper: scraperRouter,

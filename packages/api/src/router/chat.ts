@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { z } from "zod/v4";
 
 import { and, eq, inArray } from "@galileyo/db";
+import { db } from "@galileyo/db/client";
 import {
   conversationMessage,
   conversation as conversationTable,
@@ -333,7 +334,7 @@ export const chatRouter = {
           count: number;
           page: number;
           page_size: number;
-        };
+        } | null;
         error?: {
           message: string;
           code: string | number | null;
@@ -349,7 +350,7 @@ export const chatRouter = {
 
       return {
         ...result.data,
-        list: result.data.list.map((message) => ({
+        list: result.data?.list.map((message) => ({
           ...message,
           is_system: message.is_system === 1,
         })),
@@ -477,7 +478,7 @@ export const chatRouter = {
 
       if (input.type === "call-end" && input.metadata) {
         try {
-          const conversations = await ctx.db
+          const conversations = await db
             .select()
             .from(conversationTable)
             .innerJoin(
@@ -491,7 +492,7 @@ export const chatRouter = {
           );
 
           // find the conversation for the other user within the conversations
-          const otherUserConversations = await ctx.db
+          const otherUserConversations = await db
             .select()
             .from(conversationTable)
             .innerJoin(
@@ -514,7 +515,7 @@ export const chatRouter = {
             });
           }
 
-          await ctx.db.insert(conversationMessage).values({
+          await db.insert(conversationMessage).values({
             idConversation: conversation.id,
             idUser: Number(ctx.session.user.id),
             message: "call_ended",

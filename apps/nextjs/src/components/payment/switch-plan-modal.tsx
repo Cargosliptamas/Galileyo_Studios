@@ -33,7 +33,7 @@ export function SwitchPlanModal({
   onOpenChange,
   onSuccess,
 }: {
-  plan: PlanType;
+  plan: PlanType | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
@@ -45,9 +45,10 @@ export function SwitchPlanModal({
     useState<string>("");
   const [showAddNewCard, setShowAddNewCard] = useState(false);
 
-  const { data: paymentData, isLoading: isLoadingCards } = useQuery(
-    trpc.payment.getPayment.queryOptions({}),
-  );
+  const { data: paymentData, isLoading: isLoadingCards } = useQuery({
+    ...trpc.payment.getPayment.queryOptions({}),
+    enabled: open,
+  });
 
   const cards = paymentData?.list ?? [];
 
@@ -92,6 +93,10 @@ export function SwitchPlanModal({
   };
 
   const handleSwitchPlan = () => {
+    if (!plan) {
+      return;
+    }
+
     switchPlan.mutate({
       plan_id: plan.id,
       card_id: +selectedPaymentMethod,
@@ -111,6 +116,10 @@ export function SwitchPlanModal({
     }
   }, [cards, selectedPaymentMethod]);
 
+  if (!plan) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -120,26 +129,28 @@ export function SwitchPlanModal({
 
         <div className="space-y-6">
           {/* Plan Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">{plan.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Price</span>
-                  <span className="text-2xl font-bold">
-                    {formatPrice(plan.price)}
-                  </span>
+          {!showAddNewCard && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">{plan.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Price</span>
+                    <span className="text-2xl font-bold">
+                      {formatPrice(plan.price)}
+                    </span>
+                  </div>
+                  {plan.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {plan.description}
+                    </p>
+                  )}
                 </div>
-                {plan.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {plan.description}
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Payment Method Selection */}
           {!showAddNewCard && (
@@ -275,7 +286,7 @@ export function SwitchPlanModal({
 
           {/* Add New Card Form */}
           {showAddNewCard && (
-            <div className="space-y-4">
+            <div className="space-y-4 p-4">
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" onClick={handleAddCardCancel}>
                   ← Back

@@ -20,6 +20,7 @@ export interface FeedItemImageType {
 export interface BaseFeedItem {
   type: string;
   id: number | null;
+  id_subscription: number | null;
   emergency_level: string | null;
   created_at: string | null;
   location: string | null;

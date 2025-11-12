@@ -5,7 +5,7 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "~/auth/server";
-import HomePageComponent from "~/components/public-site/home";
+import { HomePage as HomePageComponent } from "~/components/public-site/home-page";
 import {
   HydrateClient,
   // prefetch,

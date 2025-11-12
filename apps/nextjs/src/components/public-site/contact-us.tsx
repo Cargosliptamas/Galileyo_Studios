@@ -60,6 +60,13 @@ const ContactUs = () => {
       // Handle form submission here
       setIsSubmitted(true);
       setTimeout(() => setIsSubmitted(false), 3000);
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+        turnstileToken: "",
+      });
     }
   };
 

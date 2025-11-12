@@ -351,6 +351,8 @@ export const feedRouter = {
         };
       };
 
+      console.log(responseJson);
+
       if (responseJson.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
@@ -461,4 +463,71 @@ export const feedRouter = {
 
       return responseJson;
     }),
+  getPostImage: protectedProcedure
+    .input(
+      z.object({
+        url: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { url } = input;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const blob = await response.blob();
+      const buffer = Buffer.from(await blob.arrayBuffer());
+
+      return `data:${blob.type};base64,${buffer.toString("base64")}`;
+    }),
+  getSubscribeableFeeds: protectedProcedure.query(async ({ ctx }) => {
+    const feed = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feed/index`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${ctx.session.session.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
+
+    const result = (await feed.json()) as {
+      status: "success" | "error";
+      data: {
+        id: string;
+        title: string;
+        is_customer_marketstack_indx: boolean;
+        is_customer_marketstack_ticker: boolean;
+        feeds: {
+          id: string;
+          title: string;
+          subtitle: string | null;
+          description: string | null;
+          checked: boolean;
+          need_zip: boolean;
+          subscribers: number;
+          is_custom: boolean;
+          can_change_checked: boolean;
+          is_public: boolean;
+          image: string | null;
+          zip?: string | null;
+        }[];
+      }[];
+    };
+
+    if (result.status !== "success") {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    const enabledIds = ["8", "15"];
+
+    return result.data.filter((feed) => enabledIds.includes(feed.id));
+  }),
 } satisfies TRPCRouterRecord;

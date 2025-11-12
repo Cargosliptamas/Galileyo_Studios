@@ -28,6 +28,7 @@ interface UserProfilePageProps {
     isFriend: boolean;
     isFriendRequested: boolean;
     isFriendRequestAcceptable: boolean;
+    ownProfile?: boolean;
   };
 }
 
@@ -164,38 +165,42 @@ export function UserProfilePage({ profileInfo }: UserProfilePageProps) {
             />
           </div>
           <div className="col-span-12 flex items-center gap-2 md:col-span-5 md:justify-end">
-            <Button
-              onClick={handleFriendClick}
-              variant={
-                friendState === "friend"
-                  ? "destructive"
-                  : friendState === "friend-requested"
-                    ? "secondary"
-                    : "primary"
-              }
-              className="flex items-center gap-2"
-            >
-              {profileInfo.isFriend ? (
-                <>
-                  <UserMinus className="size-5" />
-                  <span>{friendButtonText}</span>
-                </>
-              ) : (
-                <>
-                  <UserPlus className="size-5" />
-                  <span>{friendButtonText}</span>
-                </>
-              )}
-            </Button>
-            {friendState === "friend" ? (
-              <Button
-                onClick={handleMessageClick}
-                variant="outline"
-                size="icon"
-              >
-                <MessageCircle className="size-5" />
-              </Button>
-            ) : null}
+            {!profileInfo.ownProfile && (
+              <>
+                <Button
+                  onClick={handleFriendClick}
+                  variant={
+                    friendState === "friend"
+                      ? "destructive"
+                      : friendState === "friend-requested"
+                        ? "secondary"
+                        : "primary"
+                  }
+                  className="flex items-center gap-2"
+                >
+                  {profileInfo.isFriend ? (
+                    <>
+                      <UserMinus className="size-5" />
+                      <span>{friendButtonText}</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="size-5" />
+                      <span>{friendButtonText}</span>
+                    </>
+                  )}
+                </Button>
+                {friendState === "friend" ? (
+                  <Button
+                    onClick={handleMessageClick}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <MessageCircle className="size-5" />
+                  </Button>
+                ) : null}
+              </>
+            )}
           </div>
         </CardHeader>
         <CardContent>

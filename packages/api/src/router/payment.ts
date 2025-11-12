@@ -469,7 +469,10 @@ export const paymentRouter = {
       };
 
       if (result.status !== "success") {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: result.error?.message ?? "Failed to switch plan",
+        });
       }
     }),
   downloadInvoice: protectedProcedure

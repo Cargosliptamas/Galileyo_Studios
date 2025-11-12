@@ -26,6 +26,7 @@ export interface ProfileInfo {
   alias: string | null;
   isSubscribed: boolean;
   image: string | null;
+  ownProfile?: boolean;
 }
 
 export async function getProfileInfoBySubscription(
@@ -269,7 +270,8 @@ export async function getUserProfile(id: number, authenticatedUser?: string) {
     address,
     phoneVisible: isPhoneVisible,
     addressVisible: isAddressVisible,
-    isFriend,
+    ownProfile,
+    isFriend: ownProfile ? false : isFriend,
     isFriendRequested,
     isFriendRequestAcceptable,
   };

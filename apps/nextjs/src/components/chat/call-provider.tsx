@@ -14,6 +14,7 @@ import { useSubscription } from "@trpc/tanstack-react-query";
 import Peer from "simple-peer";
 
 import { authClient } from "~/auth/client";
+import { env } from "~/env";
 import { useTRPC } from "~/trpc/react";
 import { ActiveCallDialog } from "./dialogs/active-call";
 import { IncomingCallDialog } from "./dialogs/incoming-call";
@@ -199,7 +200,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   // Subscribe to call signaling
   useSubscription(
     trpc.chat.onCallSignal.subscriptionOptions(undefined, {
-      enabled: currentUserId !== null,
+      enabled: currentUserId !== null && env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
       onError(error) {
         console.error("call signal error", error);
       },

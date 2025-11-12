@@ -31,7 +31,7 @@ import { useTRPC } from "~/trpc/react";
 
 export function AlertMapPage() {
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.alerts.list.queryOptions());
+  const { data } = useSuspenseQuery(trpc.alerts.list.queryOptions({}));
 
   const alerts = data;
 

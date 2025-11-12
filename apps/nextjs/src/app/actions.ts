@@ -1,6 +1,11 @@
 "use server";
 
+import { UTCDate } from "@date-fns/utc";
+import { format } from "date-fns";
 import webpush from "web-push";
+
+import { db } from "@galileyo/db/client";
+import { contact } from "@galileyo/db/schema";
 
 import { getSession } from "~/auth/server";
 import { env } from "~/env";
@@ -59,7 +64,14 @@ export async function sendContactUsEmail(
   turnstileToken: string,
 ): Promise<{ success: boolean; error: string | null }> {
   // 0x4AAAAAAB0QoqBu_2OtubrO8Y1mCaPXWB4
-
+  await db.insert(contact).values({
+    name: name,
+    email: email,
+    subject: subject,
+    body: message,
+    status: 1,
+    createdAt: format(new UTCDate(), "yyyy-MM-dd HH:mm:ss"),
+  });
   console.log(
     "Sending contact us email",
     name,

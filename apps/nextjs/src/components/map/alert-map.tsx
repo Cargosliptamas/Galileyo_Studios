@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import dynamic from "next/dynamic";
+import { format } from "date-fns";
 import L from "leaflet";
 import { renderToString } from "react-dom/server";
 
@@ -164,11 +165,12 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
     }));
 
     if (!isClient) {
-      return (
-        <div className="flex h-[600px] w-full animate-pulse items-center justify-center rounded-lg bg-gray-200">
-          <div className="text-gray-500">Loading map...</div>
-        </div>
-      );
+      return null;
+      // return (
+      //   <div className="flex h-[600px] w-full animate-pulse items-center justify-center rounded-lg bg-gray-200">
+      //     <div className="text-gray-500">Loading map...</div>
+      //   </div>
+      // );
     }
 
     return (
@@ -258,7 +260,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
                         </p>
                         <p>
                           <strong>Time:</strong>{" "}
-                          {new Date(+alert.timestamp).toLocaleString()}
+                          {format(alert.timestamp, "MM/dd/yyyy hh:mm a")}
                         </p>
                         {alert.location.address && (
                           <p>

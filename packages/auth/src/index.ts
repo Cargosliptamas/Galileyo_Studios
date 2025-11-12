@@ -2,10 +2,17 @@ import type { BetterAuthOptions } from "better-auth";
 import { expo } from "@better-auth/expo";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { apiKey, magicLink, oAuthProxy } from "better-auth/plugins";
+import {
+  apiKey,
+  // oAuthProxy,
+  lastLoginMethod,
+  magicLink,
+} from "better-auth/plugins";
 
 import { db } from "@galileyo/db/client";
 import * as schema from "@galileyo/db/schema";
+
+import { passwordPlugin } from "./plugins/password";
 
 export interface EmailOptions {
   sendMagicLink: (
@@ -20,10 +27,10 @@ export interface EmailOptions {
 
 export function initAuth(options: {
   baseUrl: string;
+  apiUrl?: string;
   productionUrl: string;
   secret: string | undefined;
   emailOptions: EmailOptions;
-  emailAndPassword?: BetterAuthOptions["emailAndPassword"];
 
   // discordClientId: string;
   // discordClientSecret: string;
@@ -46,6 +53,12 @@ export function initAuth(options: {
         emailVerified: "isValidEmail",
       },
       additionalFields: {
+        passwordHash: {
+          type: "string",
+          required: false,
+          unique: false,
+          returned: false,
+        },
         firstName: {
           type: "string",
           required: true,
@@ -85,8 +98,11 @@ export function initAuth(options: {
     },
     baseURL: options.baseUrl,
     secret: options.secret,
-    emailAndPassword: options.emailAndPassword,
+    emailAndPassword: {
+      enabled: false,
+    },
     plugins: [
+      lastLoginMethod(),
       apiKey({
         disableKeyHashing: true,
         rateLimit: {
@@ -98,17 +114,14 @@ export function initAuth(options: {
           },
         },
       }),
+      passwordPlugin({
+        apiUrl: options.apiUrl ?? options.baseUrl,
+      }),
       magicLink({
         disableSignUp: true,
         sendMagicLink: (data) => options.emailOptions.sendMagicLink(data),
       }),
-      oAuthProxy({
-        /**
-         * Auto-inference blocked by https://github.com/better-auth/better-auth/pull/2891
-         */
-        currentURL: options.baseUrl,
-        productionURL: options.productionUrl,
-      }),
+      // oAuthProxy(),
       expo(),
     ],
     socialProviders: {

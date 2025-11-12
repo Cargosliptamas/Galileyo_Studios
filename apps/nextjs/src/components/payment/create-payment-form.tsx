@@ -102,6 +102,7 @@ export function CreatePaymentForm({
           // We rely on schema + component validation, no-op here
           void isValid;
         }}
+        creditCardClassName="hidden md:block"
         cardStyle="metal"
       />
 

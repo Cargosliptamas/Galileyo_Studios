@@ -7,7 +7,6 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 
-import type { PlanType } from "@galileyo/api/schemas";
 import {
   Button,
   Dialog,
@@ -22,18 +21,17 @@ import {
 import { DialogClose } from "@galileyo/ui/dialog";
 
 import type { User } from "~/auth/client";
+import { usePlanSwitch } from "~/hooks/use-plan-switch";
 import { useTRPC } from "~/trpc/react";
 import { PlanCard } from "./plan-card";
-import { SwitchPlanModal } from "./switch-plan-modal";
 
 export function Membership({ user }: { user: User }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const [newPlan, setNewPlan] = useState<PlanType | null>(null);
-  const [showSwitchPlan, setShowSwitchPlan] = useState(false);
+  const { setPlan, showPlansModal } = usePlanSwitch();
+
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [showSwitchPlanModal, setShowSwitchPlanModal] = useState(false);
 
   const { data: plans } = useSuspenseQuery(
     trpc.payment.getAvailablePlans.queryOptions({}),
@@ -73,14 +71,8 @@ export function Membership({ user }: { user: User }) {
   }, [plans]);
 
   const newPlans = useMemo(() => {
-    return plans.list;
-    // return plans.list.filter((plan) => plan.is_new_plan);
+    return plans.list.filter((plan) => plan.is_new_plan);
   }, [plans]);
-
-  const handleUpgrade = useCallback((plan: PlanType) => {
-    setNewPlan(plan);
-    setShowSwitchPlanModal(true);
-  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const notUsedHandles = useCallback(() => {}, []);
@@ -109,6 +101,7 @@ export function Membership({ user }: { user: User }) {
               },
               is_new_plan: false,
             }}
+            showFullFeatures={true}
             onUpgrade={notUsedHandles}
             onReactivate={notUsedHandles}
             isCancelled={false}
@@ -119,7 +112,11 @@ export function Membership({ user }: { user: User }) {
         <div className="space-y-6">
           <PlanCard
             plan={currentPlan}
-            onUpgrade={handleUpgrade}
+            showFullFeatures={false}
+            onUpgrade={(plan) => {
+              setPlan(plan);
+              showPlansModal(true);
+            }}
             onReactivate={() => restoreMembership.mutate()}
             isCancelled={plans.is_cancelled}
             canReactivate={plans.can_reactivate}
@@ -131,31 +128,7 @@ export function Membership({ user }: { user: User }) {
             </div>
           )}
           <div className="flex items-center justify-center gap-2">
-            <Dialog open={showSwitchPlan} onOpenChange={setShowSwitchPlan}>
-              <DialogTrigger asChild>
-                <Button>Switch plan</Button>
-              </DialogTrigger>
-              <DialogContent className="w-[90vw] max-w-full">
-                <DialogHeader>
-                  <DialogTitle>Switch plan</DialogTitle>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                  <p className="mt-1 text-muted-foreground">
-                    Choose the plan that best fits your needs
-                  </p>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {newPlans.map((plan) => (
-                      <PlanCard
-                        key={plan.id}
-                        plan={plan}
-                        onUpgrade={handleUpgrade}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => showPlansModal(true)}>Switch plan</Button>
 
             {!plans.is_cancelled && (
               <Dialog
@@ -223,20 +196,20 @@ export function Membership({ user }: { user: User }) {
             Choose the plan that best fits your needs
           </p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {newPlans.map((plan) => (
-              <PlanCard key={plan.id} plan={plan} onUpgrade={handleUpgrade} />
+            {newPlans.map((plan, index) => (
+              <PlanCard
+                previousPlan={index > 0 ? newPlans[index - 1] : null}
+                showFullFeatures={true}
+                key={plan.id}
+                plan={plan}
+                onUpgrade={(plan) => {
+                  setPlan(plan);
+                  showPlansModal(true);
+                }}
+              />
             ))}
           </div>
         </div>
-      )}
-
-      {newPlan && (
-        <SwitchPlanModal
-          plan={newPlan}
-          open={showSwitchPlanModal}
-          onOpenChange={setShowSwitchPlanModal}
-          onSuccess={() => setShowSwitchPlan(false)}
-        />
       )}
     </div>
   );

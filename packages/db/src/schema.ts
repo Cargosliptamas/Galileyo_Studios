@@ -26,6 +26,39 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
+export const emergencyAlerts = mysqlTable(
+  "emergency_alerts",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    uuid: varchar({ length: 36 }).notNull().unique(),
+    hazardName: varchar("hazard_name", { length: 255 }).notNull(),
+    hazardId: varchar("hazard_id", { length: 255 }).notNull(),
+    typeId: varchar("type_id", { length: 64 }).notNull(),
+    description: text("description").notNull(),
+    severityId: varchar("severity_id", { length: 64 }).notNull(),
+    categoryId: varchar("category_id", { length: 64 }).notNull(),
+    autoexpire: tinyint().notNull(),
+    areabriefUrl: varchar("areabrief_url", { length: 255 }),
+    roles: json().notNull(),
+    active: tinyint().notNull(),
+    latitude: decimal({ precision: 10, scale: 8 }).notNull(),
+    longitude: decimal({ precision: 11, scale: 8 }).notNull(),
+
+    // location: point({ srid: 4326 }).notNull(),
+    areaWkt: mediumtext("area_wkt"),
+    // area: multipolygon({ srid: 4326 }).notNull(),
+    externalCreationDate: timestamp("external_creation_date", {
+      mode: "string",
+    }),
+    startDate: timestamp("start_date", { mode: "string" }),
+    endDate: timestamp("end_date", { mode: "string" }),
+    lastUpdate: timestamp("last_update", { mode: "string" }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "emergency_alert_id" })],
+);
+
 export const account = mysqlTable(
   "account",
   {
@@ -1453,6 +1486,7 @@ export const service = mysqlTable(
     }),
     isSpecialFeeAnnual: tinyint("is_special_fee_annual").default(0).notNull(),
     specialDatetime: datetime("special_datetime", { mode: "string" }),
+    isNewPlan: tinyint("is_new_plan").default(0).notNull(),
   },
   (table) => [primaryKey({ columns: [table.id], name: "service_id" })],
 );

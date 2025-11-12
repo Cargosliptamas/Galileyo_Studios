@@ -30,9 +30,11 @@ export default async function DashboardPage({
     }),
   );
 
+  prefetch(trpc.feed.getSubscribeableFeeds.queryOptions());
+
   return (
     <HydrateClient>
-      <main className="container py-4">
+      <main className="container mx-auto max-w-3xl px-2 py-4">
         <h1 className="mb-4 text-2xl font-bold">Feed</h1>
 
         <FeedTypeSwitcher user={session.user} />

@@ -8,16 +8,24 @@ import { useInView } from "react-intersection-observer";
 
 import type { FeedItem } from "@galileyo/api/schemas";
 
+import type { User } from "~/auth/client";
 // import { Button } from "@galileyo/ui/button";
 
-import { FEED_LIMIT } from "~/constants/feed";
+import {
+  AD_NUMBER,
+  AD_SPACING,
+  FEED_LIMIT,
+  UPGRADE_AD_SPACING,
+} from "~/constants/feed";
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import { getUniqueId } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
+import AdCard from "./ad-card";
 import CommentsModal from "./comments-modal";
 import FeedCard from "./feed-card";
 import FeedCardSkeleton from "./feed-card-skeleton";
 import ReportModal from "./report-modal";
+import UpgradeAdCard from "./upgrade-ad-card";
 
 // import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 // import { useTRPC } from "~/trpc/react";
@@ -105,7 +113,13 @@ import ReportModal from "./report-modal";
 //   },
 // ];
 
-export default function FeedList({ activeTab }: { activeTab: string }) {
+export default function FeedList({
+  activeTab,
+  user,
+}: {
+  activeTab: string;
+  user: User;
+}) {
   const trpc = useTRPC();
 
   const { ref, inView } = useInView();
@@ -224,18 +238,58 @@ export default function FeedList({ activeTab }: { activeTab: string }) {
                     : 'Nothing more to load'}
               </button>
             </div> */}
-            {data.pages.map((page) => (
-              <Fragment key={page.page}>
-                {page.list.map((item) => (
-                  <FeedCard
-                    key={getUniqueId(item)}
-                    item={item}
-                    getQueryKeys={getQueryKeys}
-                    getQueryKeysOnError={getQueryKeysOnError}
-                  />
-                ))}
-              </Fragment>
-            ))}
+            {data.pages.map((page) => {
+              let postIndex = 0;
+              // Calculate the starting post index for this page
+              data.pages.forEach((p, idx) => {
+                if (idx < page.page - 1) {
+                  postIndex += p.list.length;
+                }
+              });
+
+              return (
+                <Fragment key={page.page}>
+                  {page.list.map((item, itemIndex) => {
+                    const currentPostIndex = postIndex + itemIndex;
+                    // Show ad after every X posts (e.g., after 5th, 10th, 15th post)
+                    const shouldShowAd =
+                      currentPostIndex > 0 &&
+                      (currentPostIndex + 1) % AD_SPACING === 0;
+
+                    // TODO: Check if the user has a plan which is not the free plan
+                    // Show upgrade ad after every x posts (separate from regular ads)
+                    const shouldShowUpgradeAd =
+                      currentPostIndex > 0 &&
+                      (currentPostIndex + 1) % UPGRADE_AD_SPACING === 0 &&
+                      !user.isInfluencer;
+
+                    return (
+                      <Fragment key={getUniqueId(item)}>
+                        <FeedCard
+                          item={item}
+                          getQueryKeys={getQueryKeys}
+                          getQueryKeysOnError={getQueryKeysOnError}
+                        />
+                        {shouldShowAd &&
+                          Array.from({ length: AD_NUMBER }, (_, adIdx) => (
+                            <AdCard
+                              key={`ad-${currentPostIndex}-${adIdx}`}
+                              adNumber={
+                                postIndex + adIdx + (page.page - 1) + itemIndex
+                              }
+                            />
+                          ))}
+                        {shouldShowUpgradeAd && (
+                          <UpgradeAdCard
+                            key={`upgrade-ad-${currentPostIndex}`}
+                          />
+                        )}
+                      </Fragment>
+                    );
+                  })}
+                </Fragment>
+              );
+            })}
             <div className="grid w-full grid-cols-1 gap-4">
               <button
                 ref={ref}

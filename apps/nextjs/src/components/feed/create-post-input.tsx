@@ -140,6 +140,7 @@ function CreatePostComponent({ user }: { user: User }) {
 
   const { profiles } = useProfiles();
 
+  const [postId, setPostId] = useState<string>(() => uuid());
   const [content, setContent] = useState("");
   const [whoCanSee, setWhoCanSee] = useState<"public" | "friends">("public");
   const [satelliteContent, setSatelliteContent] = useState("");
@@ -171,6 +172,7 @@ function CreatePostComponent({ user }: { user: User }) {
         setIsScheduled(false);
         setScheduledDate(addDays(new Date(), 1));
         clearAttachments();
+        setPostId(uuid());
 
         await queryClient.invalidateQueries(trpc.feed.pathFilter());
       },
@@ -186,7 +188,7 @@ function CreatePostComponent({ user }: { user: User }) {
 
       const formData = new FormData();
       formData.append("text", content);
-      formData.append("uuid", uuid());
+      formData.append("uuid", postId);
       if (satelliteContent.trim().length > 0 && useSatelliteVersion) {
         formData.append("satellite_text", satelliteContent);
       }

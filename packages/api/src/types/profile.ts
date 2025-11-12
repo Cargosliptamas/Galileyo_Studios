@@ -49,8 +49,8 @@ export const ProfileGeneralSchema = z.object({
   country: z.string().min(1),
   state: z.string().nullish(),
   // phone: z.string().min(1),
-  about: z.string(),
-  zip: z.string(),
+  about: z.string().nullish(),
+  zip: z.string().nullish(),
 });
 
 export const ChangePasswordSchema = z

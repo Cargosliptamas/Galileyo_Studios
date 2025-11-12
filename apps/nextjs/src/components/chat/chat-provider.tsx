@@ -36,6 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ScrollArea } from "@galileyo/ui/scroll-area";
 
 import { authClient } from "~/auth/client";
+import { env } from "~/env";
 import { formatDuration } from "~/lib/formatter";
 import { getUserImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";
@@ -190,8 +191,23 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = globalThis.window.localStorage.getItem("chat_windows_v1");
+      let chatSession: string | null =
+        globalThis.window.localStorage.getItem("chat_session");
 
-      if (!raw) {
+      if (chatSession) {
+        try {
+          chatSession = JSON.parse(chatSession) as string;
+        } catch (error) {
+          console.error("error parsing chatSession", error);
+          chatSession = null;
+        }
+      }
+
+      if (!raw || !chatSession) {
+        return;
+      }
+
+      if (!session?.user.id || chatSession !== session.user.id) {
         return;
       }
 
@@ -236,134 +252,264 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       // ignore restoration errors
       console.error("error restoring chat windows", error);
     }
-  }, []);
+  }, [session?.user.id]);
 
-  // Persist open chat windows on change
-  useEffect(() => {
-    try {
-      const toStore = windows.map((w) => ({
-        id: w.id,
-        conversationId: w.conversationId,
-        userId: w.userId,
-        userName: w.userName,
-        userPhoto: w.userPhoto,
-        isMinimized: w.isMinimized,
-        position: w.position,
-        zIndex: w.zIndex,
-        hasUserMoved: w.hasUserMoved,
-      }));
-      globalThis.window.localStorage.setItem(
-        "chat_windows_v1",
-        JSON.stringify(toStore),
-      );
-    } catch (error) {
-      console.error("error persisting chat windows", error);
-    }
-  }, [windows]);
+  const saveWindowsState = useCallback(
+    (windows: ChatWindow[]) => {
+      if (!session?.user.id) {
+        return;
+      }
+
+      try {
+        const toStore = windows.map((w) => ({
+          id: w.id,
+          conversationId: w.conversationId,
+          userId: w.userId,
+          userName: w.userName,
+          userPhoto: w.userPhoto,
+          isMinimized: w.isMinimized,
+          position: w.position,
+          zIndex: w.zIndex,
+          hasUserMoved: w.hasUserMoved,
+        }));
+
+        globalThis.window.localStorage.setItem(
+          "chat_windows_v1",
+          JSON.stringify(toStore),
+        );
+
+        globalThis.window.localStorage.setItem(
+          "chat_session",
+          JSON.stringify(session.user.id),
+        );
+      } catch (error) {
+        console.error("error persisting chat windows", error);
+      }
+    },
+    [session?.user.id],
+  );
+
+  const handleWindowsChange = useCallback(
+    ({
+      id,
+      operation,
+      position,
+    }: {
+      id: string;
+      operation:
+        | "close"
+        | "minimize"
+        | "restore"
+        | "bringToFront"
+        | "updatePosition"
+        | "resetPositionsHorizontally";
+      position?: { x: number; y: number };
+    }) => {
+      switch (operation) {
+        case "close":
+          setWindows((prev) => {
+            const updated = prev.filter((w) => w.id !== id);
+            saveWindowsState(updated);
+            return updated;
+          });
+          break;
+        case "minimize":
+          setWindows((prev) => {
+            // First, minimize the targeted window
+            const next = prev.map((w) =>
+              w.id === id ? { ...w, isMinimized: true } : w,
+            );
+
+            // Recalculate positions for open windows that haven't been manually moved
+            const screenW = globalThis.window.innerWidth;
+            const minimizedCount = next.filter((w) => w.isMinimized).length;
+
+            // Reserve space for minimized windows on the right side (only if there are minimized windows)
+            const reservedSpace =
+              minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
+
+            // Calculate the maximum right edge position for open windows
+            const maxRightEdge = screenW - reservedSpace;
+            const startY = MARGIN;
+
+            // Separate windows into those that need repositioning and those that don't
+            const windowsToReposition = next
+              .filter((w) => !w.isMinimized && !w.hasUserMoved)
+              .sort((a, b) => b.position.x - a.position.x); // Sort rightmost first
+
+            // Find the rightmost edge where we can start positioning
+            // This should be the rightmost edge, but we'll pack windows tightly
+            let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
+
+            // Reposition windows sequentially without gaps
+            const repositionedMap = new Map<string, ChatWindow>();
+            windowsToReposition.forEach((w) => {
+              repositionedMap.set(w.id, { ...w, position: { x, y: startY } });
+              x -= WINDOW_WIDTH + WINDOW_GAP;
+            });
+
+            // Return all windows with repositioned ones updated
+            const updated = next.map((w) => {
+              const repositioned = repositionedMap.get(w.id);
+              return repositioned ?? w;
+            });
+
+            saveWindowsState(updated);
+
+            return updated;
+          });
+          break;
+        case "restore":
+          setWindows((prev) => {
+            const screenW = globalThis.window.innerWidth;
+            const windowToRestore = prev.find((w) => w.id === id);
+
+            if (!windowToRestore) return prev;
+
+            // If window was manually moved before, keep its position
+            if (windowToRestore.hasUserMoved) {
+              return prev.map((w) =>
+                w.id === id ? { ...w, isMinimized: false } : w,
+              );
+            }
+
+            // Otherwise, find a non-overlapping position and then reposition all non-manually-moved windows
+            // to pack them tightly together
+            const otherWindows = prev.filter((w) => w.id !== id);
+            const newPosition = findNonOverlappingPosition(
+              otherWindows,
+              screenW,
+            );
+
+            // Update the restored window
+            const updated = prev.map((w) =>
+              w.id === id
+                ? { ...w, isMinimized: false, position: newPosition }
+                : w,
+            );
+
+            // Now reposition all non-manually-moved windows to pack them tightly
+            const minimizedCount = updated.filter((w) => w.isMinimized).length;
+            const reservedSpace =
+              minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
+            const maxRightEdge = screenW - reservedSpace;
+            let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
+            const startY = MARGIN;
+
+            const windowsToReposition = updated
+              .filter((w) => !w.isMinimized && !w.hasUserMoved)
+              .sort((a, b) => b.position.x - a.position.x);
+
+            const repositionedMap = new Map<string, ChatWindow>();
+            windowsToReposition.forEach((w) => {
+              repositionedMap.set(w.id, { ...w, position: { x, y: startY } });
+              x -= WINDOW_WIDTH + WINDOW_GAP;
+            });
+
+            return updated.map((w) => {
+              const repositioned = repositionedMap.get(w.id);
+              return repositioned ?? w;
+            });
+          });
+          break;
+        case "bringToFront":
+          setWindows((prev) => {
+            const updated = prev.map((w) =>
+              w.id === id ? { ...w, zIndex: nextZIndex++ } : w,
+            );
+            saveWindowsState(updated);
+            return updated;
+          });
+          break;
+        case "updatePosition":
+          setWindows((prev) => {
+            const updated = prev.map((w) =>
+              w.id === id
+                ? { ...w, position: position ?? w.position, hasUserMoved: true }
+                : w,
+            );
+            saveWindowsState(updated);
+            return updated;
+          });
+          break;
+        case "resetPositionsHorizontally":
+          setWindows((prev) => {
+            const screenW = globalThis.window.innerWidth;
+            const minimizedCount = prev.filter((w) => w.isMinimized).length;
+
+            // Reserve space for minimized windows on the right side (only if there are minimized windows)
+            const reservedSpace =
+              minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
+
+            // Calculate the maximum right edge position for open windows
+            const maxRightEdge = screenW - reservedSpace;
+            let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
+            const startY = MARGIN;
+
+            // Sort open windows by current x position (rightmost first) for consistent repositioning
+            const openWindows = prev
+              .filter((w) => !w.isMinimized)
+              .sort((a, b) => b.position.x - a.position.x);
+
+            const repositionedMap = new Map<string, ChatWindow>();
+            openWindows.forEach((w) => {
+              repositionedMap.set(w.id, {
+                ...w,
+                position: { x, y: startY },
+                hasUserMoved: false, // Reset manual move flag
+              });
+              x -= WINDOW_WIDTH + WINDOW_GAP;
+            });
+
+            const updated = prev.map((w) => {
+              if (w.isMinimized) return w;
+              const repositioned = repositionedMap.get(w.id);
+              return repositioned ?? w;
+            });
+
+            saveWindowsState(updated);
+            return updated;
+          });
+          break;
+        default:
+          console.error("unknown chat window operation", operation);
+          break;
+      }
+    },
+    [windows, saveWindowsState],
+  );
 
   const createConversationMutation = useMutation(
     trpc.chat.getOrCreateConversation.mutationOptions(),
   );
 
-  const closeChat = useCallback((id: string) => {
-    setWindows((prev) => prev.filter((w) => w.id !== id));
-  }, []);
+  const closeChat = useCallback(
+    (id: string) => {
+      handleWindowsChange({ id, operation: "close" });
+    },
+    [handleWindowsChange],
+  );
 
-  const minimizeChat = useCallback((id: string) => {
-    setWindows((prev) => {
-      // First, minimize the targeted window
-      const next = prev.map((w) =>
-        w.id === id ? { ...w, isMinimized: true } : w,
-      );
+  const minimizeChat = useCallback(
+    (id: string) => {
+      handleWindowsChange({ id, operation: "minimize" });
+    },
+    [handleWindowsChange],
+  );
 
-      // Recalculate positions for open windows that haven't been manually moved
-      const screenW = globalThis.window.innerWidth;
-      const minimizedCount = next.filter((w) => w.isMinimized).length;
+  const restoreChat = useCallback(
+    (id: string) => {
+      handleWindowsChange({ id, operation: "restore" });
+    },
+    [handleWindowsChange],
+  );
 
-      // Reserve space for minimized windows on the right side (only if there are minimized windows)
-      const reservedSpace = minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
-
-      // Calculate the maximum right edge position for open windows
-      const maxRightEdge = screenW - reservedSpace;
-      const startY = MARGIN;
-
-      // Separate windows into those that need repositioning and those that don't
-      const windowsToReposition = next
-        .filter((w) => !w.isMinimized && !w.hasUserMoved)
-        .sort((a, b) => b.position.x - a.position.x); // Sort rightmost first
-
-      // Find the rightmost edge where we can start positioning
-      // This should be the rightmost edge, but we'll pack windows tightly
-      let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
-
-      // Reposition windows sequentially without gaps
-      const repositionedMap = new Map<string, ChatWindow>();
-      windowsToReposition.forEach((w) => {
-        repositionedMap.set(w.id, { ...w, position: { x, y: startY } });
-        x -= WINDOW_WIDTH + WINDOW_GAP;
-      });
-
-      // Return all windows with repositioned ones updated
-      return next.map((w) => {
-        const repositioned = repositionedMap.get(w.id);
-        return repositioned ?? w;
-      });
-    });
-  }, []);
-
-  const restoreChat = useCallback((id: string) => {
-    setWindows((prev) => {
-      const screenW = globalThis.window.innerWidth;
-      const windowToRestore = prev.find((w) => w.id === id);
-
-      if (!windowToRestore) return prev;
-
-      // If window was manually moved before, keep its position
-      if (windowToRestore.hasUserMoved) {
-        return prev.map((w) =>
-          w.id === id ? { ...w, isMinimized: false } : w,
-        );
-      }
-
-      // Otherwise, find a non-overlapping position and then reposition all non-manually-moved windows
-      // to pack them tightly together
-      const otherWindows = prev.filter((w) => w.id !== id);
-      const newPosition = findNonOverlappingPosition(otherWindows, screenW);
-
-      // Update the restored window
-      const updated = prev.map((w) =>
-        w.id === id ? { ...w, isMinimized: false, position: newPosition } : w,
-      );
-
-      // Now reposition all non-manually-moved windows to pack them tightly
-      const minimizedCount = updated.filter((w) => w.isMinimized).length;
-      const reservedSpace = minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
-      const maxRightEdge = screenW - reservedSpace;
-      let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
-      const startY = MARGIN;
-
-      const windowsToReposition = updated
-        .filter((w) => !w.isMinimized && !w.hasUserMoved)
-        .sort((a, b) => b.position.x - a.position.x);
-
-      const repositionedMap = new Map<string, ChatWindow>();
-      windowsToReposition.forEach((w) => {
-        repositionedMap.set(w.id, { ...w, position: { x, y: startY } });
-        x -= WINDOW_WIDTH + WINDOW_GAP;
-      });
-
-      return updated.map((w) => {
-        const repositioned = repositionedMap.get(w.id);
-        return repositioned ?? w;
-      });
-    });
-  }, []);
-
-  const bringToFront = useCallback((id: string) => {
-    setWindows((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, zIndex: nextZIndex++ } : w)),
-    );
-  }, []);
+  const bringToFront = useCallback(
+    (id: string) => {
+      handleWindowsChange({ id, operation: "bringToFront" });
+    },
+    [handleWindowsChange],
+  );
 
   const openChat = useCallback(
     async (
@@ -426,21 +572,32 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                 x -= WINDOW_WIDTH + WINDOW_GAP;
               });
 
-              return updated.map((w) => {
+              const newState = updated.map((w) => {
                 const repositioned = repositionedMap.get(w.id);
                 return repositioned ?? w;
               });
+
+              saveWindowsState(newState);
+
+              return newState;
             });
           },
         },
       );
     },
-    [windows, createConversationMutation, bringToFront, restoreChat],
+    [
+      windows,
+      createConversationMutation,
+      bringToFront,
+      restoreChat,
+      saveWindowsState,
+    ],
   );
 
   useSubscription(
     trpc.chat.onMessage.subscriptionOptions(undefined, {
-      enabled: session?.user.id !== undefined,
+      enabled:
+        session?.user.id !== undefined && env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
       onData: (msg) => {
         void openChat(
           msg.data.id_user,
@@ -467,46 +624,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         restoreChat,
         bringToFront,
         updateWindowPosition: (id, position) => {
-          setWindows((prev) =>
-            prev.map((w) =>
-              w.id === id ? { ...w, position, hasUserMoved: true } : w,
-            ),
-          );
+          handleWindowsChange({ id, operation: "updatePosition", position });
         },
         resetPositionsHorizontally: () => {
-          setWindows((prev) => {
-            const screenW = globalThis.window.innerWidth;
-            const minimizedCount = prev.filter((w) => w.isMinimized).length;
-
-            // Reserve space for minimized windows on the right side (only if there are minimized windows)
-            const reservedSpace =
-              minimizedCount > 0 ? MINIMIZED_AREA_WIDTH : MARGIN;
-
-            // Calculate the maximum right edge position for open windows
-            const maxRightEdge = screenW - reservedSpace;
-            let x = Math.max(MARGIN, maxRightEdge - WINDOW_WIDTH);
-            const startY = MARGIN;
-
-            // Sort open windows by current x position (rightmost first) for consistent repositioning
-            const openWindows = prev
-              .filter((w) => !w.isMinimized)
-              .sort((a, b) => b.position.x - a.position.x);
-
-            const repositionedMap = new Map<string, ChatWindow>();
-            openWindows.forEach((w) => {
-              repositionedMap.set(w.id, {
-                ...w,
-                position: { x, y: startY },
-                hasUserMoved: false, // Reset manual move flag
-              });
-              x -= WINDOW_WIDTH + WINDOW_GAP;
-            });
-
-            return prev.map((w) => {
-              if (w.isMinimized) return w;
-              const repositioned = repositionedMap.get(w.id);
-              return repositioned ?? w;
-            });
+          handleWindowsChange({
+            id: "all",
+            operation: "resetPositionsHorizontally",
           });
         },
       }}

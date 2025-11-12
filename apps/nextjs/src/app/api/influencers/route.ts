@@ -16,8 +16,6 @@ export const QueryParamsSchema = z.object({
   offset: z.coerce.number().int().min(0).default(0).optional(),
 });
 
-// export type QueryParamsType = z.infer<typeof QueryParamsSchema>;
-
 export const ValidationError = z.object({
   code: z.string(),
   error: z.array(

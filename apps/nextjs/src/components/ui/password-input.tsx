@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { useId, useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
+import { cn } from "@galileyo/ui";
 import { Input } from "@galileyo/ui/input";
 import { Label } from "@galileyo/ui/label";
 
@@ -11,12 +12,14 @@ export type PasswordInputProps = Omit<
   ComponentProps<"input">,
   "id" | "type"
 > & {
+  containerClassName?: string;
   label?: string;
 };
 
 export function PasswordInput({
   label,
   placeholder,
+  containerClassName,
   ...props
 }: PasswordInputProps) {
   const id = useId();
@@ -25,7 +28,7 @@ export function PasswordInput({
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className={cn("*:not-first:mt-2", containerClassName)}>
       <Label htmlFor={id}>{label ?? "Password"}</Label>
       <div className="relative">
         <Input

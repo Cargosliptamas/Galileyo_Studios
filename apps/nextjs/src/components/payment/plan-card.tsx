@@ -37,7 +37,22 @@ const formatFeatureKey = (key: string) => {
   return key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
-const formatFeatureValue = (value: string | number) => {
+const formatFeatureValue = (
+  key: string,
+  value: string | number | boolean | undefined,
+) => {
+  if (typeof value === "undefined") {
+    return "-";
+  }
+
+  if (value === true) {
+    return "Yes";
+  }
+
+  if (value === false) {
+    return "No";
+  }
+
   if (value === 999 || value === "999") {
     return "Unlimited";
   }
@@ -46,23 +61,60 @@ const formatFeatureValue = (value: string | number) => {
     return "-";
   }
 
+  if (key === "map_access") {
+    switch (value) {
+      case "local":
+        return "Local";
+      case "full_regional":
+        return "Full Regional";
+      case "global_extended":
+        return "Global Extended";
+    }
+
+    return value;
+  }
+
+  if (key === "ad_free") {
+    switch (value.toString()) {
+      case "limited":
+        return "Limited";
+      case "true":
+        return "Yes";
+      default:
+        return "No";
+    }
+  }
+
   if (typeof value === "number") {
     return value.toLocaleString();
   }
   return value;
 };
+
+// Key features to show in lean mode (most important ones)
+const KEY_FEATURES = [
+  "alerts",
+  "max_phone_cnt",
+  "enhanced_alert",
+  "map_access",
+];
+
 export function PlanCard({
   plan,
   onUpgrade,
   onReactivate,
   isCancelled = false,
   canReactivate = false,
+  showFullFeatures = false,
+  previousPlan,
 }: {
   plan: PlanType;
   onUpgrade: (plan: PlanType) => void;
   onReactivate?: () => void;
   isCancelled?: boolean;
   canReactivate?: boolean;
+  showFullFeatures?: boolean;
+  previousPlan?: PlanType | null;
 }) {
   if (!canReactivate && isCancelled) {
     return null;
@@ -96,51 +148,123 @@ export function PlanCard({
         </div>
       )}
 
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-3 md:pb-4">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+            <CardTitle className="text-lg font-bold md:text-xl">
+              {plan.name}
+            </CardTitle>
             {plan.description && (
-              <CardDescription className="mt-1 text-sm text-muted-foreground">
+              <CardDescription className="mt-1 text-xs text-muted-foreground md:text-sm">
                 {plan.description}
               </CardDescription>
             )}
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-primary">
+            <div className="text-2xl font-bold text-primary md:text-3xl">
               {formatPrice(plan.price)}
             </div>
-            <div className="text-sm text-muted-foreground">per month</div>
+            <div className="text-xs text-muted-foreground md:text-sm">
+              per month
+            </div>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        {Object.keys(plan.settings).length > 0 && (
-          <>
-            <Separator className="my-4" />
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-foreground">
-                Plan Features
-              </h4>
-              <div className="grid gap-2">
-                {Object.entries(plan.settings).map(([key, value]) => (
+        {Object.keys(plan.settings).length > 0 &&
+          (() => {
+            // Get all features with their formatted values
+            const allFeatures = Object.entries(plan.settings)
+              .map(([key, value]) => {
+                const formattedValue = formatFeatureValue(key, value);
+                return {
+                  key: key.toString(),
+                  value,
+                  formattedValue,
+                };
+              })
+              .filter(({ key }) => key);
+
+            // Filter out features with "-" or "No" values
+            const validFeatures = allFeatures.filter(
+              ({ formattedValue }) =>
+                formattedValue !== "-" && formattedValue !== "No",
+            );
+
+            // Compare with previous plan and filter out matching features (compare ALL valid features)
+            const differentFeatures = previousPlan
+              ? validFeatures.filter(({ key, value }) => {
+                  // Check if previous plan has this key
+                  if (!(key in previousPlan.settings)) {
+                    return true; // Show this feature if previous plan doesn't have it
+                  }
+                  const prevValue = previousPlan.settings[key];
+                  // Also check if previous plan's formatted value is "-" or "No"
+                  const prevFormattedValue = formatFeatureValue(key, prevValue);
+                  if (
+                    prevFormattedValue === "-" ||
+                    prevFormattedValue === "No"
+                  ) {
+                    return true; // Show this feature if previous plan doesn't have a valid value
+                  }
+                  return prevValue !== value;
+                })
+              : validFeatures;
+
+            // Filter by showFullFeatures (mobile vs desktop) for display only
+            const visibleFeatures = differentFeatures.filter(
+              ({ key }) => showFullFeatures || KEY_FEATURES.includes(key),
+            );
+
+            if (visibleFeatures.length === 0) {
+              return null;
+            }
+
+            return (
+              <>
+                <Separator className="my-3 md:my-4" />
+                <div className="space-y-2 md:space-y-3">
+                  <h4 className="text-xs font-semibold text-foreground md:text-sm">
+                    Plan Features
+                  </h4>
                   <div
-                    key={key}
-                    className="flex items-center justify-between py-1"
+                    className={cn(
+                      "md:max-h-none md:overflow-visible",
+                      !showFullFeatures && "max-h-[200px] overflow-y-auto",
+                      showFullFeatures && "max-h-[400px] overflow-y-auto",
+                    )}
                   >
-                    <span className="text-sm text-muted-foreground">
-                      {formatFeatureKey(key)}
-                    </span>
-                    <span className="text-sm font-medium">
-                      {formatFeatureValue(value)}
-                    </span>
+                    <div className="grid gap-1.5 md:gap-2">
+                      {previousPlan && (
+                        <div className="flex items-center justify-between py-0.5 md:py-1">
+                          <span className="text-xs text-muted-foreground md:text-sm">
+                            All features from{" "}
+                            <span className="font-medium">
+                              {previousPlan.name}
+                            </span>
+                          </span>
+                        </div>
+                      )}
+                      {visibleFeatures.map(({ key, formattedValue }) => (
+                        <div
+                          key={key}
+                          className="flex items-center justify-between py-0.5 md:py-1"
+                        >
+                          <span className="text-xs text-muted-foreground md:text-sm">
+                            {formatFeatureKey(key)}
+                          </span>
+                          <span className="text-xs font-medium md:text-sm">
+                            {formattedValue}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+                </div>
+              </>
+            );
+          })()}
       </CardContent>
 
       {!plan.current && !isCancelled && (

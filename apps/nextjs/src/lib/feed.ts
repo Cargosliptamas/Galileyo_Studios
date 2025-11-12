@@ -6,3 +6,87 @@ export function getUniqueId(item: FeedItem) {
 
   return `${item.type}-${idPart}-${createdAtPart}`;
 }
+
+export type ThirdPartyLinkType =
+  | "youtube"
+  | "twitter"
+  | "spotify"
+  | "instagram"
+  | "tiktok"
+  | "reddit"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "telegram"
+  | "whatsapp"
+  | "viber"
+  | "skype"
+  | "discord"
+  | "twitch"
+  | "youtubeMusic"
+  | "appleMusic"
+  | "soundcloud"
+  | "bandcamp"
+  | "other";
+
+const LINK_PATTERNS: Record<ThirdPartyLinkType, RegExp[]> = {
+  youtube: [/https?:\/\/(www\.youtube\.com\/watch\?v=[\w-]+)/g],
+  twitch: [/https?:\/\/(www\.twitch\.tv\/[^\s]+)/g],
+  youtubeMusic: [/https?:\/\/(music\.youtube\.com\/watch\?v=[\w-]+)/g],
+  spotify: [/https?:\/\/(open\.spotify\.com\/track\/[\w-]+)/g],
+  appleMusic: [/https?:\/\/(music\.apple\.com\/[^\s]+)/g],
+  soundcloud: [/https?:\/\/(soundcloud\.com\/[^\s]+)/g],
+  bandcamp: [/https?:\/\/(bandcamp\.com\/[^\s]+)/g],
+
+  twitter: [/https?:\/\/(www\.twitter\.com\/[^\s]+)/g],
+  x: [/https?:\/\/(x\.com\/[^\s]+)/g],
+  facebook: [/https?:\/\/(www\.facebook\.com\/[^\s]+)/g],
+  instagram: [/https?:\/\/(www\.instagram\.com\/[^\s]+)/g],
+  tiktok: [/https?:\/\/(www\.tiktok\.com\/[^\s]+)/g],
+  reddit: [/https?:\/\/(www\.reddit\.com\/r\/[^\s]+)/g],
+  linkedin: [/https?:\/\/(www\.linkedin\.com\/in\/[^\s]+)/g],
+  telegram: [/https?:\/\/(t\.me\/[^\s]+)/g],
+  whatsapp: [/https?:\/\/(wa\.me\/[^\s]+)/g],
+  viber: [/https?:\/\/(viber\.com\/[^\s]+)/g],
+  skype: [/https?:\/\/(skype\.com\/[^\s]+)/g],
+  discord: [/https?:\/\/(discord\.com\/[^\s]+)/g],
+
+  other: [/https?:\/\/[^\s]+/g],
+};
+
+export interface DetectedLink {
+  link: string;
+  type: ThirdPartyLinkType;
+}
+
+export function detectLinks(text?: string | null, replaceLinks = false) {
+  if (!text) {
+    return {
+      text: "",
+      links: [],
+    };
+  }
+
+  const detectedLinks = text.match(/https?:\/\/[^\s]+/g) ?? [];
+
+  const links: DetectedLink[] = [];
+
+  for (const link of detectedLinks) {
+    for (const [type, patterns] of Object.entries(LINK_PATTERNS)) {
+      for (const pattern of patterns) {
+        if (pattern.test(link)) {
+          if (replaceLinks) {
+            text = text.replace(link, "");
+          }
+          links.push({ link, type: type as ThirdPartyLinkType });
+          break;
+        }
+      }
+    }
+  }
+
+  return {
+    text,
+    links,
+  };
+}

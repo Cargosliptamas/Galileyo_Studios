@@ -893,7 +893,7 @@ export function Profile() {
                               placeholder="Bio"
                               rows={3}
                               {...field}
-                              value={field.value}
+                              value={field.value ?? ""}
                             />
                           </FormControl>
                           <FormMessage />
@@ -906,6 +906,9 @@ export function Profile() {
                         type="submit"
                         disabled={updateProfile.isPending}
                         className="flex items-center gap-2"
+                        onClick={() => {
+                          updateProfile.mutate(generalForm.getValues());
+                        }}
                       >
                         {updateProfile.isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />

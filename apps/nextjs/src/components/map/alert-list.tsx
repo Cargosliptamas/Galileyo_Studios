@@ -97,7 +97,7 @@ export function AlertList({ alerts, onAlertClick }: AlertListProps) {
                     </div>
                   </div>
 
-                  {alert.affectedArea && (
+                  {alert.affectedArea && alert.affectedArea.radius > 0 && (
                     <div className="mt-2 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
                         <span

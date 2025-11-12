@@ -6,19 +6,14 @@ import { headers } from "next/headers";
 // import bcrypt from "bcrypt";
 
 import { initAuth } from "@galileyo/auth";
+import { getBaseUrl } from "@galileyo/utils";
 
 import { env } from "~/env";
 import { sendMagicLinkEmail } from "~/lib/emails";
 
-const baseUrl =
-  env.VERCEL_ENV === "production"
-    ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : env.VERCEL_ENV === "preview"
-      ? `https://${env.VERCEL_URL}`
-      : "http://localhost:3000";
-
 export const auth = initAuth({
-  baseUrl,
+  baseUrl: getBaseUrl(env),
+  apiUrl: env.NEXT_PUBLIC_API_URL,
   productionUrl: `https://${env.VERCEL_PROJECT_PRODUCTION_URL ?? "galileyo.com"}`,
   secret: env.AUTH_SECRET,
   emailOptions: {

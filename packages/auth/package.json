@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./middleware": "./src/middleware.ts",
     "./client": "./src/client.ts",
-    "./env": "./env.ts"
+    "./env": "./env.ts",
+    "./plugins/password/client": "./src/plugins/password/client.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -18,10 +19,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@better-auth/expo": "1.2.9",
+    "@better-auth/expo": "catalog:",
     "@galileyo/db": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.8",
-    "better-auth": "1.2.9",
+    "better-auth": "catalog:",
     "next": "^15.3.3",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
