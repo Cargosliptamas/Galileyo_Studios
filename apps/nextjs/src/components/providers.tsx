@@ -6,6 +6,7 @@ import { ThemeProvider } from "@galileyo/ui/theme";
 import { AbilityProvider } from "~/hooks/use-ability";
 import { PlanSwitchProvider } from "~/hooks/use-plan-switch";
 import { TRPCReactProvider } from "~/trpc/react";
+import { AnalyticsProvider } from "./analytics-provider";
 import { CallProvider } from "./chat/call-provider";
 import { ChatProvider } from "./chat/chat-provider";
 import { PushNotificationProvider } from "./layout/push-notification-provider";
@@ -34,7 +35,7 @@ export function Providers({
               <CallProvider>
                 <ChatProvider>
                   <PushNotificationProvider>
-                    {children}
+                    <AnalyticsProvider>{children}</AnalyticsProvider>
                   </PushNotificationProvider>
                 </ChatProvider>
               </CallProvider>
