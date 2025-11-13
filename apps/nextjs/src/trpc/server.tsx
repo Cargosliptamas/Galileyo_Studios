@@ -52,33 +52,3 @@ export function prefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
     void queryClient.prefetchQuery(queryOptions);
   }
 }
-
-export const getStatus = cache(async () => {
-  let result: {
-    name: string;
-    url: string;
-    status: "UP" | "HASISSUES" | "UNDERMAINTENANCE";
-  } | null = null;
-
-  try {
-    const response = await fetch("https://galileyo.instatus.com/summary.json", {
-      next: {
-        revalidate: 60 * 5, // 5 minutes
-      },
-    });
-
-    const data = (await response.json()) as {
-      page: {
-        name: string;
-        url: string;
-        status: "UP" | "HASISSUES" | "UNDERMAINTENANCE";
-      };
-    };
-
-    result = data.page;
-  } catch (error) {
-    console.error(error);
-  }
-
-  return result;
-});
