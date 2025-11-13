@@ -6,7 +6,7 @@ import { ThemeToggle } from "@galileyo/ui/theme";
 import { AppIcon } from "./app-icon";
 import { SiteStatus } from "./site-status";
 
-export async function SiteFooter() {
+export function SiteFooter() {
   return (
     <footer className="border-b border-slate-200 bg-card/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">

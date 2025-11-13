@@ -117,7 +117,11 @@ export default function PublicNavbar() {
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex w-20 text-primary hover:text-primary/90" suppressHydrationWarning>
+            <Link
+              href="/"
+              className="flex w-20 text-primary hover:text-primary/90"
+              suppressHydrationWarning
+            >
               <AppIcon useDark={true} />
             </Link>
           </div>
