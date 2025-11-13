@@ -56,6 +56,11 @@ export const env = createEnv({
       .enum(["true", "false"])
       .default("true")
       .transform((val) => val === "true"),
+    NEXT_PUBLIC_ANALYTICS_ENABLED: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((val) => val === "true"),
+    NEXT_PUBLIC_ANALYTICS_ID: z.string().optional(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -75,6 +80,8 @@ export const env = createEnv({
     NEXT_PUBLIC_AD_NUMBER: process.env.NEXT_PUBLIC_AD_NUMBER,
     NEXT_PUBLIC_UPGRADE_AD_SPACING: process.env.NEXT_PUBLIC_UPGRADE_AD_SPACING,
     NEXT_PUBLIC_WEBHOOKS_ENABLED: process.env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
+    NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+    NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",

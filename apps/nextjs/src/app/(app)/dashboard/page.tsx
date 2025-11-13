@@ -30,8 +30,6 @@ export default async function DashboardPage({
     }),
   );
 
-  prefetch(trpc.feed.getSubscribeableFeeds.queryOptions());
-
   return (
     <HydrateClient>
       <main className="container mx-auto max-w-3xl px-2 py-4">

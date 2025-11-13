@@ -7,6 +7,7 @@ import type {
   FinancialItemBackend,
   InfluencerFeedType,
   PrivateFeedType,
+  SubscribeableFeedType,
 } from "../types/feed";
 import { mapFeedItem } from "../lib/feed";
 import { protectedProcedure, publicProcedure } from "../trpc";
@@ -500,34 +501,127 @@ export const feedRouter = {
 
     const result = (await feed.json()) as {
       status: "success" | "error";
-      data: {
-        id: string;
-        title: string;
-        is_customer_marketstack_indx: boolean;
-        is_customer_marketstack_ticker: boolean;
-        feeds: {
-          id: string;
-          title: string;
-          subtitle: string | null;
-          description: string | null;
-          checked: boolean;
-          need_zip: boolean;
-          subscribers: number;
-          is_custom: boolean;
-          can_change_checked: boolean;
-          is_public: boolean;
-          image: string | null;
-          zip?: string | null;
-        }[];
-      }[];
+      data: SubscribeableFeedType[];
     };
 
     if (result.status !== "success") {
       throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
 
-    const enabledIds = ["8", "15"];
-
-    return result.data.filter((feed) => enabledIds.includes(feed.id));
+    return result.data;
   }),
+  getMarketstackIndexes: protectedProcedure.query(async ({ ctx }) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/feed/marketstack-indx`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const result = (await response.json()) as {
+      status: "success" | "error";
+      data: {
+        list: unknown[];
+      };
+    };
+
+    if (result.status !== "success") {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return result.data;
+  }),
+  getMarketstackTickers: protectedProcedure.query(async ({ ctx }) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/feed/marketstack-tickers`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const result = (await response.json()) as {
+      status: "success" | "error";
+      data: {
+        list: unknown[];
+      };
+    };
+
+    if (result.status !== "success") {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return result.data;
+  }),
+  addMarketstackIndex: protectedProcedure
+    .input(
+      z.object({
+        symbol: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/feed/add-own-marketstack-indx-subscription`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      const result = (await response.json()) as {
+        status: "success" | "error";
+        data: {
+          id: number;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return result.data;
+    }),
+  addMarketstackTicker: protectedProcedure
+    .input(
+      z.object({
+        symbol: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/feed/add-own-marketstack-ticker-subscription`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      const result = (await response.json()) as {
+        status: "success" | "error";
+        data: {
+          id: number;
+        };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return result.data;
+    }),
 } satisfies TRPCRouterRecord;

@@ -166,3 +166,34 @@ export type GetLatestNewsParamTypes = z.infer<typeof GetLatestNewsParams>;
 export type GetBySubscriptionParamTypes = z.infer<
   typeof GetBySubscriptionParams
 >;
+
+export interface SubscribeableFeedItemType {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  checked: boolean;
+  need_zip: boolean;
+  subscribers: number;
+  is_custom: boolean;
+  can_change_checked: boolean;
+  is_public: boolean;
+  image: string | null;
+  zip?: string | null;
+}
+
+export interface SubscribeableFeedChildType {
+  id: string;
+  title: string;
+  is_customer_marketstack_indx: boolean;
+  is_customer_marketstack_ticker: boolean;
+  feeds?: SubscribeableFeedItemType[];
+}
+
+export type SubscribeableFeedType = Omit<
+  SubscribeableFeedChildType,
+  "feeds"
+> & {
+  childs?: SubscribeableFeedChildType[];
+  feeds?: SubscribeableFeedItemType[];
+};
