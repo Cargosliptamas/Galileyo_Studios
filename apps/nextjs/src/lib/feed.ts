@@ -83,7 +83,12 @@ export function detectLinks(text?: string | null, replaceLinks = false) {
 
   const links: DetectedLink[] = [];
 
-  const detectedLinks = linkify.find(text);
+  const detectedLinks = linkify.find(text, {
+    validate: {
+      url: (value) => /^https?:\/\//.test(value),
+    },
+    ignoreTags: ["script", "style"],
+  });
 
   for (const link of detectedLinks) {
     const type = detectLinkType(link.href, "other");

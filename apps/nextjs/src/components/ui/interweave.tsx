@@ -21,8 +21,12 @@ const globalMatchers: MatcherInterface[] = [
   // new IpMatcher("ip"),
   new UrlMatcher(
     "url",
-    { validateTLD: false },
+    { validateTLD: true },
     ({ children, url }: UrlProps) => {
+      if (!/^https?:\/\//.test(url)) {
+        return children;
+      }
+
       return (
         <a
           className="line-clamp-1 max-w-xs truncate text-blue-500 hover:text-blue-600"
