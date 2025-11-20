@@ -69,4 +69,11 @@ export interface Alert {
     [key: string]: unknown;
   };
   is_influencer?: boolean;
+  influencer_page?: {
+    id: number;
+    title: string;
+    alias?: string;
+    description?: string;
+    image?: string;
+  };
 }

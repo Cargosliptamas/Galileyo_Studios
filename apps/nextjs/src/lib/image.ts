@@ -17,5 +17,9 @@ export const getInfluencerImageUrl = (url: string | null | undefined) => {
     return null;
   }
 
+  if (url.startsWith("http") || url.startsWith("https")) {
+    return url;
+  }
+
   return getBaseUrl() + "influencer/" + url;
 };

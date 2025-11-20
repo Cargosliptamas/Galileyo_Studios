@@ -766,6 +766,15 @@ export default function FeedCard({
                               timestamp: new Date().toISOString(),
                               source: item.title,
                               isActive: true,
+                              is_influencer: true,
+                              influencer_page: {
+                                id: item.id_subscription ?? 0,
+                                title: item.title,
+                                alias: undefined,
+                                description: item.title,
+                                image:
+                                  (item as InfluencerItem).image ?? undefined,
+                              },
                             },
                           ]}
                           zoom={10}

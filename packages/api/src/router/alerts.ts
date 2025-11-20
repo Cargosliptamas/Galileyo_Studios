@@ -98,6 +98,13 @@ export async function getAlertsFromBackend({
         created_at: string;
         updated_at: string | null;
         is_influencer?: boolean;
+        influencer_page?: {
+          id: number;
+          title: string;
+          alias?: string;
+          description?: string;
+          image?: string;
+        };
       }[];
     };
   };
@@ -153,6 +160,7 @@ export const alertsRouter = {
           radius: 0,
         },
         is_influencer: alert.is_influencer ?? false,
+        influencer_page: alert.influencer_page ?? undefined,
       }));
 
       return response;

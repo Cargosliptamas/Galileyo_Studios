@@ -17,6 +17,7 @@ import { Badge } from "@galileyo/ui/badge";
 
 import type { Alert } from "~/lib/types/alert";
 import { mockAlerts } from "~/lib/data/alerts";
+import { getInfluencerImageUrl } from "~/lib/image";
 import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from "~/lib/types/alert";
 
 // Dynamically import the map component to avoid SSR issues
@@ -190,9 +191,24 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
 
             // Create custom icon for each alert type
             const IconComponent = alertConfig.icon;
-            const iconHtml = renderToString(
+            let iconHtml = renderToString(
               <IconComponent className="h-6 w-6" style={{ color: "white" }} />,
             );
+
+            if (alert.is_influencer && alert.influencer_page) {
+              iconHtml = renderToString(
+                <div className="flex items-center justify-center">
+                  <img
+                    className="h-6 w-6 rounded-full"
+                    src={
+                      getInfluencerImageUrl(alert.influencer_page.image) ?? ""
+                    }
+                    alt={alert.influencer_page.title}
+                  />
+                </div>,
+              );
+            }
+
             const customIcon = L.divIcon({
               className: "custom-marker-container",
               html: `
