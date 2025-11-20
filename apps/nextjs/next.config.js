@@ -26,7 +26,9 @@ const config = {
     "@galileyo/api",
     "@galileyo/auth",
     "@galileyo/db",
+    "@galileyo/emails",
     "@galileyo/ui",
+    "@galileyo/utils",
     "@galileyo/validators",
   ],
 

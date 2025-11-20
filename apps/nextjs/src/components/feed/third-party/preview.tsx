@@ -61,10 +61,10 @@ export default function PreviewContent({ link }: ThirdPartyContentProps) {
     >
       <Card className="w-full overflow-hidden transition-all duration-200 hover:border-primary/20 hover:shadow-lg">
         <div
-          className={`flex ${hasImage ? "flex-row" : "flex-col"} ${hasImage ? "h-[200px]" : "min-h-[120px]"}`}
+          className={`grid grid-cols-1 md:flex ${hasImage ? "md:flex-row" : "md:flex-col"} ${hasImage ? "h-[200px]" : "min-h-[120px]"}`}
         >
           {hasImage && (
-            <div className="relative flex h-full w-[200px] flex-shrink-0 items-center justify-center bg-muted">
+            <div className="relative flex h-full w-40 flex-shrink-0 items-center justify-center bg-muted md:w-[200px]">
               <img
                 src={data.image}
                 alt={data.title ?? "Link preview"}

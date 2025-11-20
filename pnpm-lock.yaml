@@ -101,7 +101,7 @@ importers:
     dependencies:
       '@better-auth/expo':
         specifier: 'catalog:'
-        version: 1.3.34(da3022f9031d4a317c470d8d3243cfb1)
+        version: 1.3.34(dccd03b9509bb1b7237235a9e4c60dba)
       '@expo/metro-config':
         specifier: ^0.20.17
         version: 0.20.17
@@ -301,6 +301,12 @@ importers:
       flags:
         specifier: ^4.0.2
         version: 4.0.2(@opentelemetry/api@1.9.0)(next@15.3.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      interweave:
+        specifier: ^13.1.1
+        version: 13.1.1(react@19.0.0)
+      interweave-autolink:
+        specifier: ^5.1.2
+        version: 5.1.2(interweave@13.1.1(react@19.0.0))(react@19.0.0)
       ioredis:
         specifier: 'catalog:'
         version: 5.8.2
@@ -558,7 +564,7 @@ importers:
     dependencies:
       '@better-auth/expo':
         specifier: 'catalog:'
-        version: 1.3.34(da3022f9031d4a317c470d8d3243cfb1)
+        version: 1.3.34(dccd03b9509bb1b7237235a9e4c60dba)
       '@galileyo/db':
         specifier: workspace:*
         version: link:../db
@@ -8533,6 +8539,17 @@ packages:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
 
+  interweave-autolink@5.1.2:
+    resolution: {integrity: sha512-zcitXTUF9phyqtb99cd/dPdKNxKk+PEvFOeE/dQuNgr1pEDsxnK8HYQJxPRbJJznbdkIcSwzDIAqPT4vSjBWAA==}
+    peerDependencies:
+      interweave: ^13.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  interweave@13.1.1:
+    resolution: {integrity: sha512-5GdAavzK1i2BeeLTPzj0o6/zJMfLqQZq/2Q4c3ALT8ByEWf1syzl2MlQMTUoWzETy1x1/cAkZjiqOlulaoDRxw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   into-stream@7.0.0:
     resolution: {integrity: sha512-2dYz766i9HprMBasCMvHMuazJ7u4WzhJwo5kb3iPSiW/iRYV6uPari3zHoqZlnuaR7V1bEiNMxikhp37rdBXbw==}
     engines: {node: '>=12'}
@@ -14149,7 +14166,7 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.12
 
-  '@better-auth/expo@1.3.34(da3022f9031d4a317c470d8d3243cfb1)':
+  '@better-auth/expo@1.3.34(dccd03b9509bb1b7237235a9e4c60dba)':
     dependencies:
       '@better-fetch/fetch': 1.1.18
       better-auth: 1.3.34(next@15.3.3(@babel/core@7.27.4)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -22032,6 +22049,16 @@ snapshots:
   internmap@1.0.1: {}
 
   internmap@2.0.3: {}
+
+  interweave-autolink@5.1.2(interweave@13.1.1(react@19.0.0))(react@19.0.0):
+    dependencies:
+      interweave: 13.1.1(react@19.0.0)
+      react: 19.0.0
+
+  interweave@13.1.1(react@19.0.0):
+    dependencies:
+      escape-html: 1.0.3
+      react: 19.0.0
 
   into-stream@7.0.0:
     dependencies:

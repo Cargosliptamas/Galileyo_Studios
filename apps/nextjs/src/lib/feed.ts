@@ -31,7 +31,10 @@ export type ThirdPartyLinkType =
   | "other";
 
 const LINK_PATTERNS: Record<ThirdPartyLinkType, RegExp[]> = {
-  youtube: [/https?:\/\/(www\.youtube\.com\/watch\?v=[\w-]+)/g],
+  youtube: [
+    /https?:\/\/(www\.youtube\.com\/watch\?v=[\w-]+)/g,
+    /https?:\/\/(www\.youtu\.be\/watch\?v=[\w-]+)/g,
+  ],
   twitch: [/https?:\/\/(www\.twitch\.tv\/[^\s]+)/g],
   youtubeMusic: [/https?:\/\/(music\.youtube\.com\/watch\?v=[\w-]+)/g],
   spotify: [/https?:\/\/(open\.spotify\.com\/track\/[\w-]+)/g],
@@ -61,6 +64,25 @@ export interface DetectedLink {
   type: ThirdPartyLinkType;
 }
 
+export function detectLinkType(
+  link?: string | null,
+  defaultType?: ThirdPartyLinkType,
+): ThirdPartyLinkType {
+  if (!link) {
+    return defaultType ?? ("other" as ThirdPartyLinkType);
+  }
+
+  for (const [type, patterns] of Object.entries(LINK_PATTERNS)) {
+    for (const pattern of patterns) {
+      if (pattern.test(link)) {
+        return type as ThirdPartyLinkType;
+      }
+    }
+  }
+
+  return defaultType ?? ("other" as ThirdPartyLinkType);
+}
+
 export function detectLinks(text?: string | null, replaceLinks = false) {
   if (!text) {
     return {
@@ -69,9 +91,9 @@ export function detectLinks(text?: string | null, replaceLinks = false) {
     };
   }
 
-  const detectedLinks = text.match(/https?:\/\/[^\s]+/g) ?? [];
-
   const links: DetectedLink[] = [];
+
+  const detectedLinks = text.match(/https?:\/\/[^\s]+/g) ?? [];
 
   for (const link of detectedLinks) {
     let found = false;

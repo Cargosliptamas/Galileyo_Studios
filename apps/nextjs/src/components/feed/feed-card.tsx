@@ -51,11 +51,10 @@ import {
 import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
-import type { ThirdPartyLinkType } from "~/lib/feed";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { useFeedSubscription } from "~/hooks/use-feed-subscription";
 import { useReportModal } from "~/hooks/use-report-modal";
-import { detectLinks } from "~/lib/feed";
+import { detectLinks, detectLinkType } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
 import ImageWithAuth from "../image-with-auth";
 import { AlertMap } from "../map/alert-map";
@@ -65,6 +64,8 @@ import { UserAvatar } from "./user-avatar";
 import "leaflet/dist/leaflet.css";
 
 import { useRouter } from "next/navigation";
+
+import Interweave from "../ui/interweave";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -592,13 +593,13 @@ export default function FeedCard({
     [router],
   );
 
-  const { text, links } = useMemo(() => {
+  const { links } = useMemo(() => {
     const result = detectLinks(item.body, true);
     return {
       text: result.text,
       links: [
         ...result.links.filter((link) => link.link !== item.url),
-        { link: item.url ?? "", type: "direct-url" as ThirdPartyLinkType },
+        { link: item.url ?? "", type: detectLinkType(item.url, "direct-url") },
       ].filter((link) => link.link !== ""),
     };
   }, [item.body, item.url]);
@@ -680,7 +681,10 @@ export default function FeedCard({
         <CardContent className="pt-0">
           {/* Post Content */}
           {item.type !== "financial" && (
-            <p className="mb-4 break-words leading-relaxed">{text}</p>
+            // <p className="mb-4 break-words leading-relaxed">{text}</p>
+            <div className="mb-4 break-words leading-relaxed">
+              <Interweave content={item.body} />
+            </div>
           )}
 
           {/* Post Image */}
@@ -706,7 +710,7 @@ export default function FeedCard({
           <FeedThirdPartyContent links={links} />
 
           {item.meta_data?.location && (
-            <div className="mb-4 rounded-lg border border-slate-600 bg-slate-900/50 p-3">
+            <div className="my-4 rounded-lg border border-slate-600 bg-slate-900/50 p-3">
               <div className="flex items-center justify-between gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-cyan-400" />
