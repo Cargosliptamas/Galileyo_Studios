@@ -91,11 +91,13 @@ export function detectLinks(text?: string | null, replaceLinks = false) {
   });
 
   for (const link of detectedLinks) {
-    const type = detectLinkType(link.href, "other");
-    links.push({ link: link.href, type });
+    if (link.type === "url") {
+      const type = detectLinkType(link.href, "other");
+      links.push({ link: link.href, type });
 
-    if (replaceLinks) {
-      text = text.replace(link.href, "");
+      if (replaceLinks) {
+        text = text.replace(link.href, "");
+      }
     }
   }
 

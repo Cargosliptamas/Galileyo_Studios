@@ -6,6 +6,10 @@ import type { ThirdPartyContentProps } from "./types";
 
 export default function YoutubeContent({ link }: ThirdPartyContentProps) {
   const videoId = useMemo(() => {
+    if (link.includes("youtu.be")) {
+      return link.split("/").pop();
+    }
+
     return link.split("v=")[1]?.split("&")[0];
   }, [link]);
 
