@@ -26,7 +26,7 @@ export default function FeedThirdPartyContent({
         const Component = getThirdPartyContentComponent(link.type);
         return (
           <div key={`${link.link}-${index}`} className="mx-auto w-full">
-            <Component link={link.link} />
+            <Component link={link.link} type={link.type} />
           </div>
         );
       })}

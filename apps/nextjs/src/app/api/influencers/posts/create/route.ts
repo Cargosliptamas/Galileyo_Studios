@@ -13,6 +13,7 @@ import { env } from "~/env";
 const PostRequest = z.object({
   influencer_id: z.number().int(),
   text: z.string().max(512),
+  url: z.url().optional(),
 });
 
 const PostResponse = z.object({

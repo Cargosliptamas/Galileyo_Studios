@@ -1,0 +1,35 @@
+{
+  "name": "@galileyo/preview",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm with-env tsc --outDir dist",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "pnpm with-env tsx watch src/index.ts",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "start": "pnpm with-env node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@galileyo/metascraper": "workspace:*",
+    "@hono/node-server": "^1.19.6",
+    "@t3-oss/env-core": "^0.13.8",
+    "compromise": "^14.14.4",
+    "hono": "^4.10.6",
+    "openai": "^6.9.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@galileyo/eslint-config": "workspace:*",
+    "@galileyo/prettier-config": "workspace:*",
+    "@galileyo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "dotenv-cli": "^9.0.0",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsx": "^4.20.6",
+    "typescript": "catalog:"
+  },
+  "prettier": "@galileyo/prettier-config"
+}

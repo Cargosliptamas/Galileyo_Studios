@@ -27,6 +27,7 @@ export type ThirdPartyLinkType =
   | "appleMusic"
   | "soundcloud"
   | "bandcamp"
+  | "direct-url"
   | "other";
 
 const LINK_PATTERNS: Record<ThirdPartyLinkType, RegExp[]> = {
@@ -51,6 +52,7 @@ const LINK_PATTERNS: Record<ThirdPartyLinkType, RegExp[]> = {
   skype: [/https?:\/\/(skype\.com\/[^\s]+)/g],
   discord: [/https?:\/\/(discord\.com\/[^\s]+)/g],
 
+  "direct-url": [/2https2?:\/\/[^\s]+/g],
   other: [/https?:\/\/[^\s]+/g],
 };
 
@@ -72,13 +74,15 @@ export function detectLinks(text?: string | null, replaceLinks = false) {
   const links: DetectedLink[] = [];
 
   for (const link of detectedLinks) {
+    let found = false;
     for (const [type, patterns] of Object.entries(LINK_PATTERNS)) {
       for (const pattern of patterns) {
-        if (pattern.test(link)) {
+        if (pattern.test(link) && !found) {
           if (replaceLinks) {
             text = text.replace(link, "");
           }
           links.push({ link, type: type as ThirdPartyLinkType });
+          found = true;
           break;
         }
       }

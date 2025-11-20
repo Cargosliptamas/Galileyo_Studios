@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { parseAsBoolean, parseAsFloat, useQueryState } from "nuqs";
 
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
@@ -31,7 +32,18 @@ import { useTRPC } from "~/trpc/react";
 
 export function AlertMapPage() {
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.alerts.list.queryOptions({}));
+  const [showInfluencers] = useQueryState(
+    "showInfluencers",
+    parseAsBoolean.withDefault(false),
+  );
+  const [latitude] = useQueryState("latitude", parseAsFloat);
+  const [longitude] = useQueryState("longitude", parseAsFloat);
+
+  const { data } = useSuspenseQuery(
+    trpc.alerts.list.queryOptions({
+      show_influencers: true,
+    }),
+  );
 
   const alerts = data;
 
@@ -39,6 +51,7 @@ export function AlertMapPage() {
 
   const [filters, setFilters] = useState<AlertFilters>({
     types: [
+      "UNKNOWN",
       "ACCIDENT",
       "ACTIVESHOOTER",
       "AVALANCHE",
@@ -72,8 +85,9 @@ export function AlertMapPage() {
       "WILDFIRE",
       "WINTERSTORM",
     ] as AlertType[],
-    severities: ["low", "medium", "high", "critical"],
+    severities: ["information", "low", "medium", "high", "critical"],
     isActive: true,
+    showInfluencers,
   });
 
   const [showFiltersDialog, setShowFiltersDialog] = useState(false);
@@ -110,6 +124,8 @@ export function AlertMapPage() {
       // Check if alert is active (if filter is enabled)
       if (filters.isActive && !alert.isActive) return false;
 
+      if (!filters.showInfluencers && alert.is_influencer) return false;
+
       // Check if alert is within selected location bounds
       if (selectedLocation) {
         // Check bounding box first
@@ -132,6 +148,22 @@ export function AlertMapPage() {
       return true;
     });
   }, [alerts, filters, selectedLocation]);
+
+  const center: [number, number] = useMemo(() => {
+    if (latitude && longitude) {
+      return [Number(latitude), Number(longitude)];
+    }
+
+    return [40.7128, -74.006];
+  }, [latitude, longitude]);
+
+  const zoom = useMemo(() => {
+    if (latitude && longitude) {
+      return 14;
+    }
+
+    return 6;
+  }, [latitude, longitude]);
 
   const handleAlertClick = (alert: Alert) => {
     // Pan the map to the alert location
@@ -242,6 +274,8 @@ export function AlertMapPage() {
           <CardContent className="p-0">
             <AlertMap
               ref={mapRef}
+              center={center}
+              zoom={zoom}
               alerts={filteredAlerts}
               onAlertClick={handleAlertClick}
               showAffectedAreas={true}

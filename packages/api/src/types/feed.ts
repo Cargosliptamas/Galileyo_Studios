@@ -24,6 +24,12 @@ export interface BaseFeedItem {
   emergency_level: string | null;
   created_at: string | null;
   location: string | null;
+  meta_data?: {
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+  } | null;
   // TODO: remove this
   is_liked: boolean | null;
   is_bookmarked: boolean | null;

@@ -27,6 +27,8 @@ export const env = createEnv({
     GROWTHBOOK_CLIENT_KEY: z.string().optional(),
     GROWTHBOOK_API_HOST: z.string().optional(),
     ZYTE_API_KEY: z.string().optional(),
+    REDIS_URL: z.url().optional(),
+    PREVIEW_SERVER_URL: z.url().default("http://localhost:3001"),
   },
 
   /**
@@ -61,6 +63,10 @@ export const env = createEnv({
       .default("false")
       .transform((val) => val === "true"),
     NEXT_PUBLIC_ANALYTICS_ID: z.string().optional(),
+    NEXT_PUBLIC_PREVIEW_ENABLED: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((val) => val === "true"),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -82,6 +88,7 @@ export const env = createEnv({
     NEXT_PUBLIC_WEBHOOKS_ENABLED: process.env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
     NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
     NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
+    NEXT_PUBLIC_PREVIEW_ENABLED: process.env.NEXT_PUBLIC_PREVIEW_ENABLED,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",

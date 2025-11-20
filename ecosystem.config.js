@@ -6,6 +6,11 @@ module.exports = {
       script: "pnpm start"
     },
     {
+      name: "preview",
+      cwd: "./apps/preview",
+      script: "pnpm start"
+    },
+    {
       name: "websocket",
       cwd: "./apps/nextjs",
       script: "pnpm start:ws"

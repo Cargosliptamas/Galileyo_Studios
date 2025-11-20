@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Bookmark,
+  Globe,
   // Globe,
   // Shield,
   Heart,
@@ -11,6 +12,7 @@ import {
   MapPin,
   MessageCircle,
   MoreHorizontal,
+  PictureInPicture2,
   Satellite,
   TrendingDown,
   TrendingUp,
@@ -29,8 +31,10 @@ import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@galileyo/ui/dialog";
 import {
   DropdownMenu,
@@ -47,14 +51,20 @@ import {
 import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
+import type { ThirdPartyLinkType } from "~/lib/feed";
 import { useCommentsModal } from "~/hooks/use-comments-modal";
 import { useFeedSubscription } from "~/hooks/use-feed-subscription";
 import { useReportModal } from "~/hooks/use-report-modal";
 import { detectLinks } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
 import ImageWithAuth from "../image-with-auth";
+import { AlertMap } from "../map/alert-map";
 import FeedThirdPartyContent from "./feed-third-party-contet";
 import { UserAvatar } from "./user-avatar";
+
+import "leaflet/dist/leaflet.css";
+
+import { useRouter } from "next/navigation";
 
 function formatPrice(price: string | number | null | undefined) {
   const priceNumber =
@@ -116,6 +126,7 @@ export default function FeedCard({
   getQueryKeys: () => QueryKey;
   getQueryKeysOnError: () => QueryKey;
 }) {
+  const router = useRouter();
   const { ref, inView } = useInView();
   const [wasInView, setWasInView] = useState(false);
 
@@ -564,9 +575,33 @@ export default function FeedCard({
     openReportModal(item);
   }, [item, openReportModal]);
 
+  const handleOpenEmergencyMap = useCallback(
+    ({
+      latitude,
+      longitude,
+      showInfluncers,
+    }: {
+      latitude: number;
+      longitude: number;
+      showInfluncers: boolean;
+    }) => {
+      router.push(
+        `/alerts-map?latitude=${latitude}&longitude=${longitude}&showInfluencers=${showInfluncers}`,
+      );
+    },
+    [router],
+  );
+
   const { text, links } = useMemo(() => {
-    return detectLinks(item.body, false);
-  }, [item.body]);
+    const result = detectLinks(item.body, true);
+    return {
+      text: result.text,
+      links: [
+        ...result.links.filter((link) => link.link !== item.url),
+        { link: item.url ?? "", type: "direct-url" as ThirdPartyLinkType },
+      ].filter((link) => link.link !== ""),
+    };
+  }, [item.body, item.url]);
 
   return (
     // <Card className="max-w-3xl mx-auto">
@@ -669,6 +704,82 @@ export default function FeedCard({
           )}
 
           <FeedThirdPartyContent links={links} />
+
+          {item.meta_data?.location && (
+            <div className="mb-4 rounded-lg border border-slate-600 bg-slate-900/50 p-3">
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-cyan-400" />
+                  <span className="text-slate-300">Location </span>
+                  <span className="font-medium text-cyan-400">
+                    {item.meta_data.location.latitude},{" "}
+                    {item.meta_data.location.longitude}
+                  </span>
+                </div>
+                <div className="relative flex items-center gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-2"
+                      >
+                        <MapPin className="h-4 w-4 text-cyan-400" />
+                        <span>Show on map</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-7xl">
+                      <DialogHeader>
+                        <DialogTitle>Location</DialogTitle>
+                        <DialogDescription>
+                          {item.meta_data.location.latitude},{" "}
+                          {item.meta_data.location.longitude}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex flex-col gap-4">
+                        <Button
+                          className="flex w-full gap-2"
+                          onClick={() =>
+                            handleOpenEmergencyMap({
+                              latitude: item.meta_data?.location.latitude ?? 0,
+                              longitude:
+                                item.meta_data?.location.longitude ?? 0,
+                              showInfluncers: true,
+                            })
+                          }
+                        >
+                          <PictureInPicture2 className="h-4 w-4" />
+                          <span>Open in emergency map</span>
+                        </Button>
+                        <AlertMap
+                          alerts={[
+                            {
+                              id: item.id?.toString() ?? "",
+                              title: item.title,
+                              description: item.body,
+                              location: item.meta_data.location,
+                              severity: "information",
+                              type: "UNKNOWN",
+                              timestamp: new Date().toISOString(),
+                              source: item.title,
+                              isActive: true,
+                            },
+                          ]}
+                          zoom={10}
+                          center={[
+                            item.meta_data.location.latitude,
+                            item.meta_data.location.longitude,
+                          ]}
+                          // onAlertClick={() => {}}
+                          showAffectedAreas={false}
+                          selectedLocation={null}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Satellite Info */}
           {/* {1 == 1 && (

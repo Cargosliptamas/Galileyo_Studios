@@ -18,6 +18,7 @@ export function AlertList({ alerts, onAlertClick }: AlertListProps) {
       high: 3,
       medium: 2,
       low: 1,
+      information: 0,
     };
     return severityOrder[b.severity] - severityOrder[a.severity];
   });

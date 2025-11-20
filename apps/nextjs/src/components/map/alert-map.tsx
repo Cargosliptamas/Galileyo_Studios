@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import L from "leaflet";
 import { renderToString } from "react-dom/server";
 
+import { Skeleton } from "@galileyo/ui";
 import { Badge } from "@galileyo/ui/badge";
 
 import type { Alert } from "~/lib/types/alert";
@@ -165,12 +166,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
     }));
 
     if (!isClient) {
-      return null;
-      // return (
-      //   <div className="flex h-[600px] w-full animate-pulse items-center justify-center rounded-lg bg-gray-200">
-      //     <div className="text-gray-500">Loading map...</div>
-      //   </div>
-      // );
+      return <Skeleton className="h-[600px] w-full" />;
     }
 
     return (
@@ -198,7 +194,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
               <IconComponent className="h-6 w-6" style={{ color: "white" }} />,
             );
             const customIcon = L.divIcon({
-              className: "custom-marker",
+              className: "custom-marker-container",
               html: `
               <div class="custom-marker ${alert.type}" style="background-color: ${alertConfig.color}; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%;">
                 ${iconHtml}

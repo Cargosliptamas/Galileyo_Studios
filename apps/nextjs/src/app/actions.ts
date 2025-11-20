@@ -63,7 +63,6 @@ export async function sendContactUsEmail(
   message: string,
   turnstileToken: string,
 ): Promise<{ success: boolean; error: string | null }> {
-  // 0x4AAAAAAB0QoqBu_2OtubrO8Y1mCaPXWB4
   await db.insert(contact).values({
     name: name,
     email: email,

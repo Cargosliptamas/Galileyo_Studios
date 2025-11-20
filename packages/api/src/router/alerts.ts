@@ -18,6 +18,7 @@ function mapSeverity(severity_ID: string): AlertSeverity {
       return "critical";
     case "TERMINATION":
     case "INFORMATION":
+      return "information";
     default:
       return "low";
   }
@@ -29,21 +30,25 @@ export async function getAlertsFromBackend({
   cursor,
   from_date,
   to_date,
+  show_influencers = false,
 }: {
   token: string;
   limit: number;
   cursor: number;
   from_date?: string | null;
   to_date?: string | null;
+  show_influencers?: boolean;
 }) {
   const options: {
     page: number;
     page_size: number;
     from_date?: string | null;
     to_date?: string | null;
+    show_influencers?: boolean;
   } = {
     page: cursor,
     page_size: limit,
+    show_influencers,
   };
 
   if (from_date) {
@@ -92,6 +97,7 @@ export async function getAlertsFromBackend({
         external_creation_date: string;
         created_at: string;
         updated_at: string | null;
+        is_influencer?: boolean;
       }[];
     };
   };
@@ -110,6 +116,7 @@ export const alertsRouter = {
         cursor: z.number().optional().default(1),
         from_date: z.string().optional().nullish(),
         to_date: z.string().optional().nullish(),
+        show_influencers: z.boolean().optional().default(false),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -119,6 +126,7 @@ export const alertsRouter = {
         cursor: input.cursor,
         from_date: input.from_date,
         to_date: input.to_date,
+        show_influencers: input.show_influencers,
       });
 
       if (status !== "success") {
@@ -139,11 +147,12 @@ export const alertsRouter = {
           longitude: Number(alert.longitude),
         },
         timestamp: alert.external_creation_date,
-        source: "",
+        source: alert.is_influencer ? "Influencer" : "System",
         isActive: alert.active,
         affectedArea: {
           radius: 0,
         },
+        is_influencer: alert.is_influencer ?? false,
       }));
 
       return response;

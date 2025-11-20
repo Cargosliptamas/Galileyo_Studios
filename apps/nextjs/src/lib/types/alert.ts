@@ -13,6 +13,7 @@ export interface AlertFilters {
   types: AlertType[];
   severities: AlertSeverity[];
   isActive: boolean;
+  showInfluencers: boolean;
   dateRange?: {
     start: string;
     end: string;
@@ -20,6 +21,12 @@ export interface AlertFilters {
 }
 
 export const ALERT_TYPE_CONFIG = {
+  UNKNOWN: {
+    label: "Unknown",
+    color: "#6B7280",
+    icon: AlertCircle,
+    description: "Unknown incidents",
+  },
   ACCIDENT: {
     label: "Accident",
     color: "#EF4444",
@@ -215,6 +222,11 @@ export const ALERT_TYPE_CONFIG = {
 } as const;
 
 export const SEVERITY_CONFIG = {
+  information: {
+    label: "Information",
+    color: "#6B7280",
+    priority: 0,
+  },
   low: {
     label: "Low",
     color: "#10B981",

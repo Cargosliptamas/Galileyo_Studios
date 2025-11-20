@@ -22,6 +22,7 @@ export function AlertFiltersComponent({
       types: Object.keys(ALERT_TYPE_CONFIG) as AlertType[],
       severities: Object.keys(SEVERITY_CONFIG) as AlertSeverity[],
       isActive: true,
+      showInfluencers: true,
     },
   );
 
@@ -47,6 +48,15 @@ export function AlertFiltersComponent({
 
   const handleActiveToggle = () => {
     const newFilters = { ...filters, isActive: !filters.isActive };
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
+  const handleShowInfluencersToggle = () => {
+    const newFilters = {
+      ...filters,
+      showInfluencers: !filters.showInfluencers,
+    };
     setFilters(newFilters);
     onFiltersChange(newFilters);
   };
@@ -114,17 +124,36 @@ export function AlertFiltersComponent({
         </div>
       </div>
 
-      {/* Active Status */}
-      <div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="active-only"
-            checked={filters.isActive}
-            onCheckedChange={handleActiveToggle}
-          />
-          <Label htmlFor="active-only" className="cursor-pointer text-sm">
-            Show only active alerts
-          </Label>
+      <div className="grid grid-cols-2 gap-2">
+        {/* Active Status */}
+        <div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="active-only"
+              checked={filters.isActive}
+              onCheckedChange={handleActiveToggle}
+            />
+            <Label htmlFor="active-only" className="cursor-pointer text-sm">
+              Show only active alerts
+            </Label>
+          </div>
+        </div>
+
+        {/* Show Influencers */}
+        <div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="show-influencers"
+              checked={filters.showInfluencers}
+              onCheckedChange={handleShowInfluencersToggle}
+            />
+            <Label
+              htmlFor="show-influencers"
+              className="cursor-pointer text-sm"
+            >
+              Show influencers
+            </Label>
+          </div>
         </div>
       </div>
     </div>

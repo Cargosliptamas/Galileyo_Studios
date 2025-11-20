@@ -135,7 +135,7 @@
   color: white;
   font-weight: bold;
 }
-
+/* 
 .custom-marker.weather {
   background: #3b82f6;
 }
@@ -166,7 +166,7 @@
 
 .custom-marker.other {
   background: #64748b;
-}
+} */
 
 /* Line clamp utility */
 .line-clamp-2 {

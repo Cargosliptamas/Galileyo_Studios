@@ -1,4 +1,5 @@
 export type AlertType =
+  | "UNKNOWN"
   | "ACCIDENT"
   | "ACTIVESHOOTER"
   | "AVALANCHE"
@@ -32,7 +33,12 @@ export type AlertType =
   | "WILDFIRE"
   | "WINTERSTORM";
 
-export type AlertSeverity = "low" | "medium" | "high" | "critical";
+export type AlertSeverity =
+  | "information"
+  | "low"
+  | "medium"
+  | "high"
+  | "critical";
 
 export interface Alert {
   id: string;
@@ -62,4 +68,5 @@ export interface Alert {
     damage?: string;
     [key: string]: unknown;
   };
+  is_influencer?: boolean;
 }
