@@ -1,3 +1,5 @@
+import * as linkify from "linkifyjs";
+
 import type { FeedItem } from "@galileyo/api/schemas";
 
 export function getUniqueId(item: FeedItem) {
@@ -30,33 +32,21 @@ export type ThirdPartyLinkType =
   | "direct-url"
   | "other";
 
-const LINK_PATTERNS: Record<ThirdPartyLinkType, RegExp[]> = {
-  youtube: [
-    /https?:\/\/(www\.youtube\.com\/watch\?v=[\w-]+)/g,
-    /https?:\/\/(www\.youtu\.be\/watch\?v=[\w-]+)/g,
-  ],
-  twitch: [/https?:\/\/(www\.twitch\.tv\/[^\s]+)/g],
-  youtubeMusic: [/https?:\/\/(music\.youtube\.com\/watch\?v=[\w-]+)/g],
-  spotify: [/https?:\/\/(open\.spotify\.com\/track\/[\w-]+)/g],
-  appleMusic: [/https?:\/\/(music\.apple\.com\/[^\s]+)/g],
-  soundcloud: [/https?:\/\/(soundcloud\.com\/[^\s]+)/g],
-  bandcamp: [/https?:\/\/(bandcamp\.com\/[^\s]+)/g],
+const HOST_PATTERNS: Partial<Record<ThirdPartyLinkType, string[]>> = {
+  youtube: ["youtube.com", "youtu.be"],
+  twitch: ["twitch.tv"],
 
-  twitter: [/https?:\/\/(www\.twitter\.com\/[^\s]+)/g],
-  x: [/https?:\/\/(x\.com\/[^\s]+)/g],
-  facebook: [/https?:\/\/(www\.facebook\.com\/[^\s]+)/g],
-  instagram: [/https?:\/\/(www\.instagram\.com\/[^\s]+)/g],
-  tiktok: [/https?:\/\/(www\.tiktok\.com\/[^\s]+)/g],
-  reddit: [/https?:\/\/(www\.reddit\.com\/r\/[^\s]+)/g],
-  linkedin: [/https?:\/\/(www\.linkedin\.com\/in\/[^\s]+)/g],
-  telegram: [/https?:\/\/(t\.me\/[^\s]+)/g],
-  whatsapp: [/https?:\/\/(wa\.me\/[^\s]+)/g],
-  viber: [/https?:\/\/(viber\.com\/[^\s]+)/g],
-  skype: [/https?:\/\/(skype\.com\/[^\s]+)/g],
-  discord: [/https?:\/\/(discord\.com\/[^\s]+)/g],
+  youtubeMusic: ["music.youtube.com"],
+  spotify: ["spotify.com"],
+  appleMusic: ["music.apple.com"],
+  soundcloud: ["soundcloud.com"],
+  bandcamp: ["bandcamp.com"],
 
-  "direct-url": [/2https2?:\/\/[^\s]+/g],
-  other: [/https?:\/\/[^\s]+/g],
+  twitter: ["twitter.com", "x.com"],
+  instagram: ["instagram.com"],
+  tiktok: ["tiktok.com"],
+  reddit: ["reddit.com"],
+  facebook: ["facebook.com"],
 };
 
 export interface DetectedLink {
@@ -72,9 +62,9 @@ export function detectLinkType(
     return defaultType ?? ("other" as ThirdPartyLinkType);
   }
 
-  for (const [type, patterns] of Object.entries(LINK_PATTERNS)) {
+  for (const [type, patterns] of Object.entries(HOST_PATTERNS)) {
     for (const pattern of patterns) {
-      if (pattern.test(link)) {
+      if (link.includes(pattern)) {
         return type as ThirdPartyLinkType;
       }
     }
@@ -93,21 +83,14 @@ export function detectLinks(text?: string | null, replaceLinks = false) {
 
   const links: DetectedLink[] = [];
 
-  const detectedLinks = text.match(/https?:\/\/[^\s]+/g) ?? [];
+  const detectedLinks = linkify.find(text);
 
   for (const link of detectedLinks) {
-    let found = false;
-    for (const [type, patterns] of Object.entries(LINK_PATTERNS)) {
-      for (const pattern of patterns) {
-        if (pattern.test(link) && !found) {
-          if (replaceLinks) {
-            text = text.replace(link, "");
-          }
-          links.push({ link, type: type as ThirdPartyLinkType });
-          found = true;
-          break;
-        }
-      }
+    const type = detectLinkType(link.href, "other");
+    links.push({ link: link.href, type });
+
+    if (replaceLinks) {
+      text = text.replace(link.href, "");
     }
   }
 
