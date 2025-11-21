@@ -2,7 +2,7 @@
 
 import { FileDown } from "lucide-react";
 
-import type { PaymentHistoryType } from "@galileyo/api/schemas";
+import type { PaymentHistoryType } from "@galileyo/validators";
 import { Button } from "@galileyo/ui/button";
 import { toast } from "@galileyo/ui/toast";
 

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import type { GetLatestNewsParamTypes } from "@galileyo/api/schemas";
+import type { GetLatestNewsParamTypes } from "@galileyo/validators/feed";
 
 import { getSession } from "~/auth/server";
 import { FeedTypeSwitcher } from "~/components/feed/feed-type-switcher";

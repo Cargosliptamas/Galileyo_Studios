@@ -138,13 +138,15 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                {columns.map((column, index) => (
-                  <TableCell key={`${column.id}-${index}`}>
-                    <Skeleton className="h-6 w-full" />
-                  </TableCell>
-                ))}
-              </TableRow>
+              Array.from({ length: pagination.pageSize }).map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  {columns.map((column, index) => (
+                    <TableCell key={`${column.id}-${index}`}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

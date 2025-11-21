@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useState } from "react";
 
-import type { PlanType } from "@galileyo/api/schemas";
+import type { PlanType } from "@galileyo/validators";
 
 import { PlansModal } from "~/components/payment/plans-modal";
 import { SwitchPlanModal } from "~/components/payment/switch-plan-modal";

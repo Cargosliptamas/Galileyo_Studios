@@ -6,7 +6,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 
-import type { BookmarkListType, FeedItem } from "@galileyo/api/schemas";
+import type { BookmarkListType, FeedItem } from "@galileyo/validators";
 
 import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import { getUniqueId } from "~/lib/feed";

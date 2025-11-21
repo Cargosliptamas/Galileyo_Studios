@@ -1,6 +1,6 @@
 import * as linkify from "linkifyjs";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators";
 
 export function getUniqueId(item: FeedItem) {
   const idPart = item.id ?? crypto.randomUUID();

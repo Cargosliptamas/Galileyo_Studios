@@ -3,7 +3,8 @@ import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z } from "zod/v4";
 
-import type { Article, FetchedArticle } from "../types/scraping";
+import type { Article, FetchedArticle } from "@galileyo/validators/scraping";
+
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 

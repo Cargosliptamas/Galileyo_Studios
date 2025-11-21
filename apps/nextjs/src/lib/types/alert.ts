@@ -7,7 +7,7 @@ import {
   Wrench,
 } from "lucide-react";
 
-import type { Alert, AlertSeverity, AlertType } from "@galileyo/api/schemas";
+import type { Alert, AlertSeverity, AlertType } from "@galileyo/validators";
 
 export interface AlertFilters {
   types: AlertType[];

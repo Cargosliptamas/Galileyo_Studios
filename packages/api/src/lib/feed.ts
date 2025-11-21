@@ -1,4 +1,4 @@
-import type { FeedItem } from "../types/feed";
+import type { FeedItem } from "@galileyo/validators/feed";
 
 export function mapFeedItem(item: FeedItem): FeedItem {
   const itemMap = { ...item };

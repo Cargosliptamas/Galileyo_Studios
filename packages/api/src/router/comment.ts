@@ -5,7 +5,8 @@ import { z } from "zod/v4";
 // import { desc, eq } from "@galileyo/db";
 // import { CreatePostSchema, Post } from "@galileyo/db/schema";
 
-import type { Comment } from "../types/feed";
+import type { Comment } from "@galileyo/validators/feed";
+
 import {
   protectedProcedure,
   // publicProcedure

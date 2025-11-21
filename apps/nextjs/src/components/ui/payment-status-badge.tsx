@@ -1,4 +1,4 @@
-import type { PaymentHistoryType } from "@galileyo/api/schemas";
+import type { PaymentHistoryType } from "@galileyo/validators";
 import { cn } from "@galileyo/ui";
 import { Badge } from "@galileyo/ui/badge";
 

@@ -6,10 +6,11 @@ import type {
   BookmarkListType,
   BookmarkListTypeWithOptionalPost,
   BookmarkType,
-} from "../types/bookmark";
+} from "@galileyo/validators/bookmark";
+import { CreateBookmarkSchema } from "@galileyo/validators/bookmark";
+
 import { mapFeedItem } from "../lib/feed";
 import { protectedProcedure } from "../trpc";
-import { CreateBookmarkSchema } from "../types/bookmark";
 
 export const bookmarkRouter = {
   list: protectedProcedure

@@ -12,7 +12,6 @@ import {
   MapPin,
   MessageCircle,
   MoreHorizontal,
-  PictureInPicture2,
   Satellite,
   TrendingDown,
   TrendingUp,
@@ -24,7 +23,7 @@ import type {
   FeedItem,
   FinancialItem,
   InfluencerItem,
-} from "@galileyo/api/schemas";
+} from "@galileyo/validators/feed";
 import { cn, Skeleton } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
@@ -711,21 +710,23 @@ export default function FeedCard({
 
           {item.meta_data?.location && (
             <div className="my-4 rounded-lg border border-slate-600 bg-slate-900/50 p-3">
-              <div className="flex items-center justify-between gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-cyan-400" />
-                  <span className="text-slate-300">Location </span>
+              <div className="flex flex-col items-center justify-between gap-4 text-sm md:flex-row">
+                <div className="flex flex-row items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-cyan-400" />
+                    <span className="text-slate-300">Location </span>
+                  </div>
                   <span className="font-medium text-cyan-400">
                     {item.meta_data.location.latitude},{" "}
                     {item.meta_data.location.longitude}
                   </span>
                 </div>
-                <div className="relative flex items-center gap-2">
+                <div className="relative flex w-full items-center gap-2 md:w-auto">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
-                        variant="ghost"
-                        className="flex items-center gap-2"
+                        variant="secondary"
+                        className="flex w-full items-center gap-2 md:w-auto"
                       >
                         <MapPin className="h-4 w-4 text-cyan-400" />
                         <span>Show on map</span>
@@ -751,7 +752,7 @@ export default function FeedCard({
                             })
                           }
                         >
-                          <PictureInPicture2 className="h-4 w-4" />
+                          <MapPin className="h-4 w-4" />
                           <span>Open in emergency map</span>
                         </Button>
                         <AlertMap

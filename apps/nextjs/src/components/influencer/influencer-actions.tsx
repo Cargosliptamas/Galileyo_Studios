@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators";
 import { Button } from "@galileyo/ui";
 
 import type { ProfileInfo } from "~/lib/server/profile";

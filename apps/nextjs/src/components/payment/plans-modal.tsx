@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import type { PlanType } from "@galileyo/api/schemas";
+import type { PlanType } from "@galileyo/validators";
 import { Button, ScrollArea } from "@galileyo/ui";
 import {
   Dialog,

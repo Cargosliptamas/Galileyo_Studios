@@ -7,6 +7,38 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
+    },
+    "./my-feed": {
+      "types": "./dist/my-feed.d.ts",
+      "default": "./src/my-feed.ts"
+    },
+    "./feed": {
+      "types": "./dist/feed.d.ts",
+      "default": "./src/feed.ts"
+    },
+    "./alert": {
+      "types": "./dist/alert.d.ts",
+      "default": "./src/alert.ts"
+    },
+    "./bookmark": {
+      "types": "./dist/bookmark.d.ts",
+      "default": "./src/bookmark.ts"
+    },
+    "./payment": {
+      "types": "./dist/payment.d.ts",
+      "default": "./src/payment.ts"
+    },
+    "./profile": {
+      "types": "./dist/profile.d.ts",
+      "default": "./src/profile.ts"
+    },
+    "./search": {
+      "types": "./dist/search.d.ts",
+      "default": "./src/search.ts"
+    },
+    "./scraping": {
+      "types": "./dist/scraping.d.ts",
+      "default": "./src/scraping.ts"
     }
   },
   "license": "MIT",

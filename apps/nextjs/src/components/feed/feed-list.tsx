@@ -6,7 +6,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators/feed";
 
 import type { User } from "~/auth/client";
 // import { Button } from "@galileyo/ui/button";

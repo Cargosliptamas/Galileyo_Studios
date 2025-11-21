@@ -12,7 +12,7 @@ import {
   Settings,
 } from "lucide-react";
 
-import type { SearchResultUserType } from "@galileyo/api/schemas";
+import type { SearchResultUserType } from "@galileyo/validators";
 import { Button, toast } from "@galileyo/ui";
 import {
   CommandDialog,

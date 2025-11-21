@@ -7,6 +7,7 @@ import {
   ChevronDown,
   CreditCard,
   LogOut,
+  Newspaper,
   Settings,
 } from "lucide-react";
 
@@ -15,7 +16,7 @@ import { Button } from "@galileyo/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
+  // DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -179,19 +180,24 @@ export function UserMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              className="cursor-default"
-              onSelect={(event) => event.preventDefault()}
-            >
-              <span>Theme</span>
-              <div className="ml-auto">
-                <ThemeToggle />
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+          <DropdownMenuItem
+            className="cursor-default"
+            onSelect={(event) => event.preventDefault()}
+          >
+            <span>Theme</span>
+            <div className="ml-auto">
+              <ThemeToggle />
+            </div>
+          </DropdownMenuItem>
 
           <DropdownMenuSeparator />
+
+          <DropdownMenuItem asChild>
+            <Link href="/my-feeds" className="cursor-pointer">
+              <Newspaper className="mr-2 h-4 w-4" />
+              My Feeds
+            </Link>
+          </DropdownMenuItem>
 
           {/* Profile Settings */}
           <DropdownMenuItem asChild>

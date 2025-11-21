@@ -13,8 +13,8 @@ import { addDays, format } from "date-fns";
 import { Calendar, ChevronDown, Globe, Satellite, Smile } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
-import type { FetchedArticle } from "@galileyo/api/schemas";
 import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
+import type { FetchedArticle } from "@galileyo/validators/scraping";
 import {
   Badge,
   Card,
@@ -77,6 +77,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { toast } from "@galileyo/ui/toast";
 
 import type { User } from "~/auth/client";
+import type { Profile } from "~/hooks/use-profiles";
 import { env } from "~/env";
 import { useProfiles } from "~/hooks/use-profiles";
 import { getProfilePicture } from "~/lib/user";
@@ -131,6 +132,42 @@ function AttachmentWatcher() {
   }, [attachments.clear, setClear]);
 
   return <></>;
+}
+
+function ProfilePreviewContent({
+  user,
+  activeProfile,
+  children,
+}: {
+  user: User;
+  activeProfile: Profile | null | undefined;
+  children?: React.ReactNode | React.ReactNode[];
+}) {
+  return (
+    <>
+      <span className="text-xs text-muted-foreground">Posting as</span>
+      {activeProfile ? (
+        <UserAvatar
+          name={activeProfile.name}
+          image={activeProfile.avatar ?? null}
+          isVerified={false}
+          isInfluencer={false}
+          size="small"
+          // onlyAvatar={true}
+        />
+      ) : (
+        <UserAvatar
+          name={user.name}
+          image={getProfilePicture(user)}
+          isVerified={user.isVerified ?? false}
+          isInfluencer={false}
+          size="small"
+          // onlyAvatar={true}
+        />
+      )}
+      {children}
+    </>
+  );
 }
 
 function CreatePostComponent({ user }: { user: User }) {
@@ -254,10 +291,22 @@ function CreatePostComponent({ user }: { user: User }) {
             maxLength={512}
           >
             <div className="flex w-full items-center gap-2">
-              {profiles.length > 1 && (
+              {profiles.length > 1 ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 p-2"
+                      type="button"
+                    >
+                      <ProfilePreviewContent
+                        user={user}
+                        activeProfile={activeProfile}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </ProfilePreviewContent>
+                    </Button>
+                    {/* <Button
                       variant="ghost"
                       className="flex items-center gap-2 p-2"
                     >
@@ -284,7 +333,7 @@ function CreatePostComponent({ user }: { user: User }) {
                         />
                       )}
                       <ChevronDown className="h-4 w-4" />
-                    </Button>
+                    </Button> */}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Switch Profile</DropdownMenuLabel>
@@ -298,8 +347,8 @@ function CreatePostComponent({ user }: { user: User }) {
                           <UserAvatar
                             name={profile.name}
                             image={profile.avatar ?? null}
-                            isVerified={false}
-                            isInfluencer={false}
+                            isVerified={profile.role === "influencer"}
+                            isInfluencer={profile.role === "influencer"}
                             size="small"
                           />
                         </DropdownMenuItem>
@@ -320,6 +369,13 @@ function CreatePostComponent({ user }: { user: User }) {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              ) : (
+                <div className="flex items-center gap-2 p-2">
+                  <ProfilePreviewContent
+                    user={user}
+                    activeProfile={activeProfile}
+                  />
+                </div>
               )}
               {activeProfile === undefined && (
                 <div className="flex items-center gap-2">

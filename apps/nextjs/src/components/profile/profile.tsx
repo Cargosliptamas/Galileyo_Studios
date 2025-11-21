@@ -41,11 +41,6 @@ import {
 import { z } from "zod";
 
 import {
-  ChangePasswordSchema,
-  PrivacySchema,
-  ProfileGeneralSchema,
-} from "@galileyo/api/schemas";
-import {
   Calendar,
   cn,
   Popover,
@@ -111,6 +106,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 import { Textarea } from "@galileyo/ui/textarea";
 import { toast } from "@galileyo/ui/toast";
+import {
+  ChangePasswordSchema,
+  PrivacySchema,
+  ProfileGeneralSchema,
+} from "@galileyo/validators";
 
 import { updateProfilePicture } from "~/app/actions";
 import { authClient } from "~/auth/client";
@@ -619,6 +619,7 @@ export function Profile() {
       setCroppedAreaPixels(null); // Reset crop area for the new file
       setZoom(1); // Reset zoom for the new file
     }
+
     // Update the ref to the current fileId for the next render
     previousFileIdRef.current = fileId;
   }, [fileId]); // Depend only on fileId

@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators";
 
 export interface CommentsModalContextType {
   handleOpenCommentsModal: (post: FeedItem) => void;

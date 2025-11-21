@@ -2,7 +2,12 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
-import type { Alert, AlertSeverity, AlertType } from "../types/alert";
+import type {
+  Alert,
+  AlertSeverity,
+  AlertType,
+} from "@galileyo/validators/alert";
+
 import {
   protectedProcedure,
   // publicProcedure

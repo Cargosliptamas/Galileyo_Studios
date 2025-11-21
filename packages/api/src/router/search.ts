@@ -2,7 +2,8 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
-import type { SearchResultType } from "../types/search";
+import type { SearchResultType } from "@galileyo/validators/search";
+
 import { protectedProcedure } from "../trpc";
 
 export const searchRouter = {

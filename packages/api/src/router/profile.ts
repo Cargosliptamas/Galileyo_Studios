@@ -1,13 +1,14 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 
-import { protectedProcedure, publicProcedure } from "../trpc";
 import {
   ChangePasswordSchema,
   PrivacySchema,
   ProfileGeneralSchema,
   SignupSchema,
-} from "../types/profile";
+} from "@galileyo/validators/profile";
+
+import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const profileRouter = {
   getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -299,6 +300,51 @@ export const profileRouter = {
         action: string;
         subject: string;
       }[];
+      error: {
+        message: string;
+        code: string | number | null;
+      };
+    };
+
+    if (result.status !== "success") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: result.error.message,
+      });
+    }
+
+    return result.data;
+  }),
+  getProfiles: protectedProcedure.query(async ({ ctx }) => {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/customer/get-profiles`,
+      {
+        headers: {
+          Authorization: `Bearer ${ctx.session.session.token}`,
+        },
+      },
+    );
+
+    const result = (await request.json()) as {
+      status: "success" | "error";
+      data: {
+        subscriptions: {
+          id: string;
+          title: string;
+          meta: {
+            image: string | null;
+          };
+          type: "influencer";
+        }[];
+        private_feeds: {
+          id: string;
+          title: string;
+          meta: {
+            image: string | null;
+          };
+          type: "follower_list";
+        }[];
+      };
       error: {
         message: string;
         code: string | number | null;

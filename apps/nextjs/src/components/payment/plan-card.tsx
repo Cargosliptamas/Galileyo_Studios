@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlanType } from "@galileyo/api/schemas";
+import type { PlanType } from "@galileyo/validators";
 import {
   Badge,
   Button,

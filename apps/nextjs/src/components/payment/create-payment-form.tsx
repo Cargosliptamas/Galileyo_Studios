@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { PaymentDetailsSchema } from "@galileyo/api/schemas";
 import { Button } from "@galileyo/ui/button";
 import { DialogFooter } from "@galileyo/ui/dialog";
 import {
@@ -17,6 +16,7 @@ import {
 } from "@galileyo/ui/form";
 import { Input } from "@galileyo/ui/input";
 import { toast } from "@galileyo/ui/toast";
+import { PaymentDetailsSchema } from "@galileyo/validators";
 
 import { CreditCard } from "~/components/ui/credit-card-input";
 import { useTRPC } from "~/trpc/react";

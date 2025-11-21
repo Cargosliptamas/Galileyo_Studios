@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { SignupSchema } from "@galileyo/api/schemas";
 import { Button } from "@galileyo/ui/button";
 import { Checkbox } from "@galileyo/ui/checkbox";
 import {
@@ -19,6 +18,7 @@ import {
 import { Input } from "@galileyo/ui/input";
 import { SearchableSelect } from "@galileyo/ui/searchable-select";
 import { toast } from "@galileyo/ui/toast";
+import { SignupSchema } from "@galileyo/validators/profile";
 
 import { COUNTRIES, US_STATES } from "~/constants/country";
 import { useTRPC } from "~/trpc/react";

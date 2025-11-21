@@ -3,13 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 
 import { toast } from "@galileyo/ui/toast";
 
+import { getFollowerListImageUrl, getInfluencerImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";
+
+export type ProfileTypes = "user" | "influencer" | "follower_list";
 
 export interface Profile {
   id: string;
   name: string;
   avatar?: string;
-  role: "user" | "influencer" | "personal";
+  role: ProfileTypes;
   isActive: boolean;
   createdAt: string;
   description?: string;
@@ -17,7 +20,7 @@ export interface Profile {
 
 export interface CreateProfileData {
   name: string;
-  role: "user" | "influencer" | "personal";
+  role: ProfileTypes;
   description?: string;
   avatar?: string;
 }
@@ -27,11 +30,9 @@ export function useProfiles() {
   const [activeProfile, setActiveProfile] = useState<string | null>(null);
   const trpc = useTRPC();
 
-  const { data: privateFeeds, isLoading: isPrivateFeedsLoading } = useQuery(
-    trpc.feed.getPrivateFeeds.queryOptions(),
+  const { data: availableProfiles, isLoading: isProfilesLoading } = useQuery(
+    trpc.profile.getProfiles.queryOptions(),
   );
-  const { data: influencerFeeds, isLoading: isInfluencerFeedsLoading } =
-    useQuery(trpc.feed.getInfluencerFeeds.queryOptions());
 
   // Create a new profile
   const createProfile = useCallback(
@@ -165,43 +166,41 @@ export function useProfiles() {
     return profiles.find((p) => p.isActive) ?? profiles[0];
   }, [profiles]);
 
-  const isLoading = isPrivateFeedsLoading || isInfluencerFeedsLoading;
+  const isLoading = isProfilesLoading;
 
   useEffect(() => {
-    if (privateFeeds && privateFeeds.length > 0) {
-      const ids = privateFeeds.map((feed) => feed.id.toString());
-
+    if (availableProfiles?.subscriptions) {
       setProfiles((prevProfiles) => [
-        ...prevProfiles.filter((p) => !ids.includes(p.id)),
-        ...privateFeeds.map((feed) => ({
-          id: feed.id.toString(),
-          name: feed.title,
-          avatar: feed.image ?? undefined,
-          role: "user" as Profile["role"],
+        ...prevProfiles.filter(
+          (p) => !availableProfiles.subscriptions.some((s) => s.id === p.id),
+        ),
+        ...availableProfiles.subscriptions.map((subscription) => ({
+          id: subscription.id,
+          name: subscription.title,
+          avatar: getInfluencerImageUrl(subscription.meta.image) ?? undefined,
+          role: "influencer" as const,
           isActive: false,
           createdAt: new Date().toISOString(),
         })),
       ]);
     }
-  }, [privateFeeds]);
 
-  useEffect(() => {
-    if (influencerFeeds && influencerFeeds.list.length > 0) {
-      const ids = influencerFeeds.list.map((feed) => feed.id.toString());
-
+    if (availableProfiles?.private_feeds) {
       setProfiles((prevProfiles) => [
-        ...prevProfiles.filter((p) => !ids.includes(p.id)),
-        ...influencerFeeds.list.map((feed) => ({
-          id: feed.id.toString(),
+        ...prevProfiles.filter(
+          (p) => !availableProfiles.private_feeds.some((f) => f.id === p.id),
+        ),
+        ...availableProfiles.private_feeds.map((feed) => ({
+          id: feed.id,
           name: feed.title,
-          avatar: feed.image ?? undefined,
-          role: "influencer" as Profile["role"],
+          avatar: getFollowerListImageUrl(feed.meta.image) ?? undefined,
+          role: "follower_list" as const,
           isActive: false,
           createdAt: new Date().toISOString(),
         })),
       ]);
     }
-  }, [influencerFeeds]);
+  }, [availableProfiles?.subscriptions, availableProfiles?.private_feeds]);
 
   return {
     profiles,

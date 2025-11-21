@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
-import type { PlanType } from "@galileyo/api/schemas";
+import type { PlanType } from "@galileyo/validators";
 import {
   Badge,
   Button,

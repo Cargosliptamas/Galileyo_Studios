@@ -8,10 +8,14 @@ import type {
   InfluencerFeedType,
   PrivateFeedType,
   SubscribeableFeedType,
-} from "../types/feed";
+} from "@galileyo/validators/feed";
+import {
+  GetBySubscriptionParams,
+  GetLatestNewsParams,
+} from "@galileyo/validators/feed";
+
 import { mapFeedItem } from "../lib/feed";
 import { protectedProcedure, publicProcedure } from "../trpc";
-import { GetBySubscriptionParams, GetLatestNewsParams } from "../types/feed";
 
 export const feedRouter = {
   getLatestNews: protectedProcedure

@@ -9,13 +9,16 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  MoreHorizontal,
+  // MoreHorizontal,
   Reply,
   Send,
   Smile,
 } from "lucide-react";
 
-import type { Comment as CommentType, FeedItem } from "@galileyo/api/schemas";
+import type {
+  Comment as CommentType,
+  FeedItem,
+} from "@galileyo/validators/feed";
 // import { Card, CardContent } from '@galileyo/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
 import { Button } from "@galileyo/ui/button";
@@ -25,13 +28,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@galileyo/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@galileyo/ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@galileyo/ui/dropdown-menu";
 import {
   EmojiPicker,
   EmojiPickerContent,
@@ -153,7 +156,7 @@ function CommentComponent({
               </button>
             )}
 
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="ext-slate-500 rounded p-1 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white">
                   <MoreHorizontal className="h-4 w-4" />
@@ -171,7 +174,7 @@ function CommentComponent({
                   Report Comment
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
 
           {/* Reply Input */}

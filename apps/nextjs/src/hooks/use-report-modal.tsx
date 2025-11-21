@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators";
 
 interface ReportModalStore {
   isOpen: boolean;

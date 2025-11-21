@@ -6,7 +6,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 
-import type { FeedItem } from "@galileyo/api/schemas";
+import type { FeedItem } from "@galileyo/validators";
 
 import type { ProfileInfo } from "~/lib/server/profile";
 import { FEED_LIMIT } from "~/constants/feed";
