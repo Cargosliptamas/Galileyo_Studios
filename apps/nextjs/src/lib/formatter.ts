@@ -23,3 +23,13 @@ export function formatDuration(ms: number) {
     .map(([key, val]) => `${val} ${key}${val !== 1 ? "s" : ""}`)
     .join(", ");
 }
+
+export function formatTimestamp(timestamp: string) {
+  return Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+}

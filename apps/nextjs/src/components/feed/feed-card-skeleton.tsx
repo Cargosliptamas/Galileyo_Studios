@@ -1,9 +1,19 @@
+import { cn } from "@galileyo/ui";
 import { Card, CardContent, CardHeader } from "@galileyo/ui/card";
 import { Skeleton } from "@galileyo/ui/skeleton";
 
-export default function FeedCardSkeleton() {
+export default function FeedCardSkeleton({
+  className,
+}: {
+  className?: string;
+}) {
   return (
-    <Card className="animate-pulse border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600">
+    <Card
+      className={cn(
+        "animate-pulse border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
+        className,
+      )}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">

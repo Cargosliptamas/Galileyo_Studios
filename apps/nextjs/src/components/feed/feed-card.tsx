@@ -87,10 +87,10 @@ const reactionOptions = [
   { type: "disgust" as const, emoji: "🤢", label: "Disgust", id: "6" },
 ];
 
-function getFeedImageUrls(item: FeedItem) {
+export function getFeedImageUrls(feedImages: FeedItem["images"]) {
   const images: string[] = [];
 
-  for (const image of item.images) {
+  for (const image of feedImages) {
     let original: string | null = null;
     let normal: string | null = null;
 
@@ -117,14 +117,18 @@ function getFeedImageUrls(item: FeedItem) {
 
 export default function FeedCard({
   item,
-  isMocked = false,
   getQueryKeys,
   getQueryKeysOnError,
+  isMocked = false,
+  isOnAlertMap = false,
+  className,
 }: {
   item: FeedItem;
   isMocked?: boolean;
   getQueryKeys: () => QueryKey;
   getQueryKeysOnError: () => QueryKey;
+  isOnAlertMap?: boolean;
+  className?: string;
 }) {
   const router = useRouter();
   const { ref, inView } = useInView();
@@ -192,6 +196,10 @@ export default function FeedCard({
             list: FeedItem[];
           }>
         >(queryKey, (old) => {
+          if (isOnAlertMap) {
+            return old;
+          }
+
           const mapped = {
             ...old,
             pageParams: old?.pageParams ?? [],
@@ -252,6 +260,13 @@ export default function FeedCard({
 
         return { previousData };
       },
+      onSuccess: () => {
+        if (isOnAlertMap) {
+          void queryClient.invalidateQueries(
+            trpc.feed.getNewsById.pathFilter(),
+          );
+        }
+      },
       onError: (err, data, context) => {
         console.log("error", err);
         toast.error("Failed to set reaction");
@@ -290,6 +305,10 @@ export default function FeedCard({
             list: FeedItem[];
           }>
         >(queryKey, (old) => {
+          if (isOnAlertMap) {
+            return old;
+          }
+
           const mapped = {
             ...old,
             pageParams: old?.pageParams ?? [],
@@ -327,6 +346,13 @@ export default function FeedCard({
         });
 
         return { previousData };
+      },
+      onSuccess: () => {
+        if (isOnAlertMap) {
+          void queryClient.invalidateQueries(
+            trpc.feed.getNewsById.pathFilter(),
+          );
+        }
       },
       onError: (err, data, context) => {
         console.log("error", err);
@@ -497,8 +523,8 @@ export default function FeedCard({
   // );
 
   const feedImageUrls = useMemo(() => {
-    return getFeedImageUrls(item);
-  }, [item]);
+    return getFeedImageUrls(item.images);
+  }, [item.images]);
 
   const [zoomedImageIndex, setZoomedImageIndex] = useState<number | null>(null);
 
@@ -576,17 +602,9 @@ export default function FeedCard({
   }, [item, openReportModal]);
 
   const handleOpenEmergencyMap = useCallback(
-    ({
-      latitude,
-      longitude,
-      showInfluncers,
-    }: {
-      latitude: number;
-      longitude: number;
-      showInfluncers: boolean;
-    }) => {
+    ({ latitude, longitude }: { latitude: number; longitude: number }) => {
       router.push(
-        `/alerts-map?latitude=${latitude}&longitude=${longitude}&showInfluencers=${showInfluncers}`,
+        `/alerts-map?latitude=${latitude}&longitude=${longitude}&showInfluencers=true`,
       );
     },
     [router],
@@ -607,7 +625,10 @@ export default function FeedCard({
     // <Card className="max-w-3xl mx-auto">
     <Card
       ref={ref}
-      className="transform border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+      className={cn(
+        "transform border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
+        className,
+      )}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
@@ -722,74 +743,85 @@ export default function FeedCard({
                   </span>
                 </div>
                 <div className="relative flex w-full items-center gap-2 md:w-auto">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        className="flex w-full items-center gap-2 md:w-auto"
-                      >
-                        <MapPin className="h-4 w-4 text-cyan-400" />
-                        <span>Show on map</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-7xl">
-                      <DialogHeader>
-                        <DialogTitle>Location</DialogTitle>
-                        <DialogDescription>
-                          {item.meta_data.location.latitude},{" "}
-                          {item.meta_data.location.longitude}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex flex-col gap-4">
+                  {isOnAlertMap ? (
+                    // <Button
+                    //   variant="secondary"
+                    //   className="flex w-full items-center gap-2 md:w-auto"
+                    // >
+                    //   <MapPin className="h-4 w-4 text-cyan-400" />
+                    //   <span>Show on map</span>
+                    // </Button>
+                    <></>
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
                         <Button
-                          className="flex w-full gap-2"
-                          onClick={() =>
-                            handleOpenEmergencyMap({
-                              latitude: item.meta_data?.location.latitude ?? 0,
-                              longitude:
-                                item.meta_data?.location.longitude ?? 0,
-                              showInfluncers: true,
-                            })
-                          }
+                          variant="secondary"
+                          className="flex w-full items-center gap-2 md:w-auto"
                         >
-                          <MapPin className="h-4 w-4" />
-                          <span>Open in emergency map</span>
+                          <MapPin className="h-4 w-4 text-cyan-400" />
+                          <span>Show on map</span>
                         </Button>
-                        <AlertMap
-                          alerts={[
-                            {
-                              id: item.id?.toString() ?? "",
-                              title: item.title,
-                              description: item.body,
-                              location: item.meta_data.location,
-                              severity: "information",
-                              type: "UNKNOWN",
-                              timestamp: new Date().toISOString(),
-                              source: item.title,
-                              isActive: true,
-                              is_influencer: true,
-                              influencer_page: {
-                                id: item.id_subscription ?? 0,
+                      </DialogTrigger>
+                      <DialogContent className="max-w-7xl">
+                        <DialogHeader>
+                          <DialogTitle>Location</DialogTitle>
+                          <DialogDescription>
+                            {item.meta_data.location.latitude},{" "}
+                            {item.meta_data.location.longitude}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4">
+                          <Button
+                            className="flex w-full gap-2"
+                            onClick={() =>
+                              handleOpenEmergencyMap({
+                                latitude:
+                                  item.meta_data?.location.latitude ?? 0,
+                                longitude:
+                                  item.meta_data?.location.longitude ?? 0,
+                              })
+                            }
+                          >
+                            <MapPin className="h-4 w-4" />
+                            <span>Open in emergency map</span>
+                          </Button>
+                          <AlertMap
+                            alerts={[
+                              {
+                                id: item.id?.toString() ?? "",
                                 title: item.title,
-                                alias: undefined,
-                                description: item.title,
-                                image:
-                                  (item as InfluencerItem).image ?? undefined,
+                                description: item.body,
+                                location: item.meta_data.location,
+                                severity: "information",
+                                type: "UNKNOWN",
+                                timestamp: new Date().toISOString(),
+                                source: item.title,
+                                isActive: true,
+                                is_influencer: true,
+                                influencer_page: {
+                                  id: item.id_subscription ?? 0,
+                                  title: item.title,
+                                  alias: undefined,
+                                  description: item.title,
+                                  image:
+                                    (item as InfluencerItem).image ?? undefined,
+                                },
                               },
-                            },
-                          ]}
-                          zoom={10}
-                          center={[
-                            item.meta_data.location.latitude,
-                            item.meta_data.location.longitude,
-                          ]}
-                          // onAlertClick={() => {}}
-                          showAffectedAreas={false}
-                          selectedLocation={null}
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                            ]}
+                            zoom={10}
+                            center={[
+                              item.meta_data.location.latitude,
+                              item.meta_data.location.longitude,
+                            ]}
+                            // onAlertClick={() => {}}
+                            showAffectedAreas={false}
+                            selectedLocation={null}
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               </div>
             </div>

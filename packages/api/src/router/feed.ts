@@ -323,6 +323,38 @@ export const feedRouter = {
 
       return responseJson.data;
     }),
+  getNewsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/by-id`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: input.id,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: FeedItem;
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      return mapFeedItem(responseJson.data);
+    }),
   setSubscription: protectedProcedure
     .input(
       z.object({

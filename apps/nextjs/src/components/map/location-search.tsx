@@ -66,7 +66,8 @@ export function LocationSearch({
           )}&limit=10&addressdetails=1&polygon_geojson=1&extratags=1`,
           {
             headers: {
-              "User-Agent": "Galileyo Alert Map",
+              "User-Agent": "Galileyo",
+              "Accept-Language": "",
             },
           },
         );
@@ -76,6 +77,8 @@ export function LocationSearch({
         }
 
         const data = (await response.json()) as LocationResponse[];
+
+        console.log(data);
 
         const locations = data.map((loc) => ({
           ...loc,

@@ -10,7 +10,14 @@ import {
 } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
-import { Calendar, ChevronDown, Globe, Satellite, Smile } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  Globe,
+  MapPin,
+  Satellite,
+  Smile,
+} from "lucide-react";
 import { v4 as uuid } from "uuid";
 
 import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
@@ -76,12 +83,15 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { toast } from "@galileyo/ui/toast";
 
+import type { Location } from "../map/location-search";
 import type { User } from "~/auth/client";
 import type { Profile } from "~/hooks/use-profiles";
 import { env } from "~/env";
 import { useProfiles } from "~/hooks/use-profiles";
 import { getProfilePicture } from "~/lib/user";
 import { useTRPC } from "~/trpc/react";
+import { LocationPickerMap } from "../map/location-picker-map";
+import { LocationSearch } from "../map/location-search";
 import { DateTimePickerPopover } from "../ui/date-time-picker";
 import { UserAvatar } from "./user-avatar";
 
@@ -193,6 +203,11 @@ function CreatePostComponent({ user }: { user: User }) {
     addDays(new Date(), 1),
   );
 
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
+
   const activeProfile = useMemo(() => {
     return profiles.find((profile) => profile.id === selectedProfile);
   }, [profiles, selectedProfile]);
@@ -208,6 +223,7 @@ function CreatePostComponent({ user }: { user: User }) {
         setUseSatelliteVersion(false);
         setIsScheduled(false);
         setScheduledDate(addDays(new Date(), 1));
+        setSelectedLocation(null);
         clearAttachments();
         setPostId(uuid());
 
@@ -243,6 +259,11 @@ function CreatePostComponent({ user }: { user: User }) {
       );
       formData.append("timezone", "UTC");
       formData.append("is_schedule", isScheduled ? "1" : "0");
+
+      if (selectedLocation) {
+        formData.append("location[latitude]", selectedLocation.lat.toString());
+        formData.append("location[longitude]", selectedLocation.lon.toString());
+      }
 
       message.files?.forEach((file) => {
         formData.append("files[]", file.file);
@@ -473,6 +494,28 @@ function CreatePostComponent({ user }: { user: User }) {
                 </Tooltip>
               </TooltipProvider>
             </PromptInputButton>
+            <PromptInputButton asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={selectedLocation ? "primary" : "ghost"}
+                      size="icon"
+                      type="button"
+                      onClick={() => setIsLocationOpen(true)}
+                    >
+                      <MapPin
+                        className={cn(
+                          "h-4 w-4 text-muted-foreground",
+                          selectedLocation && "text-white",
+                        )}
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Add location</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </PromptInputButton>
           </PromptInputTools>
           <PromptInputSubmit
             disabled={!content || createPost.isPending}
@@ -604,6 +647,57 @@ function CreatePostComponent({ user }: { user: User }) {
                   The post will be published on{" "}
                   {scheduledDate ? format(scheduledDate, "PPP hh:mm:ss a") : ""}
                 </span>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isLocationOpen} onOpenChange={setIsLocationOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              Add Location
+            </DialogTitle>
+            <DialogDescription>
+              Search for a location or click on the map to select a location
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <LocationSearch
+              onLocationSelect={(location) => {
+                setSelectedLocation(location);
+                // setIsLocationOpen(false);
+              }}
+              onLocationClear={() => {
+                setSelectedLocation(null);
+              }}
+              selectedLocation={selectedLocation}
+            />
+            <LocationPickerMap
+              selectedLocation={selectedLocation}
+              onLocationSelect={(location) => {
+                setSelectedLocation(location);
+              }}
+            />
+            {selectedLocation && (
+              <div className="rounded-lg border bg-muted/50 p-3">
+                <div className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">
+                      {selectedLocation.display_name.split(",")[0]}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {selectedLocation.display_name}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {selectedLocation.lat.toFixed(6)},{" "}
+                      {selectedLocation.lon.toFixed(6)}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

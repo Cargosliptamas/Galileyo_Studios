@@ -175,3 +175,11 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  /* border-bottom-color: var(--primary-foreground) !important; */
+}
+
+.maplibregl-popup-content {
+  padding: 0 !important;
+}

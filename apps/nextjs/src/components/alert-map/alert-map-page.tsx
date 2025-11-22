@@ -1,37 +1,42 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import type { LngLatLike } from "maplibre-gl";
+import { useCallback, useMemo, useState } from "react";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { parseAsBoolean, parseAsFloat, useQueryState } from "nuqs";
 
+import type { FeedItem } from "@galileyo/validators";
+import { ScrollArea } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@galileyo/ui/dialog";
 
-import type { AlertMapRef } from "~/components/map/alert-map";
 import type { Location } from "~/components/map/location-search";
 import type { Alert, AlertFilters, AlertType } from "~/lib/types/alert";
 import { AlertFiltersComponent } from "~/components/map/alert-filters";
 import { AlertLegend } from "~/components/map/alert-legend";
-import { AlertList } from "~/components/map/alert-list";
-import { AlertMap } from "~/components/map/alert-map";
 import { LocationSearch } from "~/components/map/location-search";
-
-import "leaflet/dist/leaflet.css";
-
-import { useSuspenseQuery } from "@tanstack/react-query";
-
-import { ScrollArea } from "@galileyo/ui";
-
+import { MapProvider, useMap } from "~/components/ui/map/map";
+import { CommentsModalContext } from "~/hooks/use-comments-modal";
 import { useTRPC } from "~/trpc/react";
+import CommentsModal from "../feed/comments-modal";
+import FeedCard from "../feed/feed-card";
+import FeedCardSkeleton from "../feed/feed-card-skeleton";
+import ReportModal from "../feed/report-modal";
+import { AlertCard } from "./alert-card";
+import { AlertList } from "./alert-list";
+import { AlertMap } from "./alert-map";
 
-export function AlertMapPage() {
+export function AlertMapPageContent() {
+  const { alertMap: map } = useMap();
   const trpc = useTRPC();
+
   const [showInfluencers] = useQueryState(
     "showInfluencers",
     parseAsBoolean.withDefault(false),
@@ -39,15 +44,30 @@ export function AlertMapPage() {
   const [latitude] = useQueryState("latitude", parseAsFloat);
   const [longitude] = useQueryState("longitude", parseAsFloat);
 
+  const [bounds, setBounds] = useState<LngLatLike | null>(null);
+  const [showFiltersDialog, setShowFiltersDialog] = useState(false);
+  const [showLegendDialog, setShowLegendDialog] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [post, setPost] = useState<FeedItem | null>(null);
+
   const { data } = useSuspenseQuery(
     trpc.alerts.list.queryOptions({
       show_influencers: true,
     }),
   );
 
-  const alerts = data;
+  const { data: news, isLoading: isLoadingNews } = useQuery({
+    ...trpc.feed.getNewsById.queryOptions({
+      id: selectedAlert?.id ? Number(selectedAlert.id) : 0,
+    }),
+    enabled: Boolean(selectedAlert?.id) && selectedAlert?.is_influencer,
+  });
 
-  const mapRef = useRef<AlertMapRef>(null);
+  const alerts = data;
 
   const [filters, setFilters] = useState<AlertFilters>({
     types: [
@@ -90,29 +110,22 @@ export function AlertMapPage() {
     showInfluencers,
   });
 
-  const [showFiltersDialog, setShowFiltersDialog] = useState(false);
-  const [showLegendDialog, setShowLegendDialog] = useState(false);
-  const [showList, setShowList] = useState(true);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null,
-  );
-
   // Get user's location on mount
-  useEffect(() => {
-    const fetchUserLocation = async () => {
-      if (mapRef.current) {
-        const location = await mapRef.current.getUserLocation();
-        if (location) {
-          // Center the map on user's location
-          mapRef.current.panToLocation(location.lat, location.lng, 10);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserLocation = async () => {
+  //     if (mapRef.current) {
+  //       const location = await mapRef.current.getUserLocation();
+  //       if (location) {
+  //         // Center the map on user's location
+  //         mapRef.current.panToLocation(location.lat, location.lng, 10);
+  //       }
+  //     }
+  //   };
 
-    void fetchUserLocation();
-  }, []);
+  //   void fetchUserLocation();
+  // }, []);
 
-  // Filter alerts based on current filters and location
+  // Filter alerts based on current filters, location, and map view bounds
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
       // Check if alert type is in selected types
@@ -126,13 +139,14 @@ export function AlertMapPage() {
 
       if (!filters.showInfluencers && alert.is_influencer) return false;
 
-      // Check if alert is within selected location bounds
+      const alertLat = alert.location.latitude;
+      const alertLon = alert.location.longitude;
+
+      // Check if alert is within selected location bounds (takes priority)
       if (selectedLocation) {
         // Check bounding box first
         if (selectedLocation.boundingbox) {
           const [minLat, maxLat, minLon, maxLon] = selectedLocation.boundingbox;
-          const alertLat = alert.location.latitude;
-          const alertLon = alert.location.longitude;
 
           if (
             parseFloat(minLat) > alertLat ||
@@ -149,12 +163,15 @@ export function AlertMapPage() {
     });
   }, [alerts, filters, selectedLocation]);
 
-  const center: [number, number] = useMemo(() => {
+  const center = useMemo(() => {
     if (latitude && longitude) {
-      return [Number(latitude), Number(longitude)];
+      return {
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      };
     }
 
-    return [40.7128, -74.006];
+    return undefined;
   }, [latitude, longitude]);
 
   const zoom = useMemo(() => {
@@ -162,32 +179,32 @@ export function AlertMapPage() {
       return 14;
     }
 
-    return 6;
+    return undefined;
   }, [latitude, longitude]);
 
-  const handleAlertClick = (alert: Alert) => {
+  const handleAlertClick = useCallback((alert: Alert) => {
     // Pan the map to the alert location
-    if (mapRef.current) {
-      mapRef.current.panToAlert(alert);
-    }
-  };
+    // if (mapRef.current) {
+    //   mapRef.current.panToAlert(alert);
+    // }
+    setSelectedAlert(alert);
+  }, []);
 
   const handleFiltersChange = (newFilters: AlertFilters) => {
     setFilters(newFilters);
   };
 
   const handleLocationSelect = (location: Location) => {
-    // Save the selected location
     setSelectedLocation(location);
 
-    // Pan the map to the selected location
-    if (mapRef.current) {
-      // Use the bounding box if available to determine zoom level
-      const zoom = location.boundingbox ? 11 : 12;
-      // Ensure lat and lon are numbers
-      const lat = Number(location.lat);
-      const lon = Number(location.lon);
-      mapRef.current.panToLocation(lat, lon, zoom);
+    if (map) {
+      map.flyTo({
+        center: {
+          lon: Number(location.lon),
+          lat: Number(location.lat),
+        },
+        zoom: location.boundingbox ? 11 : 12,
+      });
     }
   };
 
@@ -195,120 +212,173 @@ export function AlertMapPage() {
     setSelectedLocation(null);
   };
 
+  const handleOpenCommentsModal = (post: FeedItem) => {
+    setPost(post);
+    setIsOpen(true);
+  };
+
+  const handleMoveEnd = () => {
+    if (map) {
+      const bounds = map.getBounds();
+      setBounds(bounds.toArray() as unknown as LngLatLike);
+    }
+  };
+
   return (
-    <div className="min-h-screen py-4">
-      {/* Header */}
-      <div className="border-b shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Alerts Map</h1>
-              <p className="text-sm text-muted-foreground">
-                Real-time alerts and incidents across the globe
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <Dialog
-                open={showFiltersDialog}
-                onOpenChange={setShowFiltersDialog}
-              >
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Filters
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-h-[80vh] max-w-xl overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Filter Alerts</DialogTitle>
-                  </DialogHeader>
-                  <ScrollArea className="h-[calc(80vh-100px)]">
-                    <AlertFiltersComponent
-                      onFiltersChange={handleFiltersChange}
-                      initialFilters={filters}
-                    />
-                  </ScrollArea>
-                </DialogContent>
-              </Dialog>
-              <Dialog
-                open={showLegendDialog}
-                onOpenChange={setShowLegendDialog}
-              >
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Legend
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-h-[80vh] max-w-xl overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Map Legend</DialogTitle>
-                  </DialogHeader>
-                  <ScrollArea className="h-[calc(80vh-100px)]">
-                    <AlertLegend />
-                  </ScrollArea>
-                </DialogContent>
-              </Dialog>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowList(!showList)}
-              >
-                {showList ? "Hide List" : "Show List"}
-              </Button>
+    <CommentsModalContext.Provider value={{ handleOpenCommentsModal }}>
+      <div className="min-h-screen">
+        {/* Header */}
+        <div className="border-b shadow-sm">
+          <div className="mx-auto px-4">
+            <div className="flex items-center justify-between gap-4 py-4">
+              <div>
+                <h1 className="text-2xl font-bold">Alerts Map</h1>
+              </div>
+              <div className="flex-1">
+                <LocationSearch
+                  onLocationSelect={handleLocationSelect}
+                  onLocationClear={handleLocationClear}
+                  selectedLocation={selectedLocation}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <Dialog
+                  open={showFiltersDialog}
+                  onOpenChange={setShowFiltersDialog}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Filters
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[80vh] max-w-xl overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Filter Alerts</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="h-[calc(80vh-100px)]">
+                      <AlertFiltersComponent
+                        onFiltersChange={handleFiltersChange}
+                        initialFilters={filters}
+                      />
+                    </ScrollArea>
+                  </DialogContent>
+                </Dialog>
+                <Dialog
+                  open={showLegendDialog}
+                  onOpenChange={setShowLegendDialog}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Legend
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[80vh] max-w-xl overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Map Legend</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="h-[calc(80vh-100px)]">
+                      <AlertLegend />
+                    </ScrollArea>
+                  </DialogContent>
+                </Dialog>
+                {/* <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowList(!showList)}
+                >
+                  {showList ? "Hide List" : "Show List"}
+                </Button> */}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Search Bar */}
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <LocationSearch
-          onLocationSelect={handleLocationSelect}
-          onLocationClear={handleLocationClear}
-          selectedLocation={selectedLocation}
-        />
-      </div>
-
-      {/* Main Content - Full Size Map */}
-      <div className="h-[calc(100vh-200px)]">
-        <Card>
-          <CardContent className="p-0">
+        {/* Main Content - Full Size Map */}
+        <div className="grid h-[calc(100vh-10rem)] w-full grid-cols-1 gap-0 p-0 xl:grid-cols-12">
+          <div className="col-span-1 md:col-span-7 xl:max-h-[calc(100vh-10rem)]">
             <AlertMap
-              ref={mapRef}
+              alerts={filteredAlerts}
               center={center}
               zoom={zoom}
+              showAffectedAreas={false}
+              selectedLocation={selectedLocation}
+              onAlertClick={handleAlertClick}
+              onMoveEnd={handleMoveEnd}
+            />
+          </div>
+          <div className="col-span-1 hidden md:col-span-5 md:block xl:max-h-[calc(100vh-10rem)]">
+            <AlertList
               alerts={filteredAlerts}
               onAlertClick={handleAlertClick}
-              showAffectedAreas={true}
-              selectedLocation={selectedLocation}
+              bounds={bounds}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        <Dialog
+          open={!!selectedAlert}
+          onOpenChange={() => setSelectedAlert(null)}
+        >
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col overflow-hidden border-none bg-transparent p-0 shadow-none">
+            <div className="flex-1 overflow-y-auto">
+              <div className="flex w-full items-center space-x-2 p-6">
+                {selectedAlert?.is_influencer &&
+                  (isLoadingNews || !news ? (
+                    <div className="w-full rounded-xl bg-background">
+                      <FeedCardSkeleton className="mx-auto w-full" />
+                    </div>
+                  ) : (
+                    <div className="w-full rounded-xl bg-background">
+                      <FeedCard
+                        className="w-full"
+                        item={news}
+                        getQueryKeys={() =>
+                          trpc.feed.getNewsById.queryKey({
+                            id: Number(selectedAlert.id),
+                          })
+                        }
+                        getQueryKeysOnError={() =>
+                          trpc.feed.getNewsById.queryKey({
+                            id: Number(selectedAlert.id),
+                          })
+                        }
+                        isOnAlertMap={true}
+                      />
+                    </div>
+                  ))}
+
+                {selectedAlert && !selectedAlert.is_influencer && (
+                  <div className="w-full rounded-xl bg-background">
+                    <AlertCard alert={selectedAlert} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Alert List */}
-      {showList && (
-        <div className="mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Alerts List</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredAlerts.length} alerts
-                {selectedLocation && (
-                  <span className="ml-2 text-xs">
-                    in {selectedLocation.display_name}
-                  </span>
-                )}
-              </p>
-            </CardHeader>
-            <CardContent className="max-h-96 overflow-y-auto">
-              <AlertList
-                alerts={filteredAlerts}
-                onAlertClick={handleAlertClick}
-              />
-            </CardContent>
-          </Card>
-        </div>
+      {post && (
+        <CommentsModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          post={post}
+        />
       )}
-    </div>
+
+      <ReportModal />
+    </CommentsModalContext.Provider>
+  );
+}
+
+export function AlertMapPage() {
+  return (
+    <MapProvider>
+      <AlertMapPageContent />
+    </MapProvider>
   );
 }

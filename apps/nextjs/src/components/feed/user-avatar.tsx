@@ -42,7 +42,7 @@ export function UserAvatar({
   children?: React.ReactNode;
   href?: string;
   onlyAvatar?: boolean;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "xs";
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -53,6 +53,7 @@ export function UserAvatar({
               "h-12 w-12",
               size === "small" && "h-8 w-8",
               size === "large" && "h-16 w-16",
+              size === "xs" && "h-6 w-6",
             )}
           >
             <AvatarImage
