@@ -2,7 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CopyIcon, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
+import {
+  CopyIcon,
+  EllipsisIcon,
+  History,
+  Pencil,
+  Plus,
+  Trash,
+} from "lucide-react";
 
 import type { InfluencerFeedType } from "@galileyo/validators";
 import {
@@ -30,6 +37,7 @@ import { UserAvatar } from "../feed/user-avatar";
 import { CopyButton } from "../ui/copy-button";
 import { DataTable } from "../ui/table/DataTable";
 import { DataTableColumnHeader } from "../ui/table/DataTableColumnHeader";
+import { FeedHistoryDialog } from "./feed-history-dialog";
 import { InfluencerFeedModal } from "./influencer-feed-modal";
 import { InfluencerFeedStatsCards } from "./influencer-feed-stats-cards";
 
@@ -42,6 +50,7 @@ export function MyInfluencerFeeds() {
   >(null);
   const [isPromocodeModalOpen, setIsPromocodeModalOpen] = useState(false);
   const [promocodeValue, setPromocodeValue] = useState("");
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -178,6 +187,16 @@ export function MyInfluencerFeeds() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    setSelectedFeed(row.original);
+                    setIsHistoryDialogOpen(true);
+                  }}
+                >
+                  <History className="h-4 w-4" />
+                  History
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="flex items-center gap-2"
                   onClick={() => {
@@ -347,6 +366,13 @@ export function MyInfluencerFeeds() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          <FeedHistoryDialog
+            feed={selectedFeed}
+            isOpen={isHistoryDialogOpen}
+            onOpenChange={setIsHistoryDialogOpen}
+            feedType="influencer"
+          />
         </CardContent>
       </Card>
     </div>

@@ -188,4 +188,70 @@ export const influencerFeedsRouter = {
 
       return responseJson.data;
     }),
+  history: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().optional(),
+        body: z.string().optional(),
+        created_at: z.string().optional(),
+        limit: z.number().optional().default(100),
+        cursor: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/influencer/sent`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_subscription: input.id,
+            body: input.body,
+            created_at: input.created_at,
+            page: input.cursor,
+            page_size: input.limit,
+          }),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: {
+          list: {
+            id: number;
+            body: string;
+            created_at: string;
+            subscribers: number;
+          }[];
+          count: number;
+          page: number;
+          page_size: number;
+        };
+        error?: {
+          message: string;
+          code: string | number | null;
+        };
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: responseJson.error?.message ?? "Failed to fetch history",
+        });
+      }
+
+      // Map body to message to match the expected format
+      return {
+        ...responseJson.data,
+        list: responseJson.data.list.map((item) => ({
+          id: item.id,
+          message: item.body,
+          created_at: item.created_at,
+          subscribers: item.subscribers,
+        })),
+      };
+    }),
 } satisfies TRPCRouterRecord;

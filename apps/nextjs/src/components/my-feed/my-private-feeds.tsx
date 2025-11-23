@@ -2,7 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
+import {
+  EllipsisIcon,
+  History,
+  Mail,
+  Pencil,
+  Plus,
+  Trash,
+  Users,
+} from "lucide-react";
 
 import type { PrivateFeedType } from "@galileyo/validators";
 import {
@@ -15,6 +23,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@galileyo/ui";
 import { Badge } from "@galileyo/ui/badge";
@@ -27,6 +36,9 @@ import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "../feed/user-avatar";
 import { DataTable } from "../ui/table/DataTable";
 import { DataTableColumnHeader } from "../ui/table/DataTableColumnHeader";
+import { FeedHistoryDialog } from "./feed-history-dialog";
+import { PrivateFeedInviteDialog } from "./private-feed-invite-dialog";
+import { PrivateFeedMemberManagementDialog } from "./private-feed-member-management-dialog";
 import { PrivateFeedModal } from "./private-feed-modal";
 import { PrivateFeedStatsCards } from "./private-feed-stats-cards";
 
@@ -37,6 +49,10 @@ export function MyPrivateFeeds() {
   const [changeType, setChangeType] = useState<
     "create" | "edit" | "delete" | null
   >(null);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isMemberManagementDialogOpen, setIsMemberManagementDialogOpen] =
+    useState(false);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -110,6 +126,37 @@ export function MyPrivateFeeds() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setSelectedFeed(row.original);
+                  setIsInviteDialogOpen(true);
+                }}
+              >
+                <Mail className="h-4 w-4" />
+                Invite
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setSelectedFeed(row.original);
+                  setIsMemberManagementDialogOpen(true);
+                }}
+              >
+                <Users className="h-4 w-4" />
+                Manage Members
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setSelectedFeed(row.original);
+                  setIsHistoryDialogOpen(true);
+                }}
+              >
+                <History className="h-4 w-4" />
+                History
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="flex items-center gap-2"
                 onClick={() => {
@@ -226,6 +273,28 @@ export function MyPrivateFeeds() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          <PrivateFeedInviteDialog
+            feed={selectedFeed}
+            isOpen={isInviteDialogOpen}
+            onOpenChange={setIsInviteDialogOpen}
+            onSuccess={() => {
+              setIsInviteDialogOpen(false);
+            }}
+          />
+
+          <PrivateFeedMemberManagementDialog
+            feed={selectedFeed}
+            isOpen={isMemberManagementDialogOpen}
+            onOpenChange={setIsMemberManagementDialogOpen}
+          />
+
+          <FeedHistoryDialog
+            feed={selectedFeed}
+            isOpen={isHistoryDialogOpen}
+            onOpenChange={setIsHistoryDialogOpen}
+            feedType="private"
+          />
         </CardContent>
       </Card>
     </div>
