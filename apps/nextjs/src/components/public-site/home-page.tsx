@@ -18,6 +18,7 @@ import * as motion from "motion/react-client";
 
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { PhoneMockup } from "../phone-mockup";
+import PromoBanner from "../ui/promo-banner";
 import { HomeBackground } from "./home-backround";
 import {
   Alerts,
@@ -129,6 +130,9 @@ export async function HomePage() {
 
   return (
     <>
+      {/* Holiday Promo Teaser Banner */}
+      <PromoBanner endDate="2025-12-31T23:59:00-07:00" />
+
       <section className="relative overflow-hidden">
         <HomeBackground />
 

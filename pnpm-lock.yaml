@@ -376,6 +376,9 @@ importers:
       react-map-gl:
         specifier: ^8.1.0
         version: 8.1.0(mapbox-gl@3.16.0)(maplibre-gl@5.13.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react-timer-hook:
+        specifier: ^4.0.5
+        version: 4.0.5(react@19.0.0)
       serwist:
         specifier: preview
         version: 10.0.0-preview.14(typescript@5.9.3)
@@ -11654,6 +11657,11 @@ packages:
     resolution: {integrity: sha512-DgXrc+AZF47+HvAPEmn7Ua/1p10jNoVZVI/LoPiYdtY+OM+/nG5yefLHKJwdKqY1adMuHFbeyBaG9j64ML7vTw==}
     peerDependencies:
       react: '>= 0.14.0'
+
+  react-timer-hook@4.0.5:
+    resolution: {integrity: sha512-elDxx4OIxBTbm4rXSK5cjBHkq06prO2qY9JzoYxOa11AkL3ij69jp0VuDUOqcehEK38CV0uu7FzUKtPVISRLKA==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react@19.0.0:
     resolution: {integrity: sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==}
@@ -26196,6 +26204,10 @@ snapshots:
       prismjs: 1.30.0
       react: 19.0.0
       refractor: 3.6.0
+
+  react-timer-hook@4.0.5(react@19.0.0):
+    dependencies:
+      react: 19.0.0
 
   react@19.0.0: {}
 
