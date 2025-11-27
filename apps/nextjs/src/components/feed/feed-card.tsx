@@ -55,8 +55,9 @@ import { useFeedSubscription } from "~/hooks/use-feed-subscription";
 import { useReportModal } from "~/hooks/use-report-modal";
 import { detectLinks, detectLinkType } from "~/lib/feed";
 import { useTRPC } from "~/trpc/react";
+// import { AlertMap } from "../map/alert-map";
+import { AlertMap } from "../alert-map/alert-map";
 import ImageWithAuth from "../image-with-auth";
-import { AlertMap } from "../map/alert-map";
 import FeedThirdPartyContent from "./feed-third-party-contet";
 import { UserAvatar } from "./user-avatar";
 
@@ -786,38 +787,42 @@ export default function FeedCard({
                             <MapPin className="h-4 w-4" />
                             <span>Open in emergency map</span>
                           </Button>
-                          <AlertMap
-                            alerts={[
-                              {
-                                id: item.id?.toString() ?? "",
-                                title: item.title,
-                                description: item.body,
-                                location: item.meta_data.location,
-                                severity: "information",
-                                type: "UNKNOWN",
-                                timestamp: new Date().toISOString(),
-                                source: item.title,
-                                isActive: true,
-                                is_influencer: true,
-                                influencer_page: {
-                                  id: item.id_subscription ?? 0,
+                          <div className="h-[400px] w-full">
+                            <AlertMap
+                              alerts={[
+                                {
+                                  id: item.id?.toString() ?? "",
                                   title: item.title,
-                                  alias: undefined,
-                                  description: item.title,
-                                  image:
-                                    (item as InfluencerItem).image ?? undefined,
+                                  description: item.body,
+                                  location: item.meta_data.location,
+                                  severity: "information",
+                                  type: "UNKNOWN",
+                                  timestamp: new Date().toISOString(),
+                                  source: item.title,
+                                  isActive: true,
+                                  is_influencer: true,
+                                  influencer_page: {
+                                    id: item.id_subscription ?? 0,
+                                    title: item.title,
+                                    alias: undefined,
+                                    description: item.title,
+                                    image:
+                                      (item as InfluencerItem).image ??
+                                      undefined,
+                                  },
                                 },
-                              },
-                            ]}
-                            zoom={10}
-                            center={[
-                              item.meta_data.location.latitude,
-                              item.meta_data.location.longitude,
-                            ]}
-                            // onAlertClick={() => {}}
-                            showAffectedAreas={false}
-                            selectedLocation={null}
-                          />
+                              ]}
+                              zoom={15}
+                              center={{
+                                latitude: item.meta_data.location.latitude,
+                                longitude: item.meta_data.location.longitude,
+                              }}
+                              // onAlertClick={() => {}}
+                              showAffectedAreas={false}
+                              selectedLocation={null}
+                              canClickAlerts={false}
+                            />
+                          </div>
                         </div>
                       </DialogContent>
                     </Dialog>

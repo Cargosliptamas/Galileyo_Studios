@@ -21,6 +21,9 @@ interface AlertMapProps {
   onAlertClick?: (alert: Alert) => void;
   onViewStateChange?: (viewState: ViewState) => void;
   onMoveEnd?: (viewState: ViewState) => void;
+  children?: React.ReactNode;
+  cooperativeGestures?: boolean;
+  canClickAlerts?: boolean;
 }
 
 export function AlertMap({
@@ -33,6 +36,9 @@ export function AlertMap({
   onAlertClick,
   onViewStateChange,
   onMoveEnd,
+  children,
+  cooperativeGestures,
+  canClickAlerts = true,
 }: AlertMapProps) {
   const data: MapData[] = useMemo(() => {
     return alerts.map((alert) => ({
@@ -44,20 +50,20 @@ export function AlertMap({
 
   const handleMarkerClick = useCallback(
     (item: MapData) => {
-      if (item.alert) {
+      if (item.alert && canClickAlerts) {
         onMarkerClick?.(item.alert);
       }
     },
-    [onMarkerClick],
+    [onMarkerClick, canClickAlerts],
   );
 
   const handleAlertClick = useCallback(
     (item: MapData) => {
-      if (item.alert) {
+      if (item.alert && canClickAlerts) {
         onAlertClick?.(item.alert);
       }
     },
-    [onAlertClick],
+    [onAlertClick, canClickAlerts],
   );
 
   const viewState = useMemo(() => {
@@ -82,7 +88,11 @@ export function AlertMap({
         onPopupClick={handleAlertClick}
         onViewStateChange={onViewStateChange}
         onMoveEnd={onMoveEnd}
-      />
+        cooperativeGestures={cooperativeGestures}
+        canClickMarkers={canClickAlerts}
+      >
+        {children}
+      </Map>
     </div>
   );
 }

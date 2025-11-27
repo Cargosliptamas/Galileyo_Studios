@@ -1,3 +1,5 @@
+export * from "./cache";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Env = Record<string, any>;
 

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 import type { Alert } from "@galileyo/validators";
+import { cn } from "@galileyo/ui";
 import { Badge } from "@galileyo/ui/badge";
 import { Card, CardContent } from "@galileyo/ui/card";
 
@@ -10,10 +11,12 @@ import { UserAvatar } from "~/components/feed/user-avatar";
 import { formatTimestamp } from "~/lib/formatter";
 import { getInfluencerImageUrl } from "~/lib/image";
 import { ALERT_TYPE_CONFIG, SEVERITY_CONFIG } from "~/lib/types/alert";
+import Interweave from "../ui/interweave";
 
 interface AlertCardProps {
   alert: Alert;
   onAlertClick?: (alert: Alert) => void;
+  showFull?: boolean;
 }
 
 function AlertItemHeader({ alert }: { alert: Alert }) {
@@ -48,7 +51,11 @@ function AlertItemHeader({ alert }: { alert: Alert }) {
   );
 }
 
-export function AlertCard({ alert, onAlertClick }: AlertCardProps) {
+export function AlertCard({
+  alert,
+  onAlertClick,
+  showFull = false,
+}: AlertCardProps) {
   const alertConfig = ALERT_TYPE_CONFIG[alert.type];
   const severityConfig = SEVERITY_CONFIG[alert.severity];
 
@@ -84,8 +91,17 @@ export function AlertCard({ alert, onAlertClick }: AlertCardProps) {
           )}
         </div>
 
-        <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
-          {alert.description}
+        <p
+          className={cn(
+            "mb-2 line-clamp-2 text-sm text-muted-foreground",
+            showFull ? "line-clamp-none" : "line-clamp-2",
+          )}
+        >
+          {showFull ? (
+            <Interweave content={alert.description} />
+          ) : (
+            alert.description
+          )}
         </p>
 
         <div className="flex flex-col gap-1 text-xs text-muted-foreground">

@@ -75,6 +75,7 @@ export type ViewState = MapLibreViewState;
 export interface MapProps {
   id?: string;
   initialViewState?: Partial<ViewState>;
+  cooperativeGestures?: boolean;
   onViewStateChange?: (viewState: ViewState) => void;
   onMoveEnd?: (viewState: ViewState) => void;
   data?: MapData[];
@@ -101,6 +102,7 @@ export interface MapProps {
   };
   onMarkerClick?: (item: MapData) => void;
   onPopupClick?: (item: MapData) => void;
+  canClickMarkers?: boolean;
 }
 
 export function Map({
@@ -109,6 +111,7 @@ export function Map({
   onViewStateChange,
   data,
   children,
+  cooperativeGestures,
   popupEnabled = true,
   config = {
     useGeolocateControl: {
@@ -131,6 +134,7 @@ export function Map({
   onMarkerClick,
   onPopupClick,
   onMoveEnd,
+  canClickMarkers = true,
 }: MapProps) {
   const [mapStyle, setMapStyle] = useState<string>(mapStyles[0].styleUrl);
   const [activeStyleId, setActiveStyleId] = useState<string>(mapStyles[0].id);
@@ -138,10 +142,12 @@ export function Map({
 
   const handleMarkerClick = useCallback(
     (item: MapData) => {
-      setSelectedItem(item);
-      onMarkerClick?.(item);
+      if (canClickMarkers) {
+        setSelectedItem(item);
+        onMarkerClick?.(item);
+      }
     },
-    [onMarkerClick],
+    [onMarkerClick, canClickMarkers],
   );
 
   const handleViewStateChange = useCallback(
@@ -170,6 +176,7 @@ export function Map({
       // style={{width: 600, height: 400}}
       mapStyle={mapStyle}
       attributionControl={{ compact: true, customAttribution: "Galileyo" }}
+      cooperativeGestures={cooperativeGestures}
     >
       {data?.map((item, index) => (
         <MapMarker

@@ -22,11 +22,13 @@
     "@date-fns/utc": "^2.1.1",
     "@galileyo/auth": "workspace:*",
     "@galileyo/db": "workspace:*",
+    "@galileyo/utils": "workspace:*",
     "@galileyo/validators": "workspace:*",
     "@trpc/server": "catalog:",
     "date-fns": "^4.1.0",
     "ioredis": "^5.8.2",
     "nanoid": "^5.1.6",
+    "openmeteo": "^1.2.2",
     "simple-peer": "catalog:",
     "superjson": "2.2.2",
     "zod": "catalog:"

@@ -1,25 +1,41 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Satellite } from "lucide-react";
 import { motion } from "motion/react";
 
+import { Skeleton } from "@galileyo/ui/skeleton";
 import { toast } from "@galileyo/ui/toast";
 
 import type { Alert } from "~/lib/types/alert";
 import { WordRotate } from "~/components/ui/word-rotate";
+import { AlertMap as AlertMapComponent } from "../alert-map/alert-map";
 
-import "leaflet/dist/leaflet.css";
+// import "leaflet/dist/leaflet.css";
 
 const AlertMap = dynamic(
   () => import("../map/alert-map").then((mod) => mod.AlertMap),
   { ssr: false },
 );
 
-export function HomeAlertMap({ alerts }: { alerts: Alert[] }) {
+export function HomeAlertMapOld({ alerts }: { alerts: Alert[] }) {
   return <AlertMap alerts={alerts} />;
+}
+
+export function HomeAlertMap({ alerts }: { alerts: Alert[] }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return <Skeleton className="h-[500px] w-full" />;
+  }
+
+  return <AlertMapComponent alerts={alerts} cooperativeGestures={true} />;
 }
 
 export function Questions({

@@ -29,6 +29,7 @@ export const env = createEnv({
     ZYTE_API_KEY: z.string().optional(),
     REDIS_URL: z.url().optional(),
     PREVIEW_SERVER_URL: z.url().default("http://localhost:3001"),
+    OPENWEATHER_API_KEY: z.string().optional(),
   },
 
   /**

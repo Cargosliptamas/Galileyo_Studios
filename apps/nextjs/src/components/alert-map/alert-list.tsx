@@ -1,13 +1,39 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import type { LngLatLike } from "maplibre-gl";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import {
+  Check,
+  Cloud,
+  CloudRain,
+  Gauge,
+  Thermometer,
+  Wind,
+} from "lucide-react";
 import { LngLatBounds } from "maplibre-gl";
 
-import { ScrollArea } from "@galileyo/ui";
+import { cn, ScrollArea } from "@galileyo/ui";
+import { Card, CardContent } from "@galileyo/ui/card";
 
+import type { WeatherLayerIds } from "../ui/map/layers/weather-layer";
 import type { Alert } from "~/lib/types/alert";
+import {
+  useWeatherLayers,
+  WeatherLayerIdsString,
+} from "../ui/map/layers/weather-layer";
 import { AlertCard } from "./alert-card";
+
+const weatherLayerIconComponents: Record<
+  (typeof WeatherLayerIdsString)[number],
+  LucideIcon
+> = {
+  weather_clouds: Cloud,
+  weather_pressure: Gauge,
+  weather_temperature: Thermometer,
+  weather_wind: Wind,
+  weather_precipitation: CloudRain,
+};
 
 interface AlertListProps {
   alerts: Alert[];
@@ -15,11 +41,22 @@ interface AlertListProps {
   bounds?: LngLatLike | null;
 }
 
+function WeatherLayerIcon({
+  layerId,
+}: {
+  layerId: (typeof WeatherLayerIdsString)[number];
+}) {
+  const IconComponent = weatherLayerIconComponents[layerId];
+  return <IconComponent className="h-5 w-5" />;
+}
+
 export function AlertList({
   alerts,
   onAlertClick,
   bounds: boundsArray,
 }: AlertListProps) {
+  const { weatherLayers, toggleLayer } = useWeatherLayers();
+
   const sortedAlerts = useMemo(
     () =>
       [...alerts]
@@ -47,15 +84,68 @@ export function AlertList({
           return (
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
+        })
+        .sort((a, b) => {
+          if (b.is_influencer && !a.is_influencer) {
+            return 1;
+          }
+
+          if (a.is_influencer && !b.is_influencer) {
+            return -1;
+          }
+
+          return 0;
         }),
     [alerts, boundsArray],
   );
 
+  const handleWeatherLayerClick = useCallback(
+    (layerId: WeatherLayerIds) => {
+      toggleLayer(layerId);
+    },
+    [toggleLayer],
+  );
+
   return (
     <div className="space-y-3 p-2">
-      <h1 className="text-xl font-bold">{sortedAlerts.length} alerts</h1>
-
       <ScrollArea className="h-[calc(100vh-15rem)]">
+        <h1 className="mb-2 text-xl font-bold">Weather Layers</h1>
+        <div className="mb-2 grid grid-cols-1 gap-4 xl:grid-cols-2">
+          {WeatherLayerIdsString.map((layerId) => {
+            const isEnabled = weatherLayers[layerId];
+            return (
+              <Card
+                className={cn(
+                  "transform cursor-pointer border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
+                  isEnabled &&
+                    "border-blue-500 bg-blue-50/50 dark:border-blue-400 dark:bg-blue-900/20",
+                )}
+                onClick={() => handleWeatherLayerClick(layerId)}
+                key={layerId}
+              >
+                <CardContent className="p-4">
+                  <div className="mb-2 flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <WeatherLayerIcon layerId={layerId} />
+                      <h4 className="text-sm font-semibold capitalize">
+                        {layerId.replace("weather_", "").replace(/_/g, " ")}
+                      </h4>
+                      {isEnabled && (
+                        <Check className="ml-auto h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="mb-2 text-sm text-muted-foreground">
+                    Preview of the {layerId} layer.
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <h1 className="mb-2 text-xl font-bold">{sortedAlerts.length} alerts</h1>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           {sortedAlerts.length === 0 ? (
             <div className="col-span-full py-8 text-center text-muted-foreground">

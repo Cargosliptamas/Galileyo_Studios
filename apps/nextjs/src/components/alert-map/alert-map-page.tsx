@@ -6,7 +6,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { parseAsBoolean, parseAsFloat, useQueryState } from "nuqs";
 
 import type { FeedItem } from "@galileyo/validators";
-import { ScrollArea } from "@galileyo/ui";
+import { cn, ScrollArea } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 import {
   Dialog,
@@ -29,12 +29,27 @@ import CommentsModal from "../feed/comments-modal";
 import FeedCard from "../feed/feed-card";
 import FeedCardSkeleton from "../feed/feed-card-skeleton";
 import ReportModal from "../feed/report-modal";
+import {
+  WeatherLayer,
+  WeatherLayersProvider,
+} from "../ui/map/layers/weather-layer";
 import { AlertCard } from "./alert-card";
 import { AlertList } from "./alert-list";
 import { AlertMap } from "./alert-map";
+import {
+  AlertMapContextProvider,
+  useAlertMapContext,
+} from "./alert-map-context";
+// import { FullscreenControl } from "react-map-gl/maplibre";
+import { ListToggleControl } from "./controls/list-toggle-control";
 
-export function AlertMapPageContent() {
+export function AlertMapPageContent({
+  mapAccess,
+}: {
+  mapAccess: "local" | "full_regional" | "global_extended" | null;
+}) {
   const { alertMap: map } = useMap();
+  const { showList } = useAlertMapContext();
   const trpc = useTRPC();
 
   const [showInfluencers] = useQueryState(
@@ -182,13 +197,25 @@ export function AlertMapPageContent() {
     return undefined;
   }, [latitude, longitude]);
 
-  const handleAlertClick = useCallback((alert: Alert) => {
-    // Pan the map to the alert location
-    // if (mapRef.current) {
-    //   mapRef.current.panToAlert(alert);
-    // }
-    setSelectedAlert(alert);
-  }, []);
+  const canClickAlerts = useMemo(() => {
+    return mapAccess && mapAccess !== "local" ? true : false;
+  }, [mapAccess]);
+
+  const handleAlertClick = useCallback(
+    (alert: Alert) => {
+      // Pan the map to the alert location
+      // if (mapRef.current) {
+      //   mapRef.current.panToAlert(alert);
+      // }
+
+      if (!mapAccess || mapAccess === "local") {
+        return;
+      }
+
+      setSelectedAlert(alert);
+    },
+    [mapAccess],
+  );
 
   const handleFiltersChange = (newFilters: AlertFilters) => {
     setFilters(newFilters);
@@ -295,7 +322,12 @@ export function AlertMapPageContent() {
 
         {/* Main Content - Full Size Map */}
         <div className="grid h-[calc(100vh-10rem)] w-full grid-cols-1 gap-0 p-0 xl:grid-cols-12">
-          <div className="col-span-1 md:col-span-7 xl:max-h-[calc(100vh-10rem)]">
+          <div
+            className={cn(
+              "col-span-1 md:col-span-7 xl:max-h-[calc(100vh-10rem)]",
+              showList ? "md:col-span-7" : "md:col-span-12",
+            )}
+          >
             <AlertMap
               alerts={filteredAlerts}
               center={center}
@@ -304,15 +336,22 @@ export function AlertMapPageContent() {
               selectedLocation={selectedLocation}
               onAlertClick={handleAlertClick}
               onMoveEnd={handleMoveEnd}
-            />
+              canClickAlerts={canClickAlerts}
+            >
+              <WeatherLayer />
+              {/* <FullscreenControl position="top-right" /> */}
+              <ListToggleControl />
+            </AlertMap>
           </div>
-          <div className="col-span-1 hidden md:col-span-5 md:block xl:max-h-[calc(100vh-10rem)]">
-            <AlertList
-              alerts={filteredAlerts}
-              onAlertClick={handleAlertClick}
-              bounds={bounds}
-            />
-          </div>
+          {showList && (
+            <div className="col-span-1 hidden md:col-span-5 md:block xl:max-h-[calc(100vh-10rem)]">
+              <AlertList
+                alerts={filteredAlerts}
+                onAlertClick={handleAlertClick}
+                bounds={bounds}
+              />
+            </div>
+          )}
         </div>
 
         <Dialog
@@ -353,7 +392,7 @@ export function AlertMapPageContent() {
 
                 {selectedAlert && !selectedAlert.is_influencer && (
                   <div className="w-full rounded-xl bg-background">
-                    <AlertCard alert={selectedAlert} />
+                    <AlertCard alert={selectedAlert} showFull={true} />
                   </div>
                 )}
               </div>
@@ -375,10 +414,18 @@ export function AlertMapPageContent() {
   );
 }
 
-export function AlertMapPage() {
+export function AlertMapPage({
+  mapAccess,
+}: {
+  mapAccess: "local" | "full_regional" | "global_extended" | null;
+}) {
   return (
     <MapProvider>
-      <AlertMapPageContent />
+      <WeatherLayersProvider>
+        <AlertMapContextProvider>
+          <AlertMapPageContent mapAccess={mapAccess} />
+        </AlertMapContextProvider>
+      </WeatherLayersProvider>
     </MapProvider>
   );
 }

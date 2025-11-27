@@ -1,7 +1,7 @@
 "use client";
 
 import type { MarkerEvent } from "react-map-gl/maplibre";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Marker } from "react-map-gl/maplibre";
 
 import type { MapData } from "./types";
@@ -9,7 +9,7 @@ import { UserAvatar } from "~/components/feed/user-avatar";
 import { getInfluencerImageUrl } from "~/lib/image";
 import { ALERT_TYPE_CONFIG } from "~/lib/types/alert";
 
-export function MapMarker({
+function MapMarkerComponent({
   item,
   anchor = "bottom",
   onClick,
@@ -62,7 +62,7 @@ export function MapMarker({
             isVerified={false}
             isInfluencer={false}
             onlyAvatar={true}
-            size="xs"
+            size="small"
           />
         </div>
       )}
@@ -78,3 +78,5 @@ export function MapMarker({
     </Marker>
   );
 }
+
+export const MapMarker = memo(MapMarkerComponent);

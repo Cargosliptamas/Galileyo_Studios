@@ -313,6 +313,10 @@ export async function HomePage() {
         className="bg-white py-20 dark:bg-slate-950 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 h-[500px] w-full text-center">
+            <HomeAlertMap alerts={alerts} />
+          </div>
+
           <div className="mb-16 text-center">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -410,10 +414,6 @@ export async function HomePage() {
               AI and satellite tech deliver fast, life-saving assistance - when
               every second counts.
             </p>
-          </div>
-
-          <div className="mb-16">
-            <HomeAlertMap alerts={alerts} />
           </div>
 
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">

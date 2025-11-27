@@ -15,6 +15,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "bentocache": "catalog:"
+  },
   "devDependencies": {
     "@galileyo/eslint-config": "workspace:*",
     "@galileyo/prettier-config": "workspace:*",
