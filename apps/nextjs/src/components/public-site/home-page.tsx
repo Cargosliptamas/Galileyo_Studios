@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import * as motion from "motion/react-client";
 
+import type { PricingPlan } from "~/lib/server/types";
+import { getSession } from "~/auth/server";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { PhoneMockup } from "../phone-mockup";
 import PromoBanner from "../ui/promo-banner";
@@ -125,14 +127,14 @@ const features = [
 // ];
 
 export async function HomePage() {
+  const session = await getSession();
   const pricingPlans = await getPricingPlans();
   const alerts = await getEmergencyAlerts();
 
   return (
     <>
       {/* Holiday Promo Teaser Banner */}
-      <PromoBanner endDate="2025-12-31T23:59:00-07:00" />
-
+      {!session && <PromoBanner endDate="2025-12-31T23:59:00-07:00" />}
       <section className="relative overflow-hidden">
         <HomeBackground />
 
@@ -624,7 +626,7 @@ export async function HomePage() {
           </div>
 
           <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
-            {pricingPlans.map((plan, index) => (
+            {pricingPlans.map((plan: PricingPlan, index: number) => (
               <div
                 key={index}
                 className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
@@ -685,11 +687,7 @@ export async function HomePage() {
                   ))}
                 </ul>
 
-                <PricingPlanButton
-                  planId={plan.id}
-                  cta={plan.cta}
-                  highlight={plan.highlight}
-                />
+                <PricingPlanButton plan={plan} />
               </div>
             ))}
           </div>

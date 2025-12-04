@@ -6,13 +6,14 @@ import type {
   PaymentHistoryListType,
   PaymentHistoryTypes,
   PlanListType,
+  PlanType,
 } from "@galileyo/validators/payment";
-import { PaymentDetailsSchema } from "@galileyo/validators/payment";
-
+import { eq } from "@galileyo/db";
 // import { z } from "zod/v4";
 
-// import { desc, eq } from "@galileyo/db";
-// import { CreatePostSchema, Post } from "@galileyo/db/schema";
+import { db } from "@galileyo/db/client";
+import { register as registerSchema } from "@galileyo/db/schema";
+import { PaymentDetailsSchema } from "@galileyo/validators/payment";
 
 import { protectedProcedure } from "../trpc";
 
@@ -33,6 +34,56 @@ function getPaymentHistoryType(type: number): PaymentHistoryTypes {
   }
 
   return "unknown";
+}
+
+async function fetchAvailablePlans(
+  token: string,
+  cursor: number,
+  limit: number,
+) {
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/product/list`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        full_info: true,
+        page: cursor,
+        page_size: limit,
+      }),
+    },
+  );
+
+  const result = (await request.json()) as {
+    status: "success" | "error";
+    data: {
+      end_at: string | null;
+      is_cancelled: boolean;
+      can_reactivate: boolean;
+      count: number;
+      page: number;
+      page_size: number;
+      list: {
+        id: number;
+        current: boolean;
+        is_scheduled: boolean;
+        name: string;
+        description: string | null;
+        price: number;
+        settings: Record<string, string | number>;
+        is_new_plan: boolean;
+      }[];
+    };
+  };
+
+  if (result.status !== "success") {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+  }
+
+  return result.data;
 }
 
 export const paymentRouter = {
@@ -318,49 +369,13 @@ export const paymentRouter = {
       }),
     )
     .query(async ({ ctx, input }): Promise<PlanListType> => {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${ctx.session.session.token}`,
-          },
-          body: JSON.stringify({
-            full_info: true,
-            page: input.cursor,
-            page_size: input.limit,
-          }),
-        },
+      const plans = await fetchAvailablePlans(
+        ctx.session.session.token,
+        input.cursor,
+        input.limit,
       );
 
-      const result = (await request.json()) as {
-        status: "success" | "error";
-        data: {
-          end_at: string | null;
-          is_cancelled: boolean;
-          can_reactivate: boolean;
-          count: number;
-          page: number;
-          page_size: number;
-          list: {
-            id: number;
-            current: boolean;
-            is_scheduled: boolean;
-            name: string;
-            description: string | null;
-            price: number;
-            settings: Record<string, string | number>;
-            is_new_plan: boolean;
-          }[];
-        };
-      };
-
-      if (result.status !== "success") {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-      }
-
-      return result.data;
+      return plans;
     }),
   getAvailableAlerts: protectedProcedure.query(async ({ ctx }) => {
     const request = await fetch(
@@ -497,4 +512,40 @@ export const paymentRouter = {
 
       return request.blob();
     }),
+  hasUnfinishedPayment: protectedProcedure.query(
+    async ({ ctx }): Promise<PlanType | null> => {
+      const register = await db
+        .select()
+        .from(registerSchema)
+        .where(eq(registerSchema.email, ctx.session.user.email));
+
+      if (register.length === 0) {
+        return null;
+      }
+
+      const filtered = register.filter((item) => item.selectedPlan !== null);
+
+      if (filtered.length === 0) {
+        return null;
+      }
+
+      const lastRegister = filtered[filtered.length - 1];
+
+      const plans = await fetchAvailablePlans(
+        ctx.session.session.token,
+        1,
+        100,
+      );
+
+      return (
+        plans.list.find((item) => item.id === lastRegister?.selectedPlan) ??
+        null
+      );
+    },
+  ),
+  suppressUnfinishedPayment: protectedProcedure.mutation(async ({ ctx }) => {
+    await db
+      .delete(registerSchema)
+      .where(eq(registerSchema.email, ctx.session.user.email));
+  }),
 } satisfies TRPCRouterRecord;

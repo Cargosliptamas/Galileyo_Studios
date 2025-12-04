@@ -9,8 +9,10 @@ import { motion } from "motion/react";
 import { Skeleton } from "@galileyo/ui/skeleton";
 import { toast } from "@galileyo/ui/toast";
 
+import type { PricingPlan } from "~/lib/server/types";
 import type { Alert } from "~/lib/types/alert";
 import { WordRotate } from "~/components/ui/word-rotate";
+import { useSignup } from "~/hooks/use-signup";
 import { AlertMap as AlertMapComponent } from "../alert-map/alert-map";
 
 // import "leaflet/dist/leaflet.css";
@@ -552,19 +554,22 @@ export function Alerts() {
 }
 
 export function PricingPlanButton({
-  planId,
-  cta,
-  highlight,
+  plan,
+  useModal,
 }: {
-  planId: string;
-  cta: string;
-  highlight: boolean;
+  plan: PricingPlan;
+  useModal?: boolean;
 }) {
   const router = useRouter();
+  const { setShowSignupModal } = useSignup();
 
   const handleGetStartedCTA = useCallback(() => {
-    router.push(`/sign-up?plan=${planId}`);
-  }, [planId, router]);
+    if (useModal) {
+      setShowSignupModal(true, plan);
+    } else {
+      router.push(`/sign-up?plan=${plan.id}`);
+    }
+  }, [plan, router, useModal, setShowSignupModal]);
 
   return (
     <motion.button
@@ -572,13 +577,13 @@ export function PricingPlanButton({
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.15 }}
       className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
-        highlight
+        plan.highlight
           ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
           : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
       }`}
       onClick={handleGetStartedCTA}
     >
-      {cta}
+      {plan.cta}
     </motion.button>
   );
 }

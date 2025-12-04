@@ -1424,6 +1424,7 @@ export const register = mysqlTable(
     isUnfinishedSignup: tinyint("is_unfinished_signup").default(0),
     createdAt: datetime("created_at", { mode: "string" }).notNull(),
     updatedAt: datetime("updated_at", { mode: "string" }),
+    selectedPlan: bigint("selected_plan", { mode: "number" }),
   },
   (table) => [primaryKey({ columns: [table.id], name: "register_id" })],
 );

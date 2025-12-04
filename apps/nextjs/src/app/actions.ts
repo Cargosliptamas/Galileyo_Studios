@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { UTCDate } from "@date-fns/utc";
 import { format } from "date-fns";
 import webpush from "web-push";
@@ -196,4 +197,12 @@ export async function downloadInvoice(invoiceId: number) {
   const data = await request.blob();
 
   return data;
+}
+
+export async function removeAffiliateCookie() {
+  const cookieStore = await cookies();
+
+  cookieStore.delete("affiliate_token");
+
+  return { success: true };
 }

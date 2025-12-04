@@ -23,7 +23,7 @@
     "@galileyo/db": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.8",
     "better-auth": "catalog:",
-    "next": "^15.3.3",
+    "next": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "zod": "catalog:"

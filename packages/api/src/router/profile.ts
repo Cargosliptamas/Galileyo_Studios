@@ -1,5 +1,6 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod/v4";
 
 import {
   ChangePasswordSchema,
@@ -60,49 +61,116 @@ export const profileRouter = {
 
     return result.data;
   }),
-  signup: publicProcedure.input(SignupSchema).mutation(async ({ input }) => {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/default/signup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  signup: publicProcedure
+    .input(SignupSchema)
+    .mutation(async ({ input, ctx }) => {
+      // Get affiliate token from input or cookie
+      let affiliateToken = input.affiliate_token;
+      if (!affiliateToken && ctx.cookies?.affiliate_token) {
+        affiliateToken = ctx.cookies.affiliate_token;
+      }
+
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/default/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name: input.first_name,
+            last_name: input.last_name,
+            email: input.email,
+            password: input.password,
+            country: input.country,
+            state: input.state,
+            iam18: input.accept_terms,
+            iagree: input.after_eighteen,
+            selected_plan: input.selected_plan
+              ? +input.selected_plan
+              : undefined,
+            affiliate_token: affiliateToken,
+            "from-new-site": true,
+          }),
         },
-        body: JSON.stringify({
-          first_name: input.first_name,
-          last_name: input.last_name,
-          email: input.email,
-          password: input.password,
-          country: input.country,
-          state: input.state,
-          iam18: input.accept_terms,
-          iagree: input.after_eighteen,
-          "from-new-site": true,
-        }),
-      },
-    );
+      );
 
-    const result = (await request.json()) as {
-      status: "success" | "error";
-      data: {
-        id: string;
-        email: string;
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          id: number;
+          access_token: string;
+          user: {
+            id: number;
+            email: string;
+          };
+        };
+        error: {
+          message: string;
+          code: string | number | null;
+        };
       };
-      error: {
-        message: string;
-        code: string | number | null;
+
+      if (result.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: result.error.message,
+        });
+      }
+
+      return {
+        id: result.data.user.id,
+        email: result.data.user.email,
+        access_token: result.data.access_token,
       };
-    };
+    }),
+  payNewProfile: publicProcedure
+    .input(
+      z.object({
+        plan_id: z.number(),
+        access_token: z.string(),
+        first_name: z.string(),
+        last_name: z.string(),
+        phone: z.string(),
+        country: z.string(),
+        state: z.string(),
+        cardholder_name: z.string(),
+        card_number: z.string(),
+        expiry_month: z.string(),
+        expiry_year: z.string(),
+        cvv: z.string(),
+        zip: z.string(),
+        company: z.string().optional(),
+        city: z.string().optional(),
+        address1: z.string().optional(),
+        address2: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/product/pay-new-profile`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${input.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        },
+      );
 
-    if (result.status !== "success") {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: result.error.message,
-      });
-    }
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        error?: { message?: string };
+      };
 
-    return result.data;
-  }),
+      if (result.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: result.error?.message ?? "Failed to switch plan",
+        });
+      }
+    }),
   updateProfile: protectedProcedure
     .input(ProfileGeneralSchema)
     .mutation(async ({ ctx, input }) => {

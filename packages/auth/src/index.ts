@@ -89,6 +89,11 @@ export function initAuth(options: {
           required: true,
           defaultValue: 1,
         },
+        role: {
+          type: "number",
+          required: false,
+          defaultValue: 1,
+        },
       },
     },
     session: {

@@ -8,6 +8,7 @@ import { commentRouter } from "./router/comment";
 import { feedRouter } from "./router/feed";
 import { friendsRouter } from "./router/friends";
 import { mapRouter } from "./router/map";
+import { membersRouter } from "./router/members";
 import { influencerFeedsRouter } from "./router/my-feeds/influencer-feeds";
 import { privateFeedsRouter } from "./router/my-feeds/private-feeds";
 import { paymentRouter } from "./router/payment";
@@ -25,6 +26,7 @@ export const appRouter = createTRPCRouter({
   feed: feedRouter,
   friends: friendsRouter,
   map: mapRouter,
+  members: membersRouter,
   payment: paymentRouter,
   profile: profileRouter,
   scraper: scraperRouter,

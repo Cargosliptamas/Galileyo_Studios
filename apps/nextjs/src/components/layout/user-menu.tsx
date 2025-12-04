@@ -9,6 +9,7 @@ import {
   LogOut,
   Newspaper,
   Settings,
+  Users,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
@@ -199,6 +200,14 @@ export function UserMenu({
             </Link>
           </DropdownMenuItem>
 
+          {user.role === 1 && (
+            <DropdownMenuItem asChild>
+              <Link href="/members" className="cursor-pointer">
+                <Users className="mr-2 h-4 w-4" />
+                Members
+              </Link>
+            </DropdownMenuItem>
+          )}
           {/* Profile Settings */}
           <DropdownMenuItem asChild>
             <Link href="/profile" className="cursor-pointer">

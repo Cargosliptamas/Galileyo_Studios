@@ -305,8 +305,7 @@ export const AlertMap = forwardRef<AlertMapRef, AlertMapProps>(
           {selectedLocation && (
             <>
               {/* Render polygon if geojson is available */}
-              {selectedLocation.geojson &&
-                selectedLocation.geojson.type === "Polygon" &&
+              {selectedLocation.geojson?.type === "Polygon" &&
                 Array.isArray(selectedLocation.geojson.coordinates[0]) && (
                   <Polygon
                     positions={

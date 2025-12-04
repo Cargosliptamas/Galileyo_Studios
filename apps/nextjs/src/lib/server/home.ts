@@ -7,19 +7,7 @@ import { db } from "@galileyo/db/client";
 import { emergencyAlerts, service } from "@galileyo/db/schema";
 
 import type { Alert, AlertSeverity, AlertType } from "../types/alert";
-
-interface PricingPlan {
-  id: string;
-  name: string;
-  price: string;
-  period: string;
-  description: string;
-  subtext: string;
-  features: string[];
-  cta: string;
-  popular: boolean;
-  highlight: boolean;
-}
+import type { PricingPlan } from "./types";
 
 const additionalPlanData: Record<
   number,
@@ -96,6 +84,7 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
     id: plan.id.toString(),
     name: additionalPlanData[plan.id]?.name ?? plan.name ?? "",
     price: plan.price?.toString() ?? "",
+    priceNumber: plan.price ?? 0,
     period: "/month",
     description: additionalPlanData[plan.id]?.description ?? "",
     subtext: additionalPlanData[plan.id]?.subtext ?? plan.description ?? "",

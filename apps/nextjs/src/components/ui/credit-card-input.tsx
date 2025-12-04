@@ -375,8 +375,14 @@ function CreditCard({
   showInputs = true,
   isCardHolderNameEnabled = true,
   fixCardType,
+  showCard = true,
   children,
-}: CreditCardProps & { creditCardClassName?: string }) {
+  externalErrors,
+}: CreditCardProps & {
+  creditCardClassName?: string;
+  showCard?: boolean;
+  externalErrors?: ValidationErrors;
+}) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -539,6 +545,10 @@ function CreditCard({
   const currentSizeConfig = sizeConfig[cardSize];
   const currentCardIcons = CardIcons(cardSize);
 
+  useEffect(() => {
+    setErrors(externalErrors ?? {});
+  }, [externalErrors]);
+
   return (
     <div
       ref={containerRef}
@@ -549,128 +559,130 @@ function CreditCard({
       )}
     >
       {/* Card Container with 3D effects using Tailwind CSS utilities */}
-      <div
-        className={cn(
-          "relative [perspective:1000px]",
-          currentSizeConfig.cardHeight,
-          creditCardClassName,
-        )}
-      >
-        <motion.div
-          className="relative h-full w-full [transform-style:preserve-3d]"
-          animate={{ rotateY: isFlipped ? 180 : 0 }}
-          style={{
-            rotateX: rotateX,
-            rotateY: isFlipped ? 180 : rotateY,
-          }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+      {showCard && (
+        <div
+          className={cn(
+            "relative [perspective:1000px]",
+            currentSizeConfig.cardHeight,
+            creditCardClassName,
+          )}
         >
-          {/* Front of Card */}
-          <Card
-            className={cn(
-              "absolute inset-0 flex h-full w-full flex-col justify-between shadow-xl [backface-visibility:hidden]",
-              cardStyles[cardStyle],
-              currentSizeConfig.cardPadding,
-            )}
+          <motion.div
+            className="relative h-full w-full [transform-style:preserve-3d]"
+            animate={{ rotateY: isFlipped ? 180 : 0 }}
+            style={{
+              rotateX: rotateX,
+              rotateY: isFlipped ? 180 : rotateY,
+            }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
           >
-            <div className="flex items-start justify-between">
-              <div
-                className={cn(
-                  "rounded shadow-md",
-                  getChipColor(),
-                  currentSizeConfig.chipSize,
-                )}
-              ></div>
-              {/* Vendor logo moved to top right for now, will be repositioned */}
-            </div>
-
-            <div className={currentSizeConfig.spacing}>
-              <div
-                className={cn(
-                  "font-mono font-bold tracking-wider",
-                  currentSizeConfig.textSize,
-                )}
-              >
-                {currentValue.cardNumber || "•••• •••• •••• ••••"}
+            {/* Front of Card */}
+            <Card
+              className={cn(
+                "absolute inset-0 flex h-full w-full flex-col justify-between shadow-xl [backface-visibility:hidden]",
+                cardStyles[cardStyle],
+                currentSizeConfig.cardPadding,
+              )}
+            >
+              <div className="flex items-start justify-between">
+                <div
+                  className={cn(
+                    "rounded shadow-md",
+                    getChipColor(),
+                    currentSizeConfig.chipSize,
+                  )}
+                ></div>
+                {/* Vendor logo moved to top right for now, will be repositioned */}
               </div>
 
-              {/* Bottom row: cardholder - expires - vendor logo */}
-              <div className="flex items-end justify-between">
-                <div className="flex-1">
-                  <div
-                    className={cn(
-                      "font-medium uppercase opacity-70",
-                      currentSizeConfig.textSizeSmall,
-                    )}
-                  >
-                    Card Holder
-                  </div>
-                  <div
-                    className={cn(
-                      "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold",
-                      currentSizeConfig.maxTextWidth,
-                    )}
-                  >
-                    {currentValue.cardholderName || "YOUR NAME"}
-                  </div>
+              <div className={currentSizeConfig.spacing}>
+                <div
+                  className={cn(
+                    "font-mono font-bold tracking-wider",
+                    currentSizeConfig.textSize,
+                  )}
+                >
+                  {currentValue.cardNumber || "•••• •••• •••• ••••"}
                 </div>
-                <div className="flex-1 text-center">
-                  <div
-                    className={cn(
-                      "font-medium uppercase opacity-70",
-                      currentSizeConfig.textSizeSmall,
-                    )}
-                  >
-                    Expires
+
+                {/* Bottom row: cardholder - expires - vendor logo */}
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <div
+                      className={cn(
+                        "font-medium uppercase opacity-70",
+                        currentSizeConfig.textSizeSmall,
+                      )}
+                    >
+                      Card Holder
+                    </div>
+                    <div
+                      className={cn(
+                        "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold",
+                        currentSizeConfig.maxTextWidth,
+                      )}
+                    >
+                      {currentValue.cardholderName || "YOUR NAME"}
+                    </div>
                   </div>
-                  <div className="text-sm font-bold">
-                    {currentValue.expiryMonth && currentValue.expiryYear
-                      ? `${currentValue.expiryMonth}/${currentValue.expiryYear.slice(-2)}`
-                      : "MM/YY"}
+                  <div className="flex-1 text-center">
+                    <div
+                      className={cn(
+                        "font-medium uppercase opacity-70",
+                        currentSizeConfig.textSizeSmall,
+                      )}
+                    >
+                      Expires
+                    </div>
+                    <div className="text-sm font-bold">
+                      {currentValue.expiryMonth && currentValue.expiryYear
+                        ? `${currentValue.expiryMonth}/${currentValue.expiryYear.slice(-2)}`
+                        : "MM/YY"}
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-1 justify-end">
-                  {showVendor && currentCardIcons[cardType]}
+                  <div className="flex flex-1 justify-end">
+                    {showVendor && currentCardIcons[cardType]}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
 
-          {/* Back of Card */}
-          <Card
-            className={cn(
-              "absolute inset-0 flex h-full w-full flex-col justify-between shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)]",
-              cardBackStyles[cardStyle],
-              currentSizeConfig.cardPadding,
-            )}
-          >
-            <div className="mt-4 h-12 w-full bg-black shadow-inner"></div>
+            {/* Back of Card */}
+            <Card
+              className={cn(
+                "absolute inset-0 flex h-full w-full flex-col justify-between shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)]",
+                cardBackStyles[cardStyle],
+                currentSizeConfig.cardPadding,
+              )}
+            >
+              <div className="mt-4 h-12 w-full bg-black shadow-inner"></div>
 
-            <div className="flex items-center justify-end space-x-4">
-              <div className="text-right">
-                <div className="text-xs font-medium uppercase opacity-70">
-                  {cvvLabel}
+              <div className="flex items-center justify-end space-x-4">
+                <div className="text-right">
+                  <div className="text-xs font-medium uppercase opacity-70">
+                    {cvvLabel}
+                  </div>
+                  <div className="rounded bg-white px-3 py-1 text-center font-mono font-bold text-black">
+                    {currentValue.cvv || "•••"}
+                  </div>
                 </div>
-                <div className="rounded bg-white px-3 py-1 text-center font-mono font-bold text-black">
-                  {currentValue.cvv || "•••"}
-                </div>
+                <Lock className="h-6 w-6 opacity-60" />
               </div>
-              <Lock className="h-6 w-6 opacity-60" />
-            </div>
 
-            <div className="text-center text-xs font-medium opacity-60">
-              This card is protected by advanced security features
-            </div>
-          </Card>
-        </motion.div>
-      </div>
+              <div className="text-center text-xs font-medium opacity-60">
+                This card is protected by advanced security features
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      )}
 
       {children}
 
       {showInputs && (
-        <div className={cn(currentSizeConfig.spacing, "mt-6")}>
+        <div className={cn(currentSizeConfig.spacing, showCard && "mt-6")}>
           {isCardHolderNameEnabled && (
             <div>
               <label className="mb-2 block text-sm font-medium">

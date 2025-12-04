@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { cookies } from "next/headers";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@galileyo/api";
@@ -25,6 +26,14 @@ export const OPTIONS = () => {
 };
 
 const handler = async (req: NextRequest) => {
+  const cookieStore = await cookies();
+
+  const cookiesMap: Record<string, string> = {};
+  const affiliateToken = cookieStore.get("affiliate_token")?.value;
+  if (affiliateToken) {
+    cookiesMap.affiliate_token = affiliateToken;
+  }
+
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     router: appRouter,
@@ -33,6 +42,7 @@ const handler = async (req: NextRequest) => {
       createTRPCContext({
         auth: auth,
         headers: req.headers,
+        cookies: cookiesMap,
       }),
     onError({ error, path }) {
       console.error(`>>> tRPC Error on '${path}'`, error);

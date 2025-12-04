@@ -22,11 +22,12 @@ export const SignupSchema = z
     first_name: z.string().min(1, { message: "First name is required" }),
     last_name: z.string().min(1, { message: "Last name is required" }),
     email: z.email({ message: "Invalid email address" }),
+    selected_plan: z.string().optional(),
     password: passwordSchema,
     password_confirmation: z
       .string()
       .min(1, { message: "Password confirmation is required" }),
-    country: z.string().min(1, { message: "Country is required" }),
+    country: z.string().optional(),
     state: z.string().optional(),
     accept_terms: z.boolean().refine((value) => value, {
       message: "You must accept the terms and conditions",
@@ -34,6 +35,7 @@ export const SignupSchema = z
     after_eighteen: z.boolean().refine((value) => value, {
       message: "You must be at least 18 years old",
     }),
+    affiliate_token: z.string().optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",

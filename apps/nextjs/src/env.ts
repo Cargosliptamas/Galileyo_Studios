@@ -68,6 +68,10 @@ export const env = createEnv({
       .enum(["true", "false"])
       .default("false")
       .transform((val) => val === "true"),
+    NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((val) => val === "true"),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -90,6 +94,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
     NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
     NEXT_PUBLIC_PREVIEW_ENABLED: process.env.NEXT_PUBLIC_PREVIEW_ENABLED,
+    NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT:
+      process.env.NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",

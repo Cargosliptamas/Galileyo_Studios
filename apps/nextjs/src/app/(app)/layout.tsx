@@ -3,6 +3,9 @@
 import { getSession } from "~/auth/server";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
+import { UnfinishedPaymentBanner } from "~/components/ui/unfinished-payment-banner";
+import { PaymentProvider } from "~/hooks/use-payment";
+import { SignupProvider } from "~/hooks/use-signup";
 
 // import { flags } from "~/flags/server";
 
@@ -18,7 +21,16 @@ export default async function AppLayout({
   return (
     <div className="font-inter relative z-10 flex min-h-svh flex-col bg-background dark:bg-slate-900">
       <SiteHeader user={session?.user} showMap={showMap} />
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="flex flex-1 flex-col">
+        {session ? (
+          <PaymentProvider>
+            <UnfinishedPaymentBanner />
+            {children}
+          </PaymentProvider>
+        ) : (
+          <SignupProvider>{children}</SignupProvider>
+        )}
+      </main>
       <SiteFooter />
       {/* <SpeedInsights /> */}
     </div>

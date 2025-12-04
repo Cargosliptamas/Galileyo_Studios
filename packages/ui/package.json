@@ -41,6 +41,7 @@
     "./sidebar": "./src/sidebar.tsx",
     "./skeleton": "./src/skeleton.tsx",
     "./slider": "./src/slider.tsx",
+    "./stepper": "./src/stepper.tsx",
     "./switch": "./src/switch.tsx",
     "./table": "./src/table.tsx",
     "./tabs": "./src/tabs.tsx",

@@ -14,12 +14,14 @@ export type PasswordInputProps = Omit<
 > & {
   containerClassName?: string;
   label?: string;
+  showLabel?: boolean;
 };
 
 export function PasswordInput({
   label,
   placeholder,
   containerClassName,
+  showLabel = true,
   ...props
 }: PasswordInputProps) {
   const id = useId();
@@ -29,7 +31,7 @@ export function PasswordInput({
 
   return (
     <div className={cn("*:not-first:mt-2", containerClassName)}>
-      <Label htmlFor={id}>{label ?? "Password"}</Label>
+      {showLabel && <Label htmlFor={id}>{label ?? "Password"}</Label>}
       <div className="relative">
         <Input
           id={id}
@@ -39,6 +41,7 @@ export function PasswordInput({
           {...props}
         />
         <button
+          tabIndex={-1}
           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
           onClick={toggleVisibility}
