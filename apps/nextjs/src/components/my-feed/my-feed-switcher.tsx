@@ -22,14 +22,14 @@ export function MyFeedSwitcher({ isInfluencer }: { isInfluencer: boolean }) {
             isInfluencer ? "grid-cols-2" : "grid-cols-1",
           )}
         >
-          {isInfluencer === true && (
+          {isInfluencer ? (
             <TabsTrigger
               value="influencer"
               className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
             >
               Influencer Feeds
             </TabsTrigger>
-          )}
+          ) : null}
           <TabsTrigger
             value="private"
             className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
@@ -38,11 +38,11 @@ export function MyFeedSwitcher({ isInfluencer }: { isInfluencer: boolean }) {
           </TabsTrigger>
         </TabsList>
 
-        {isInfluencer === true && (
+        {isInfluencer ? (
           <TabsContent value="influencer" className="space-y-6">
             <MyInfluencerFeeds />
           </TabsContent>
-        )}
+        ) : null}
 
         <TabsContent value="private" className="space-y-6">
           <MyPrivateFeeds />
