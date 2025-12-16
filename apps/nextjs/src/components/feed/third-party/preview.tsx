@@ -8,7 +8,7 @@ import { Card, CardDescription, CardTitle, Skeleton } from "@galileyo/ui";
 
 import type { ThirdPartyContentProps } from "./types";
 import type { LinkPreviewData } from "~/lib/types/preview";
-import { env } from "~/env";
+import { env } from "~/env/client";
 
 export default function PreviewContent({ link }: ThirdPartyContentProps) {
   const { data, isLoading } = useQuery({

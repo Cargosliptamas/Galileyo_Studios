@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { PlanType } from "@galileyo/validators/payment";
 
-import { env } from "~/env";
+import { env } from "~/env/client";
 import { useTRPC } from "~/trpc/react";
 
 export const DELETE_UNFINISHED_PAYMENT =

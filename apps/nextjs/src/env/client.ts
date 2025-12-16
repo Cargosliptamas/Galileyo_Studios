@@ -81,3 +81,5 @@ export function clientEnv() {
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
   });
 }
+
+export const env = clientEnv();

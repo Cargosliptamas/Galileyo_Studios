@@ -1,4 +1,4 @@
-import { env } from "~/env";
+import { env } from "~/env/client";
 
 const getBaseUrl = () => {
   return env.NEXT_PUBLIC_API_URL.replace("/v1", "/uploads/");

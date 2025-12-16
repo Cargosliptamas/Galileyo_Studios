@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { env } from "~/env";
+import { env } from "~/env/client";
 
 function Analytics({ enabled }: { enabled: boolean }) {
   if (

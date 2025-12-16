@@ -7,7 +7,7 @@ import {
   subscribeUser,
   unsubscribeUser,
 } from "~/app/actions";
-import { env } from "~/env";
+import { env } from "~/env/client";
 
 export const PushNotificationContext = createContext<{
   isSupported: boolean;

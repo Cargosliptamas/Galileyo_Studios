@@ -42,3 +42,5 @@ export function serverEnv() {
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
   });
 }
+
+export const env = serverEnv();

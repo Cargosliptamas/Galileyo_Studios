@@ -36,7 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 import { ScrollArea } from "@galileyo/ui/scroll-area";
 
 import { authClient } from "~/auth/client";
-import { env } from "~/env";
+import { env } from "~/env/client";
 import { formatDuration } from "~/lib/formatter";
 import { getUserImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";

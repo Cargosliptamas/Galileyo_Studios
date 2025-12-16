@@ -1,4 +1,4 @@
-import { env } from "~/env";
+import { env } from "~/env/client";
 
 export const FEED_LIMIT = env.NEXT_PUBLIC_FEED_LIMIT;
 
