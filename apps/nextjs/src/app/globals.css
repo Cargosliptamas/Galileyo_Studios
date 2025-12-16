@@ -87,15 +87,16 @@
 
 @keyframes marquee {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0%);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
 .animate-marquee {
-  animation: marquee 20s linear infinite;
+  display: inline-flex;
+  animation: marquee 35s linear infinite;
 }
 
 /* Custom styles for alert map */

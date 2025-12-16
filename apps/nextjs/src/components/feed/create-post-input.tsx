@@ -10,47 +10,28 @@ import {
 } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
-import {
-  Calendar,
-  ChevronDown,
-  Globe,
-  MapPin,
-  Satellite,
-  Smile,
-} from "lucide-react";
+import { Calendar, ChevronDown, MapPin, Satellite, Smile } from "lucide-react";
 import { v4 as uuid } from "uuid";
 
 import type { PromptInputMessage } from "@galileyo/ui/ai-elements";
-import type { FetchedArticle } from "@galileyo/validators/scraping";
 import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Checkbox,
   cn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-  Input,
   Label,
-  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Separator,
   Switch,
   Tooltip,
   TooltipContent,
@@ -86,7 +67,6 @@ import { toast } from "@galileyo/ui/toast";
 import type { Location } from "../map/location-search";
 import type { User } from "~/auth/client";
 import type { Profile } from "~/hooks/use-profiles";
-import { env } from "~/env";
 import { useProfiles } from "~/hooks/use-profiles";
 import { getProfilePicture } from "~/lib/user";
 import { useTRPC } from "~/trpc/react";
@@ -708,296 +688,10 @@ function CreatePostComponent({ user }: { user: User }) {
   );
 }
 
-function ScraperComponent() {
-  const trpc = useTRPC();
-  const [url, setUrl] = useState("");
-  const [articles, setArticles] = useState<FetchedArticle[]>([]);
-  const [selectedArticles, setSelectedArticles] = useState<Set<string>>(
-    new Set(),
-  );
-  const [isPublishing, setIsPublishing] = useState(false);
-
-  const createPost = useMutation(
-    trpc.feed.createPost.mutationOptions({
-      onSuccess: () => {
-        // Success handled in the publishing function
-      },
-      onError: (error) => {
-        toast.error(error.message || "Failed to publish articles");
-      },
-    }),
-  );
-
-  const scrape = useMutation(
-    trpc.scraper.scrape.mutationOptions({
-      onMutate: () => {
-        setArticles([]);
-        setSelectedArticles(new Set());
-      },
-      onSuccess: (data) => {
-        console.log(data);
-        setArticles(data);
-      },
-      onError: (err) => {
-        toast.error(err.message || "Failed to scrape");
-      },
-    }),
-  );
-
-  const handleSubmit = (url: string) => {
-    scrape.mutate({ url });
-  };
-
-  const handleArticleSelect = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedArticles);
-    if (checked) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedArticles(newSelected);
-  };
-
-  const handleSelectAll = () => {
-    if (selectedArticles.size === articles.length) {
-      setSelectedArticles(new Set());
-    } else {
-      setSelectedArticles(new Set(articles.map((article) => article.id)));
-    }
-  };
-
-  const handlePublishSelected = async () => {
-    const selected = articles.filter((article) =>
-      selectedArticles.has(article.id),
-    );
-    if (selected.length === 0) {
-      toast.error(
-        "No articles selected. Please select at least one article to publish.",
-      );
-      return;
-    }
-
-    setIsPublishing(true);
-    try {
-      toast.success(`Publishing ${selected.length} selected article(s)...`);
-
-      // Publish articles sequentially
-      for (const article of selected) {
-        const formData = new FormData();
-
-        // Create post content from article
-        const postContent = `${article.headline ?? "Untitled Article"}\n\n${article.articleBody ?? ""}\n\nSource: ${article.url}`;
-
-        formData.append("text", postContent);
-        formData.append("uuid", uuid());
-        formData.append("subscriptions[]", ""); // Use default user feed
-        formData.append("user_feed", "public"); // Make it public
-        formData.append("schedule", "");
-        formData.append("timezone", "UTC");
-        formData.append("is_schedule", "0");
-
-        // Add article image if available
-        if (article.mainImage?.url) {
-          try {
-            // Fetch the image and convert to blob
-            const imageResponse = await fetch(article.mainImage.url);
-            const imageBlob = await imageResponse.blob();
-            formData.append("files[]", imageBlob, "article-image.jpg");
-          } catch (error) {
-            console.warn("Failed to fetch article image:", error);
-          }
-        }
-
-        // Create post using the existing createPost mutation
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-        createPost.mutate(formData as any);
-      }
-
-      toast.success(`Successfully published ${selected.length} article(s)!`);
-
-      // Clear selection after successful publishing
-      setSelectedArticles(new Set());
-    } catch (error) {
-      console.error("Error publishing articles:", error);
-      toast.error("Failed to publish some articles. Please try again.");
-    } finally {
-      setIsPublishing(false);
-    }
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex w-full items-center gap-2 text-stone-900"
-          style={{
-            background:
-              "linear-gradient(90deg, #ff005a, #ffb800, #00ff94, #01cfff, #a259ff, #ff005a)",
-            backgroundSize: "200% 200%",
-            animation: "rainbowBG 3s linear infinite",
-          }}
-        >
-          <Globe className="h-4 w-4" />
-          Scrape URL
-          <style>
-            {`
-              @keyframes rainbowBG {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-              }
-            `}
-          </style>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600">
-        <DialogHeader>
-          <DialogTitle>Scrape URL</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>
-          Enter the URL of the website you want to scrape.
-        </DialogDescription>
-        <div className="flex flex-col gap-2">
-          <div className="flex w-full flex-row gap-2">
-            <Input
-              placeholder="Enter URL to scrape"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-            />
-
-            <Button
-              onClick={() => handleSubmit(url)}
-              disabled={scrape.isPending}
-            >
-              {scrape.isPending ? "Scraping..." : "Scrape"}
-            </Button>
-          </div>
-
-          {articles.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="select-all"
-                    checked={
-                      selectedArticles.size === articles.length &&
-                      articles.length > 0
-                    }
-                    onCheckedChange={handleSelectAll}
-                  />
-                  <Label htmlFor="select-all" className="text-sm font-medium">
-                    Select All ({selectedArticles.size}/{articles.length})
-                  </Label>
-                </div>
-                {selectedArticles.size > 0 && (
-                  <Button
-                    onClick={handlePublishSelected}
-                    size="sm"
-                    className="ml-auto"
-                    disabled={isPublishing}
-                  >
-                    {isPublishing
-                      ? "Publishing..."
-                      : `Publish Selected (${selectedArticles.size})`}
-                  </Button>
-                )}
-              </div>
-
-              <Separator />
-
-              <ScrollArea className="h-[400px] w-full">
-                <div className="space-y-3 p-4">
-                  {articles.map((article) => (
-                    <Card
-                      key={article.url}
-                      className={cn(
-                        "transition-all duration-200 hover:shadow-md",
-                        selectedArticles.has(article.id) &&
-                          "ring-2 ring-primary",
-                      )}
-                    >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start gap-3">
-                          <Checkbox
-                            id={`article-${article.url}`}
-                            checked={selectedArticles.has(article.id)}
-                            onCheckedChange={(checked) =>
-                              handleArticleSelect(
-                                article.id,
-                                checked as boolean,
-                              )
-                            }
-                            className="mt-1"
-                          />
-                          <div className="flex-1 space-y-2">
-                            <CardTitle className="text-lg leading-tight">
-                              {article.headline ?? "Untitled Article"}
-                            </CardTitle>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              {article.datePublished && (
-                                <Badge variant="outline">
-                                  {article.datePublished}
-                                </Badge>
-                              )}
-                              {article.inLanguage && (
-                                <Badge variant="secondary">
-                                  {article.inLanguage}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="pt-0">
-                        {article.mainImage?.url && (
-                          <div className="mb-3">
-                            <img
-                              src={article.mainImage.url}
-                              alt={article.headline ?? "Article image"}
-                              className="h-48 w-full rounded-md object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {article.articleBody && (
-                          <CardDescription className="line-clamp-3 text-sm leading-relaxed">
-                            {article.articleBody}
-                          </CardDescription>
-                        )}
-
-                        <div className="mt-3 border-t pt-3">
-                          <a
-                            href={article.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-muted-foreground transition-colors hover:text-primary"
-                          >
-                            View original article →
-                          </a>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export function CreatePostInput({ user }: { user: User }) {
   return (
     <AttachmentManager>
       <CreatePostComponent user={user} />
-      {env.NEXT_PUBLIC_ZYTE_ENABLED && <ScraperComponent />}
     </AttachmentManager>
   );
 }

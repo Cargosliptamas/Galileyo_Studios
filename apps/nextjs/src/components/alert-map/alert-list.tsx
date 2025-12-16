@@ -109,8 +109,8 @@ export function AlertList({
   return (
     <div className="space-y-3 p-2">
       <ScrollArea className="h-[calc(100vh-15rem)]">
-        <h1 className="mb-2 text-xl font-bold">Weather Layers</h1>
-        <div className="mb-2 grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <h1 className="mb-2 text-lg font-bold">Weather Layers</h1>
+        <div className="mb-2 grid grid-cols-2 gap-2 xl:grid-cols-3">
           {WeatherLayerIdsString.map((layerId) => {
             const isEnabled = weatherLayers[layerId];
             return (
@@ -123,30 +123,24 @@ export function AlertList({
                 onClick={() => handleWeatherLayerClick(layerId)}
                 key={layerId}
               >
-                <CardContent className="p-4">
-                  <div className="mb-2 flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <WeatherLayerIcon layerId={layerId} />
-                      <h4 className="text-sm font-semibold capitalize">
-                        {layerId.replace("weather_", "").replace(/_/g, " ")}
-                      </h4>
-                      {isEnabled && (
-                        <Check className="ml-auto h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      )}
-                    </div>
+                <CardContent className="p-2">
+                  <div className="flex items-center gap-1.5">
+                    <WeatherLayerIcon layerId={layerId} />
+                    <h4 className="truncate text-xs font-semibold capitalize">
+                      {layerId.replace("weather_", "").replace(/_/g, " ")}
+                    </h4>
+                    {isEnabled && (
+                      <Check className="ml-auto h-3 w-3 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+                    )}
                   </div>
-
-                  <p className="mb-2 text-sm text-muted-foreground">
-                    Preview of the {layerId} layer.
-                  </p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
 
-        <h1 className="mb-2 text-xl font-bold">{sortedAlerts.length} alerts</h1>
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <h1 className="mb-2 text-lg font-bold">{sortedAlerts.length} alerts</h1>
+        <div className="grid grid-cols-1 gap-2 xl:grid-cols-2 2xl:grid-cols-3">
           {sortedAlerts.length === 0 ? (
             <div className="col-span-full py-8 text-center text-muted-foreground">
               <p>No alerts match your current filters.</p>
@@ -157,6 +151,7 @@ export function AlertList({
                 key={alert.id}
                 alert={alert}
                 onAlertClick={onAlertClick}
+                compact
               />
             ))
           )}

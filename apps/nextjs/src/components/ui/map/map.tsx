@@ -30,28 +30,28 @@ const mapStyles = [
     styleUrl: "https://tiles.openfreemap.org/styles/liberty",
     description: "Liberty style from OpenFreemap",
   },
-  {
-    id: "voyager",
-    name: "Voyager",
-    image: "",
-    styleUrl: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
-    description: "Voyager style from Carto",
-  },
-  {
-    id: "positron",
-    name: "Positron",
-    image: "",
-    styleUrl: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-    description: "Positron style from Carto",
-  },
-  {
-    id: "dark-matter",
-    name: "Dark Matter",
-    image: "",
-    styleUrl:
-      "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-    description: "Dark style from Carto",
-  },
+  // {
+  //   id: "voyager",
+  //   name: "Voyager",
+  //   image: "",
+  //   styleUrl: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
+  //   description: "Voyager style from Carto",
+  // },
+  // {
+  //   id: "positron",
+  //   name: "Positron",
+  //   image: "",
+  //   styleUrl: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+  //   description: "Positron style from Carto",
+  // },
+  // {
+  //   id: "dark-matter",
+  //   name: "Dark Matter",
+  //   image: "",
+  //   styleUrl:
+  //     "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+  //   description: "Dark style from Carto",
+  // },
   {
     id: "arcgis-hybrid",
     name: "ArcGIS Hybrid",
@@ -69,6 +69,14 @@ const mapStyles = [
     description: "OSM style",
   },
 ] as const satisfies StyleItem[];
+
+const DEFAULT_MAP_STYLE = mapStyles[1];
+
+const DEFAULT_VIEW_STATE = {
+  longitude: -74.006,
+  latitude: 40.7128,
+  zoom: 0,
+};
 
 export type ViewState = MapLibreViewState;
 
@@ -136,8 +144,10 @@ export function Map({
   onMoveEnd,
   canClickMarkers = true,
 }: MapProps) {
-  const [mapStyle, setMapStyle] = useState<string>(mapStyles[0].styleUrl);
-  const [activeStyleId, setActiveStyleId] = useState<string>(mapStyles[0].id);
+  const [mapStyle, setMapStyle] = useState<string>(DEFAULT_MAP_STYLE.styleUrl);
+  const [activeStyleId, setActiveStyleId] = useState<string>(
+    DEFAULT_MAP_STYLE.id,
+  );
   const [selectedItem, setSelectedItem] = useState<MapData | null>(null);
 
   const handleMarkerClick = useCallback(
@@ -170,13 +180,14 @@ export function Map({
   return (
     <MapLibre
       id={id}
-      initialViewState={initialViewState}
+      initialViewState={initialViewState ?? DEFAULT_VIEW_STATE}
       onMove={(event) => handleViewStateChange(event.viewState)}
       onMoveEnd={(event) => onMoveEnd?.(event.viewState)}
       // style={{width: 600, height: 400}}
       mapStyle={mapStyle}
       attributionControl={{ compact: true, customAttribution: "Galileyo" }}
       cooperativeGestures={cooperativeGestures}
+      // projection="globe"
     >
       {data?.map((item, index) => (
         <MapMarker

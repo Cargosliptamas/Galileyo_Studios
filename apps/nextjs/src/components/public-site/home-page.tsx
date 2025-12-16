@@ -319,8 +319,18 @@ export async function HomePage() {
         className="bg-white py-20 dark:bg-slate-950 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 h-[500px] w-full text-center">
-            <HomeAlertMap alerts={alerts} />
+          <div className="mb-16 w-full text-center">
+            <div className="mb-4">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                INSource Map
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Influential News Source
+              </p>
+            </div>
+            <div className="h-[500px] w-full">
+              <HomeAlertMap alerts={alerts} />
+            </div>
           </div>
 
           <div className="mb-16 text-center">

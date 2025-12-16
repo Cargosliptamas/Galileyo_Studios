@@ -259,7 +259,10 @@ export function AlertMapPageContent({
           <div className="mx-auto px-4">
             <div className="flex items-center justify-between gap-4 py-4">
               <div>
-                <h1 className="text-2xl font-bold">Alerts Map</h1>
+                <h1 className="text-2xl font-bold">INSource Map</h1>
+                <p className="text-xs text-muted-foreground">
+                  Influential News Source
+                </p>
               </div>
               <div className="flex-1">
                 <LocationSearch

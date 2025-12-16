@@ -17,9 +17,16 @@ interface AlertCardProps {
   alert: Alert;
   onAlertClick?: (alert: Alert) => void;
   showFull?: boolean;
+  compact?: boolean;
 }
 
-function AlertItemHeader({ alert }: { alert: Alert }) {
+function AlertItemHeader({
+  alert,
+  compact = false,
+}: {
+  alert: Alert;
+  compact?: boolean;
+}) {
   const alertConfig = useMemo(
     () => ALERT_TYPE_CONFIG[alert.type],
     [alert.type],
@@ -35,8 +42,14 @@ function AlertItemHeader({ alert }: { alert: Alert }) {
           isVerified={false}
           isInfluencer={false}
           onlyAvatar={true}
+          size={compact ? "xs" : "sm"}
         />
-        <h4 className="text-sm font-semibold">
+        <h4
+          className={cn(
+            "line-clamp-1 font-semibold",
+            compact ? "text-xs" : "text-sm",
+          )}
+        >
           {alert.influencer_page?.title ?? ""}
         </h4>
       </div>
@@ -45,8 +58,18 @@ function AlertItemHeader({ alert }: { alert: Alert }) {
 
   return (
     <div className="flex items-center gap-2">
-      <IconComponent className="h-5 w-5" style={{ color: alertConfig.color }} />
-      <h4 className="text-sm font-semibold">{alert.title}</h4>
+      <IconComponent
+        className={cn(compact ? "h-4 w-4" : "h-5 w-5")}
+        style={{ color: alertConfig.color }}
+      />
+      <h4
+        className={cn(
+          "line-clamp-1 font-semibold",
+          compact ? "text-xs" : "text-sm",
+        )}
+      >
+        {alert.title}
+      </h4>
     </div>
   );
 }
@@ -55,6 +78,7 @@ export function AlertCard({
   alert,
   onAlertClick,
   showFull = false,
+  compact = false,
 }: AlertCardProps) {
   const alertConfig = ALERT_TYPE_CONFIG[alert.type];
   const severityConfig = SEVERITY_CONFIG[alert.severity];
@@ -64,13 +88,16 @@ export function AlertCard({
       className="transform cursor-pointer border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
       onClick={() => onAlertClick?.(alert)}
     >
-      <CardContent className="p-4">
-        <div className="mb-2 flex flex-col gap-2">
-          <AlertItemHeader alert={alert} />
+      <CardContent className={cn("p-4", compact && "p-2.5")}>
+        <div
+          className={cn("mb-2 flex flex-col gap-2", compact && "mb-1.5 gap-1")}
+        >
+          <AlertItemHeader alert={alert} compact={compact} />
           {!alert.is_influencer && (
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               <Badge
                 variant="secondary"
+                className={cn(compact && "px-1.5 py-0 text-[10px]")}
                 style={{
                   backgroundColor: severityConfig.color,
                   color: "white",
@@ -80,6 +107,7 @@ export function AlertCard({
               </Badge>
               <Badge
                 variant="secondary"
+                className={cn(compact && "px-1.5 py-0 text-[10px]")}
                 style={{
                   backgroundColor: alertConfig.color,
                   color: "white",
@@ -93,8 +121,9 @@ export function AlertCard({
 
         <p
           className={cn(
-            "mb-2 line-clamp-2 text-sm text-muted-foreground",
+            "mb-2 text-sm text-muted-foreground",
             showFull ? "line-clamp-none" : "line-clamp-2",
+            compact && "mb-1 line-clamp-1 text-xs",
           )}
         >
           {showFull ? (
@@ -104,21 +133,26 @@ export function AlertCard({
           )}
         </p>
 
-        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+        <div
+          className={cn(
+            "flex flex-col gap-1 text-xs text-muted-foreground",
+            compact && "gap-0.5 text-[10px]",
+          )}
+        >
           <p>
             <strong>Source:</strong> {alert.source}
           </p>
           <p>
             <strong>Time:</strong> {formatTimestamp(alert.timestamp)}
           </p>
-          {alert.location.address && (
+          {alert.location.address && !compact && (
             <p>
               <strong>Location:</strong> {alert.location.address}
             </p>
           )}
         </div>
 
-        {alert.affectedArea && alert.affectedArea.radius > 0 && (
+        {alert.affectedArea && alert.affectedArea.radius > 0 && !compact && (
           <div className="mt-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <span

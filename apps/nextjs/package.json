@@ -55,7 +55,7 @@
     "linkifyjs": "^4.3.2",
     "lucide-react": "^0.525.0",
     "map-gl-style-switcher": "^0.9.1",
-    "maplibre-gl": "^5.13.0",
+    "maplibre-gl": "^5.14.0",
     "motion": "^12.23.24",
     "next": "catalog:",
     "nodemailer": "^7.0.5",
