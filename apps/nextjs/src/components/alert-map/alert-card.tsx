@@ -42,7 +42,7 @@ function AlertItemHeader({
           isVerified={false}
           isInfluencer={false}
           onlyAvatar={true}
-          size={compact ? "xs" : "sm"}
+          size={compact ? "xs" : "small"}
         />
         <h4
           className={cn(
