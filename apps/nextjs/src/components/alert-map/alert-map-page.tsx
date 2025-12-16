@@ -123,6 +123,7 @@ export function AlertMapPageContent({
     severities: ["information", "low", "medium", "high", "critical"],
     isActive: true,
     showInfluencers,
+    showOnlyInfluencers: false,
   });
 
   // Get user's location on mount
@@ -151,6 +152,9 @@ export function AlertMapPageContent({
 
       // Check if alert is active (if filter is enabled)
       if (filters.isActive && !alert.isActive) return false;
+
+      // If showOnlyInfluencers is true, only show influencers
+      if (filters.showOnlyInfluencers && !alert.is_influencer) return false;
 
       if (!filters.showInfluencers && alert.is_influencer) return false;
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Button } from "@galileyo/ui/button";
 import { Checkbox } from "@galileyo/ui/checkbox";
 import { Label } from "@galileyo/ui/label";
 
@@ -23,8 +24,12 @@ export function AlertFiltersComponent({
       severities: Object.keys(SEVERITY_CONFIG) as AlertSeverity[],
       isActive: true,
       showInfluencers: true,
+      showOnlyInfluencers: false,
     },
   );
+
+  const allAlertTypes = Object.keys(ALERT_TYPE_CONFIG) as AlertType[];
+  const allSeverities = Object.keys(SEVERITY_CONFIG) as AlertSeverity[];
 
   const handleTypeToggle = (type: AlertType) => {
     const newTypes = filters.types.includes(type)
@@ -61,13 +66,118 @@ export function AlertFiltersComponent({
     onFiltersChange(newFilters);
   };
 
+  const handleSelectAllTypes = () => {
+    const newFilters = { ...filters, types: allAlertTypes };
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
+  const handleDeselectAllTypes = () => {
+    const newFilters = { ...filters, types: [] };
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
+  const handlePresetFilter = (preset: "all" | "influencers" | "alerts") => {
+    let newFilters: AlertFilters;
+    switch (preset) {
+      case "all":
+        newFilters = {
+          types: allAlertTypes,
+          severities: allSeverities,
+          isActive: true,
+          showInfluencers: true,
+          showOnlyInfluencers: false,
+        };
+        break;
+      case "influencers":
+        newFilters = {
+          types: allAlertTypes, // Keep all types selected so influencers pass type check
+          severities: allSeverities,
+          isActive: true,
+          showInfluencers: true,
+          showOnlyInfluencers: true, // Only show influencers
+        };
+        break;
+      case "alerts":
+        newFilters = {
+          types: allAlertTypes,
+          severities: allSeverities,
+          isActive: true,
+          showInfluencers: false,
+          showOnlyInfluencers: false,
+        };
+        break;
+    }
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
   return (
     <div className="space-y-4">
-      {/* Alert Types */}
+      {/* Quick Filter Presets */}
       <div>
         <h4 className="mb-2 text-sm font-medium text-muted-foreground">
-          Alert Types
+          Quick Filters
         </h4>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handlePresetFilter("all")}
+            className="text-xs"
+          >
+            All
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handlePresetFilter("influencers")}
+            className="text-xs"
+          >
+            Influencers Only
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handlePresetFilter("alerts")}
+            className="text-xs"
+          >
+            Alerts Only
+          </Button>
+        </div>
+      </div>
+
+      {/* Alert Types */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Alert Types
+          </h4>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleSelectAllTypes}
+              className="h-6 px-2 text-xs"
+            >
+              Select All
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleDeselectAllTypes}
+              className="h-6 px-2 text-xs"
+            >
+              Deselect All
+            </Button>
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(ALERT_TYPE_CONFIG).map(([type, config]) => {
             const IconComponent = config.icon;

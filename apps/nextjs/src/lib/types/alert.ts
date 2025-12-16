@@ -14,6 +14,7 @@ export interface AlertFilters {
   severities: AlertSeverity[];
   isActive: boolean;
   showInfluencers: boolean;
+  showOnlyInfluencers?: boolean;
   dateRange?: {
     start: string;
     end: string;
