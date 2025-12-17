@@ -31,6 +31,7 @@ export function InfluencerFeedList({ id, type }: Props) {
     trpc.feed.getNewsBySubscriptionOrFollowerList.infiniteQueryOptions({
       id,
       limit: FEED_LIMIT,
+      skip_subscription_check: true,
       cursor: 1,
       type,
     });

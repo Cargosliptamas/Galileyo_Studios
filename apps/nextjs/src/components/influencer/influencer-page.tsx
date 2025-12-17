@@ -54,6 +54,7 @@ export default function InfluencerPage({
     trpc.feed.getNewsBySubscriptionOrFollowerList.infiniteQueryOptions({
       id: info.id,
       type: info.type,
+      skip_subscription_check: true,
       limit: FEED_LIMIT,
       cursor: 1,
     }),

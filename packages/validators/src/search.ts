@@ -6,6 +6,7 @@ export const SearchResultUserSchema = z.object({
   image: z.string().nullish().optional(),
   address: z.string().nullish().optional(),
   phone: z.string().nullish().optional(),
+  type: z.enum(["user", "influencer_page"]),
 });
 
 export const SearchResultSchema = z.object({

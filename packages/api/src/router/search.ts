@@ -17,7 +17,7 @@ export const searchRouter = {
     )
     .mutation(async ({ ctx, input }) => {
       const feed = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/search/index`,
+        `${process.env.NEXT_PUBLIC_API_URL}/search/with-influencer-pages`,
         {
           method: "POST",
           headers: {

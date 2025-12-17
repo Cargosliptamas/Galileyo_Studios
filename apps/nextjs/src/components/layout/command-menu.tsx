@@ -28,7 +28,7 @@ import {
 
 import { useDebounce } from "~/hooks/use-debounce";
 import { fuzzySearch } from "~/lib/fuzzy-search";
-import { getUserImageUrl } from "~/lib/image";
+import { getInfluencerImageUrl, getUserImageUrl } from "~/lib/image";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "../feed/user-avatar";
 import { navigationLinks } from "./navigation-items";
@@ -145,7 +145,11 @@ export default function CommandMenu() {
   const handleUserSelect = useCallback(
     (user: SearchResultUserType) => {
       // Navigate to user profile or handle user selection
-      router.push(`/profile/${user.id}`);
+      if (user.type === "user") {
+        router.push(`/profile/${user.id}`);
+      } else {
+        router.push(`/profile/by-subscription/${user.id}`);
+      }
       setOpen(false);
       setQuery("");
       setSearchResults([]);
@@ -257,34 +261,67 @@ export default function CommandMenu() {
               {/* Search Results */}
               {searchResults.length > 0 && (
                 <>
+                  <CommandGroup heading="Influencers">
+                    {searchResults
+                      .filter((user) => user.type === "influencer_page")
+                      .map((user) => (
+                        <CommandItem
+                          key={`user-${user.id}`}
+                          value={`user-${user.id}`}
+                          onSelect={() => handleUserSelect(user)}
+                        >
+                          <UserAvatar
+                            name={user.name}
+                            image={getInfluencerImageUrl(user.image)}
+                            isVerified={false}
+                            isInfluencer={true}
+                            onlyAvatar={true}
+                            size="small"
+                          />
+                          <span>{user.name}</span>
+                          {user.address && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {user.address}
+                            </span>
+                          )}
+                          {user.phone && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {user.phone}
+                            </span>
+                          )}
+                        </CommandItem>
+                      ))}
+                  </CommandGroup>
                   <CommandGroup heading="Users">
-                    {searchResults.map((user) => (
-                      <CommandItem
-                        key={`user-${user.id}`}
-                        value={`user-${user.id}`}
-                        onSelect={() => handleUserSelect(user)}
-                      >
-                        <UserAvatar
-                          name={user.name}
-                          image={getUserImageUrl(user.image)}
-                          isVerified={false}
-                          isInfluencer={false}
-                          onlyAvatar={true}
-                          size="small"
-                        />
-                        <span>{user.name}</span>
-                        {user.address && (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {user.address}
-                          </span>
-                        )}
-                        {user.phone && (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {user.phone}
-                          </span>
-                        )}
-                      </CommandItem>
-                    ))}
+                    {searchResults
+                      .filter((user) => user.type === "user")
+                      .map((user) => (
+                        <CommandItem
+                          key={`user-${user.id}`}
+                          value={`user-${user.id}`}
+                          onSelect={() => handleUserSelect(user)}
+                        >
+                          <UserAvatar
+                            name={user.name}
+                            image={getUserImageUrl(user.image)}
+                            isVerified={false}
+                            isInfluencer={false}
+                            onlyAvatar={true}
+                            size="small"
+                          />
+                          <span>{user.name}</span>
+                          {user.address && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {user.address}
+                            </span>
+                          )}
+                          {user.phone && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {user.phone}
+                            </span>
+                          )}
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                   <CommandSeparator />
                 </>

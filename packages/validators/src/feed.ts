@@ -163,6 +163,7 @@ export const GetLatestNewsParams = z.object({
 
 export const GetBySubscriptionParams = z.object({
   id: z.number(),
+  skip_subscription_check: z.boolean().optional(),
   type: z.enum(["subscription", "followerList"]),
   limit: z.number().optional().default(10),
   cursor: z.number().optional().default(1),

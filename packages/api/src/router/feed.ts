@@ -251,7 +251,7 @@ export const feedRouter = {
     .query(async ({ ctx, input }) => {
       const config: {
         url: string;
-        body: Record<string, number | string>;
+        body: Record<string, number | string | boolean | undefined>;
         headers: Record<string, string>;
       } = {
         url: ``,
@@ -270,6 +270,7 @@ export const feedRouter = {
           config.url = `${process.env.NEXT_PUBLIC_API_URL}/default/news-by-subscription`;
           config.body = {
             id_subscription: input.id,
+            skip_subscription_check: input.skip_subscription_check,
           };
           break;
         case "followerList":
