@@ -54,7 +54,7 @@ export function AlertMapPageContent({
 
   const [showInfluencers] = useQueryState(
     "showInfluencers",
-    parseAsBoolean.withDefault(false),
+    parseAsBoolean.withDefault(true),
   );
   const [latitude] = useQueryState("latitude", parseAsFloat);
   const [longitude] = useQueryState("longitude", parseAsFloat);
