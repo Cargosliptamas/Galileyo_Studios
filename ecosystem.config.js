@@ -1,6 +1,11 @@
 module.exports = {
   apps: [
     {
+      name: "cron",
+      cwd: "./apps/cron",
+      script: "pnpm start"
+    },
+    {
       name: "frontend",
       cwd: "./apps/nextjs",
       script: "pnpm start"

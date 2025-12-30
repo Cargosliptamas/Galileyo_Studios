@@ -15,8 +15,6 @@ import {
   longtext,
   mediumtext,
   mysqlTable,
-  // mysqlSchema,
-  // AnyMySqlColumn,
   primaryKey,
   smallint,
   text,
@@ -25,39 +23,6 @@ import {
   unique,
   varchar,
 } from "drizzle-orm/mysql-core";
-
-export const emergencyAlerts = mysqlTable(
-  "emergency_alerts",
-  {
-    id: bigint({ mode: "number" }).autoincrement().notNull(),
-    uuid: varchar({ length: 36 }).notNull().unique(),
-    hazardName: varchar("hazard_name", { length: 255 }).notNull(),
-    hazardId: varchar("hazard_id", { length: 255 }).notNull(),
-    typeId: varchar("type_id", { length: 64 }).notNull(),
-    description: text("description").notNull(),
-    severityId: varchar("severity_id", { length: 64 }).notNull(),
-    categoryId: varchar("category_id", { length: 64 }).notNull(),
-    autoexpire: tinyint().notNull(),
-    areabriefUrl: varchar("areabrief_url", { length: 255 }),
-    roles: json().notNull(),
-    active: tinyint().notNull(),
-    latitude: decimal({ precision: 10, scale: 8 }).notNull(),
-    longitude: decimal({ precision: 11, scale: 8 }).notNull(),
-
-    // location: point({ srid: 4326 }).notNull(),
-    areaWkt: mediumtext("area_wkt"),
-    // area: multipolygon({ srid: 4326 }).notNull(),
-    externalCreationDate: timestamp("external_creation_date", {
-      mode: "string",
-    }),
-    startDate: timestamp("start_date", { mode: "string" }),
-    endDate: timestamp("end_date", { mode: "string" }),
-    lastUpdate: timestamp("last_update", { mode: "string" }),
-    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
-    updatedAt: timestamp("updated_at", { mode: "string" }),
-  },
-  (table) => [primaryKey({ columns: [table.id], name: "emergency_alert_id" })],
-);
 
 export const account = mysqlTable(
   "account",
@@ -331,6 +296,18 @@ export const authRule = mysqlTable(
   (table) => [primaryKey({ columns: [table.name], name: "auth_rule_name" })],
 );
 
+export const bookmarkedPosts = mysqlTable(
+  "bookmarked_posts",
+  {
+    id: int().autoincrement().notNull(),
+    userId: bigint("user_id", { mode: "number" }).notNull(),
+    postId: bigint("post_id", { mode: "number" }).notNull(),
+    createdAt: datetime("created_at", { mode: "string" }).notNull(),
+    updatedAt: datetime("updated_at", { mode: "string" }),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "bookmarked_posts_id" })],
+);
+
 export const bpSubscription = mysqlTable(
   "bp_subscription",
   {
@@ -546,12 +523,12 @@ export const conversationMessage = mysqlTable(
       onUpdate: "restrict",
     }),
     message: text(),
-    isSystem: tinyint("is_system").default(0).notNull(),
-    metadata: json("metadata"),
     createdAt: datetime("created_at", { mode: "string" }).notNull(),
     updatedAt: datetime("updated_at", { mode: "string" }),
     receivedAt: datetime("received_at", { mode: "string" }),
     token: varchar({ length: 255 }),
+    isSystem: tinyint("is_system").default(0).notNull(),
+    metadata: json(),
   },
   (table) => [
     primaryKey({ columns: [table.id], name: "conversation_message_id" }),
@@ -734,6 +711,60 @@ export const emailTemplate = mysqlTable(
   (table) => [
     primaryKey({ columns: [table.id], name: "email_template_id" }),
     unique("name").on(table.name),
+  ],
+);
+
+export const emergencyAlerts = mysqlTable(
+  "emergency_alerts",
+  {
+    id: int().autoincrement().notNull(),
+    uuid: varchar({ length: 36 }).notNull(),
+    hazardName: varchar("hazard_name", { length: 255 }).notNull(),
+    hazardId: varchar("hazard_id", { length: 255 }).notNull(),
+    typeId: varchar("type_id", { length: 64 }).notNull(),
+    description: text().notNull(),
+    severityId: varchar("severity_id", { length: 64 }).notNull(),
+    categoryId: varchar("category_id", { length: 64 }).notNull(),
+    autoexpire: tinyint().notNull(),
+    areabriefUrl: varchar("areabrief_url", { length: 255 }),
+    roles: json().notNull(),
+    active: tinyint().notNull(),
+    latitude: decimal({ precision: 10, scale: 8 }).notNull(),
+    longitude: decimal({ precision: 11, scale: 8 }).notNull(),
+    // TODO: use point type when drizzle-orm supports it
+    area: varchar("area", { length: 255 }).notNull(),
+    // TODO: use point type when drizzle-orm supports it
+    location: varchar("location", { length: 255 }).notNull(),
+    areaWkt: mediumtext("area_wkt"),
+    // Warning: Can't parse multipolygon from database
+    // multipolygonType: multipolygon("area").notNull(),
+    externalCreationDate: timestamp("external_creation_date", {
+      mode: "string",
+    }),
+    startDate: timestamp("start_date", { mode: "string" }),
+    endDate: timestamp("end_date", { mode: "string" }),
+    lastUpdate: timestamp("last_update", { mode: "string" }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [
+    index("spx_emergency_alerts_area").on(table.area),
+    index("spx_emergency_alerts_location").on(table.location),
+    primaryKey({ columns: [table.id], name: "emergency_alerts_id" }),
+    unique("uuid").on(table.uuid),
+  ],
+);
+
+export const emergencyProcess = mysqlTable(
+  "emergency_process",
+  {
+    id: int().autoincrement().notNull(),
+    uuid: varchar({ length: 36 }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "emergency_process_id" }),
+    unique("uuid").on(table.uuid),
   ],
 );
 
@@ -1194,6 +1225,18 @@ export const moneyTransaction = mysqlTable(
   ],
 );
 
+export const mutedSubscriptions = mysqlTable(
+  "muted_subscriptions",
+  {
+    id: int().autoincrement().notNull(),
+    idSubscription: bigint("id_subscription", { mode: "number" }).notNull(),
+    userId: bigint("user_id", { mode: "number" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "muted_subscriptions_id" }),
+  ],
+);
+
 export const news = mysqlTable(
   "news",
   {
@@ -1424,7 +1467,7 @@ export const register = mysqlTable(
     isUnfinishedSignup: tinyint("is_unfinished_signup").default(0),
     createdAt: datetime("created_at", { mode: "string" }).notNull(),
     updatedAt: datetime("updated_at", { mode: "string" }),
-    selectedPlan: bigint("selected_plan", { mode: "number" }),
+    selectedPlan: int("selected_plan"),
   },
   (table) => [primaryKey({ columns: [table.id], name: "register_id" })],
 );
@@ -1457,6 +1500,32 @@ export const reportReferral = mysqlTable(
     primaryKey({ columns: [table.id], name: "report_referral_id" }),
     unique("UK_report_referral_month").on(table.period),
   ],
+);
+
+export const reportedPosts = mysqlTable(
+  "reported_posts",
+  {
+    id: int().autoincrement().notNull(),
+    idNews: int("id_news").notNull(),
+    reason: varchar({ length: 255 }).notNull(),
+    additionalText: varchar("additional_text", { length: 255 }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+    userId: bigint("user_id", { mode: "number" }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "reported_posts_id" })],
+);
+
+export const scrapedArticles = mysqlTable(
+  "scraped_articles",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    hash: varchar({ length: 255 }).notNull(),
+    url: varchar({ length: 255 }).notNull(),
+    headline: varchar({ length: 255 }).notNull(),
+    articleBody: text().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "scraped_articles_id" })],
 );
 
 export const service = mysqlTable(
@@ -1573,6 +1642,9 @@ export const smsPool = mysqlTable(
     shortBody: varchar("short_body", { length: 160 }),
     url: varchar({ length: 512 }),
     isBan: tinyint("is_ban").default(0).notNull(),
+    morphClass: varchar("morph_class", { length: 255 }),
+    morphId: bigint("morph_id", { mode: "number" }),
+    metaData: json("meta_data"),
   },
   (table) => [primaryKey({ columns: [table.id], name: "sms_pool_id" })],
 );
@@ -1833,6 +1905,8 @@ export const subscription = mysqlTable(
     type: tinyint().default(0),
     showReactions: tinyint("show_reactions").default(0).notNull(),
     showComments: tinyint("show_comments").default(0).notNull(),
+    idUser: bigint("id_user", { mode: "number" }),
+    isZipRequired: tinyint("is_zip_required").default(0).notNull(),
   },
   (table) => [primaryKey({ columns: [table.id], name: "subscription_id" })],
 );
@@ -1967,6 +2041,17 @@ export const user = mysqlTable(
     primaryKey({ columns: [table.id], name: "user_id" }),
     unique("password_reset_token").on(table.passwordResetToken),
   ],
+);
+
+export const userAbilities = mysqlTable(
+  "user_abilities",
+  {
+    id: int().autoincrement().notNull(),
+    userId: bigint("user_id", { mode: "number" }).notNull(),
+    action: varchar({ length: 255 }).notNull(),
+    subject: varchar({ length: 255 }),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "user_abilities_id" })],
 );
 
 export const userFollowerAlert = mysqlTable(

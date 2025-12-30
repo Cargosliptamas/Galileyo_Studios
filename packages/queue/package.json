@@ -1,0 +1,32 @@
+{
+  "name": "@galileyo/queue",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "bullmq": "^5.66.4",
+    "node-schedule": "^2.1.1"
+  },
+  "devDependencies": {
+    "@galileyo/eslint-config": "workspace:*",
+    "@galileyo/prettier-config": "workspace:*",
+    "@galileyo/tsconfig": "workspace:*",
+    "@types/node-schedule": "^2.1.7",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@galileyo/prettier-config"
+}
