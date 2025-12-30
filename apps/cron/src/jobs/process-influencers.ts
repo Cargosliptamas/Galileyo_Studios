@@ -22,7 +22,7 @@ async function processInfluencers() {
 
 export default {
   options: {
-    scheduleTime: "0 */1 * * *",
+    scheduleTime: "0 */6 * * *",
     startup: true,
   },
   process: processInfluencers,
