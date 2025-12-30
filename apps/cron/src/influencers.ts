@@ -67,7 +67,7 @@ const influencers: Influencer[] = [
     urls: ["https://rumble.com/c/TheInfoWarrior/videos"],
   },
   {
-    id: 21122,
+    id: 21123,
     urls: ["https://tomrenz.com/episodes/"],
   },
   {
