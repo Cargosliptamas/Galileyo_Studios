@@ -78,7 +78,7 @@ export default function InfluencerPage({
     <HydrateClient>
       <div className="mx-auto max-w-2xl px-4 py-4">
         <Card className="transform border-slate-200 bg-white/50 dark:border-slate-700 dark:bg-slate-800/50">
-          <div className="relative">
+          <div className="relative min-h-24">
             <ImageWithFallback
               src={headerImage}
               fallback={
