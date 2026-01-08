@@ -90,7 +90,7 @@ export function InfluencerActions({ id, isLoggedIn, type }: Props) {
 
   if (isFetching || mutation.isPending) {
     return (
-      <Button disabled>
+      <Button disabled className="rounded-full px-4 font-semibold">
         <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />
         ...
       </Button>

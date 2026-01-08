@@ -27,6 +27,8 @@ export interface ProfileInfo {
   isSubscribed: boolean;
   image: string | null;
   ownProfile?: boolean;
+  headerImage?: string | null;
+  socialLinks?: string[] | null;
 }
 
 export async function getProfileInfoBySubscription(
@@ -75,6 +77,8 @@ export async function getProfileInfoBySubscription(
     alias: influencerPage?.alias ?? null,
     isSubscribed,
     image: influencerPage?.image ?? null,
+    headerImage: influencerPage?.headerImage ?? null,
+    socialLinks: influencerPage?.socialLinks ?? null,
   };
 }
 
@@ -122,6 +126,8 @@ export async function getProfileInfoByAlias(
     alias: data.alias,
     isSubscribed,
     image: data.image,
+    headerImage: data.headerImage,
+    socialLinks: data.socialLinks,
   };
 }
 

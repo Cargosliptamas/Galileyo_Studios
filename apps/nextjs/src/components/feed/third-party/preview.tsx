@@ -35,7 +35,7 @@ export default function PreviewContent({ link }: ThirdPartyContentProps) {
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-500 hover:text-blue-600"
+        className="flex max-w-xs items-center gap-2 break-words text-blue-500 hover:text-blue-600 md:max-w-full"
       >
         <span className="flex-1 truncate">{link}</span>
         <ExternalLink className="h-4 w-4" />

@@ -875,6 +875,8 @@ export const influencerPage = mysqlTable(
     image: varchar({ length: 63 }),
     createdAt: datetime("created_at", { mode: "string" }).notNull(),
     updatedAt: datetime("updated_at", { mode: "string" }),
+    headerImage: varchar("header_image", { length: 255 }),
+    socialLinks: json("social_links").$type<string[]>(),
   },
   (table) => [
     primaryKey({ columns: [table.id], name: "influencer_page_id" }),
