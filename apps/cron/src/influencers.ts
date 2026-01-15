@@ -59,6 +59,10 @@ const influencers: Influencer[] = [
     },
   },
   {
+    id: 20789,
+    urls: ["https://www.thrivetimeshow.com/business-coach-podcast/"],
+  },
+  {
     id: 21119,
     urls: ["https://courtenayturner.com/"],
   },

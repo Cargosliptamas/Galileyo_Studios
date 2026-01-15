@@ -1,5 +1,4 @@
 import { cache, Suspense } from "react";
-import { Globe } from "lucide-react";
 
 import { Card, CardContent, Skeleton } from "@galileyo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@galileyo/ui/avatar";
@@ -18,6 +17,7 @@ import { ImageWithFallback } from "../image-with-fallback";
 import { ExpandableDescription } from "./expandable-description";
 import { InfluencerActions } from "./influencer-actions";
 import { InfluencerFeedList } from "./influencer-feed-list";
+import { SocialLink } from "./social-link";
 
 export const getProfileInfo = cache(
   async (
@@ -136,15 +136,7 @@ export default function InfluencerPage({
                       return null;
                     }
 
-                    return (
-                      <div
-                        className="flex items-center gap-1.5 text-sm"
-                        key={index}
-                      >
-                        <Globe className="h-3.5 w-3.5 flex-shrink-0" />
-                        <span className="truncate">{link}</span>
-                      </div>
-                    );
+                    return <SocialLink key={index} link={link} />;
                   })}
                 </div>
               )}
@@ -154,7 +146,11 @@ export default function InfluencerPage({
 
         <div className="mt-4">
           <Suspense fallback={<FeedCardSkeleton />}>
-            <InfluencerFeedList id={info.id} type={info.type} />
+            <InfluencerFeedList
+              id={info.id}
+              type={info.type}
+              isLoggedIn={isLoggedIn}
+            />
           </Suspense>
         </div>
       </div>

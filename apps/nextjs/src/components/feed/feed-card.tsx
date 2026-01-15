@@ -123,6 +123,7 @@ export default function FeedCard({
   isMocked = false,
   isOnAlertMap = false,
   className,
+  actionsDisabled = false,
 }: {
   item: FeedItem;
   isMocked?: boolean;
@@ -130,6 +131,7 @@ export default function FeedCard({
   getQueryKeysOnError: () => QueryKey;
   isOnAlertMap?: boolean;
   className?: string;
+  actionsDisabled?: boolean;
 }) {
   const router = useRouter();
   const { ref, inView } = useInView();
@@ -511,6 +513,10 @@ export default function FeedCard({
   }, [isMocked, item.id, item.id_user]);
 
   const hasActions = useMemo(() => {
+    if (actionsDisabled) {
+      return false;
+    }
+
     return (
       item.type !== "financial" &&
       item.type !== "not_sended_yet" &&

@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
+  - scripts/*
 
 catalog:
   '@better-auth/expo': 1.3.34

@@ -18,9 +18,9 @@ import FeedCard from "../feed/feed-card";
 import FeedCardSkeleton from "../feed/feed-card-skeleton";
 import ReportModal from "../feed/report-modal";
 
-type Props = Pick<ProfileInfo, "id" | "type">;
+type Props = Pick<ProfileInfo, "id" | "type"> & { isLoggedIn?: boolean };
 
-export function InfluencerFeedList({ id, type }: Props) {
+export function InfluencerFeedList({ id, type, isLoggedIn }: Props) {
   const trpc = useTRPC();
   const { ref, inView } = useInView();
 
@@ -121,6 +121,7 @@ export function InfluencerFeedList({ id, type }: Props) {
                     item={item}
                     getQueryKeys={getQueryKeys}
                     getQueryKeysOnError={getQueryKeysOnError}
+                    actionsDisabled={!isLoggedIn}
                   />
                 ))}
               </Fragment>
