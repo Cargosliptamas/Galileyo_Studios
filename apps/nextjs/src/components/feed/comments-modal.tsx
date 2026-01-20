@@ -46,6 +46,8 @@ import { Separator } from "@galileyo/ui/separator";
 import { toast } from "@galileyo/ui/toast";
 
 import { authClient } from "~/auth/client";
+import { useAbility } from "~/hooks/use-ability";
+import { usePlanSwitch } from "~/hooks/use-plan-switch";
 import { getProfilePicture } from "~/lib/user";
 import { useTRPC } from "~/trpc/react";
 import { UserAvatar } from "./user-avatar";
@@ -69,6 +71,7 @@ function CommentComponent({
   setReplyText: (text: string) => void;
   handleSubmitReply: (parentId: number) => void;
 }) {
+  const ability = useAbility();
   const [isExpanded, setIsExpanded] = useState(false);
   const trpc = useTRPC();
 
@@ -144,7 +147,7 @@ function CommentComponent({
               {comment.likes > 0 && <span>{formatNumber(comment.likes)}</span>}
             </button> */}
 
-            {!isReply && (
+            {!isReply && ability.can("use", "can_comment_on_posts") && (
               <button
                 onClick={() =>
                   setReplyingTo(replyingTo === comment.id ? null : comment.id)
@@ -178,65 +181,66 @@ function CommentComponent({
           </div>
 
           {/* Reply Input */}
-          {replyingTo === comment.id && (
-            <div className="mt-3 flex gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={getProfilePicture(session.user) ?? ""} />
-                <AvatarFallback className="bg-slate-700 text-white">
-                  {session.user.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <textarea
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder={`Reply to ${comment.user.full_name}...`}
-                  className="w-full resize-none rounded border border-slate-300 bg-slate-50 p-2 text-sm text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-400"
-                  rows={2}
-                />
-                <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Popover modal={true}>
-                      <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Smile className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-fit p-0">
-                        <EmojiPicker
-                          className="h-[342px]"
-                          locale="en"
-                          onEmojiSelect={({ emoji }) => {
-                            setReplyText(`${replyText}${emoji}`);
-                          }}
-                        >
-                          <EmojiPickerSearch />
-                          <EmojiPickerContent />
-                          <EmojiPickerFooter />
-                        </EmojiPicker>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setReplyingTo(null)}
-                      className="px-3 py-1 text-sm text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => handleSubmitReply(comment.id)}
-                      className="flex items-center gap-1 rounded bg-cyan-500 px-3 py-1 text-sm text-white transition-colors hover:bg-cyan-400"
-                      disabled={!replyText.trim()}
-                    >
-                      <Send className="h-3 w-3" />
-                      Reply
-                    </button>
+          {ability.can("use", "can_comment_on_posts") &&
+            replyingTo === comment.id && (
+              <div className="mt-3 flex gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={getProfilePicture(session.user) ?? ""} />
+                  <AvatarFallback className="bg-slate-700 text-white">
+                    {session.user.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder={`Reply to ${comment.user.full_name}...`}
+                    className="w-full resize-none rounded border border-slate-300 bg-slate-50 p-2 text-sm text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-400"
+                    rows={2}
+                  />
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Popover modal={true}>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Smile className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-fit p-0">
+                          <EmojiPicker
+                            className="h-[342px]"
+                            locale="en"
+                            onEmojiSelect={({ emoji }) => {
+                              setReplyText(`${replyText}${emoji}`);
+                            }}
+                          >
+                            <EmojiPickerSearch />
+                            <EmojiPickerContent />
+                            <EmojiPickerFooter />
+                          </EmojiPicker>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setReplyingTo(null)}
+                        className="px-3 py-1 text-sm text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleSubmitReply(comment.id)}
+                        className="flex items-center gap-1 rounded bg-cyan-500 px-3 py-1 text-sm text-white transition-colors hover:bg-cyan-400"
+                        disabled={!replyText.trim()}
+                      >
+                        <Send className="h-3 w-3" />
+                        Reply
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
@@ -337,6 +341,8 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [replyText, setReplyText] = useState("");
 
   const { data: session } = authClient.useSession();
+  const ability = useAbility();
+  const { showPlansModal } = usePlanSwitch();
 
   const trpc = useTRPC();
   const { data: comments, isLoading } = useInfiniteQuery({
@@ -449,62 +455,86 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         <Separator className="bg-slate-700" />
 
         {/* Comment Input */}
-        <div className="mb-4 flex gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={getProfilePicture(session.user) ?? ""} />
-            <AvatarFallback className="bg-slate-700 text-white">
-              {session.user.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="w-full resize-none rounded-lg border border-slate-300 bg-slate-50 p-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
-              rows={3}
-              maxLength={280}
-              disabled={isLoading}
-            />
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Smile className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-fit p-0">
-                    <EmojiPicker
-                      className="h-[342px]"
-                      locale="en"
-                      onEmojiSelect={({ emoji }) => {
-                        setNewComment((prev) => `${prev}${emoji}`);
-                      }}
-                    >
-                      <EmojiPickerSearch />
-                      <EmojiPickerContent />
-                      <EmojiPickerFooter />
-                    </EmojiPicker>
-                  </PopoverContent>
-                </Popover>
-                <span className="text-sm text-slate-500">
-                  {newComment.length}/280
-                </span>
+        {ability.can("use", "can_comment_on_posts") ? (
+          <div className="mb-4 flex gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={getProfilePicture(session.user) ?? ""} />
+              <AvatarFallback className="bg-slate-700 text-white">
+                {session.user.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Add a comment..."
+                className="w-full resize-none rounded-lg border border-slate-300 bg-slate-50 p-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+                rows={3}
+                maxLength={280}
+                disabled={isLoading}
+              />
+              <div className="mt-2 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Popover modal={true}>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Smile className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-fit p-0">
+                      <EmojiPicker
+                        className="h-[342px]"
+                        locale="en"
+                        onEmojiSelect={({ emoji }) => {
+                          setNewComment((prev) => `${prev}${emoji}`);
+                        }}
+                      >
+                        <EmojiPickerSearch />
+                        <EmojiPickerContent />
+                        <EmojiPickerFooter />
+                      </EmojiPicker>
+                    </PopoverContent>
+                  </Popover>
+                  <span className="text-sm text-slate-500">
+                    {newComment.length}/280
+                  </span>
+                </div>
+                <button
+                  onClick={handleSubmitComment}
+                  className="flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 font-medium text-white transition-colors hover:bg-cyan-400"
+                  disabled={
+                    !newComment.trim() || isLoading || createComment.isPending
+                  }
+                >
+                  <Send className="h-4 w-4" />
+                  Comment
+                </button>
               </div>
-              <button
-                onClick={handleSubmitComment}
-                className="flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 font-medium text-white transition-colors hover:bg-cyan-400"
-                disabled={
-                  !newComment.trim() || isLoading || createComment.isPending
-                }
-              >
-                <Send className="h-4 w-4" />
-                Comment
-              </button>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-200">
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <p className="font-medium">
+                  You can&apos;t comment on posts on your current plan.
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  To start commenting, please switch to a plan that includes
+                  commenting capabilities.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                type="button"
+                onClick={() => showPlansModal(true)}
+              >
+                Switch plan
+              </Button>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -67,6 +67,8 @@ import { toast } from "@galileyo/ui/toast";
 import type { Location } from "../map/location-search";
 import type { User } from "~/auth/client";
 import type { Profile } from "~/hooks/use-profiles";
+import { useAbility } from "~/hooks/use-ability";
+import { usePlanSwitch } from "~/hooks/use-plan-switch";
 import { useProfiles } from "~/hooks/use-profiles";
 import { getProfilePicture } from "~/lib/user";
 import { useTRPC } from "~/trpc/react";
@@ -162,6 +164,8 @@ function ProfilePreviewContent({
 }
 
 function CreatePostComponent({ user }: { user: User }) {
+  const ability = useAbility();
+  const { showPlansModal } = usePlanSwitch();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { clear: clearAttachments } = useAttachmentManager();
@@ -268,6 +272,30 @@ function CreatePostComponent({ user }: { user: User }) {
     },
     [],
   );
+
+  if (!ability.can("use", "can_post")) {
+    return (
+      <div className="flex w-full items-center justify-between gap-4 rounded-lg border bg-muted/40 px-4 py-3 text-sm">
+        <div className="space-y-1">
+          <p className="font-medium text-foreground">
+            You can&apos;t create posts on your current plan.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            To start posting, please switch to a plan that includes posting
+            capabilities.
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          type="button"
+          onClick={() => showPlansModal(true)}
+        >
+          Switch plan
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-row gap-2">

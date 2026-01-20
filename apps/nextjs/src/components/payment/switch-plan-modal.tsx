@@ -55,6 +55,7 @@ export function SwitchPlanModal({
   const switchPlan = useMutation(
     trpc.payment.switchPlan.mutationOptions({
       onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.profile.pathFilter());
         await queryClient.invalidateQueries(trpc.payment.pathFilter());
         toast.success("Plan switched");
         onOpenChange(false);

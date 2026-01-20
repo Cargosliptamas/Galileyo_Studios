@@ -2,7 +2,7 @@
 
 import { format, subDays } from "date-fns";
 
-import { and, desc, eq, gt, gte, like, sql } from "@galileyo/db";
+import { and, asc, desc, eq, gt, gte, like, sql } from "@galileyo/db";
 import { db } from "@galileyo/db/client";
 import {
   emergencyAlerts,
@@ -41,11 +41,24 @@ const additionalPlanData: Record<
     popular: false,
     highlight: false,
   },
+  103: {
+    name: "BRONZE+",
+    description: "Stay Informed",
+    subtext: "Gain access to share your thoughts and comments on posts.",
+    features: [
+      "Everything in Bronze, plus:",
+      "Ability to create posts and comments",
+    ],
+    cta: "Upgrade to Bronze+",
+    popular: false,
+    highlight: false,
+  },
   101: {
     name: "SILVER",
     description: "Stay Connected",
     subtext: "Unlock full map access and deeper insights.",
     features: [
+      "Everything in Bronze+, plus:",
       "Ad-free experience",
       "Full regional map overlays + discovery zone",
       "Early feature access",
@@ -61,6 +74,7 @@ const additionalPlanData: Record<
     subtext:
       "Built for travelers, responders, and long-time users who rely on Galileyo everywhere.",
     features: [
+      "Everything in Silver, plus:",
       "Expanded map with global and satellite layers",
       "Advanced dashboards (weather, infrastructure, finance)",
       "Beta features and premium support",
@@ -84,6 +98,7 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       //   eq(service.id, 102),
       // ),
     ),
+    orderBy: [asc(service.price)],
   });
 
   return plans.map((plan) => ({

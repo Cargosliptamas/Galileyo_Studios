@@ -612,7 +612,7 @@ export async function HomePage() {
 
       {/* Pricing Section */}
       <section id="pricing" className="bg-white py-20 dark:bg-slate-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-0">
           <div className="mb-16 text-center">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -635,11 +635,11 @@ export async function HomePage() {
             </motion.p>
           </div>
 
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {pricingPlans.map((plan: PricingPlan, index: number) => (
               <div
                 key={index}
-                className={`relative rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
                   plan.highlight
                     ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
                     : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
@@ -684,7 +684,7 @@ export async function HomePage() {
                   {plan.subtext}
                 </p>
 
-                <ul className="mb-8 space-y-4">
+                <ul className="mb-8 flex-1 space-y-4">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start gap-3">
                       <Check
@@ -697,7 +697,9 @@ export async function HomePage() {
                   ))}
                 </ul>
 
-                <PricingPlanButton plan={plan} />
+                <div className="mt-auto">
+                  <PricingPlanButton plan={plan} />
+                </div>
               </div>
             ))}
           </div>

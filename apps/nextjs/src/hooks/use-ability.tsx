@@ -54,6 +54,8 @@ export function AbilityProvider({
 
   useEffect(() => {
     if (abilities) {
+      console.log("abilities");
+      console.log(abilities);
       setAbility(createMongoAbility<AbilityType>(abilities));
     }
   }, [abilities]);
