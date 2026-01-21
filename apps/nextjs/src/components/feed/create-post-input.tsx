@@ -273,7 +273,15 @@ function CreatePostComponent({ user }: { user: User }) {
     [],
   );
 
-  if (!ability.can("use", "can_post")) {
+  const canPost = useMemo(() => {
+    if (user.isInfluencer) {
+      return true;
+    }
+
+    return ability.can("use", "can_post");
+  }, [ability, user]);
+
+  if (!canPost) {
     return (
       <div className="flex w-full items-center justify-between gap-4 rounded-lg border bg-muted/40 px-4 py-3 text-sm">
         <div className="space-y-1">
