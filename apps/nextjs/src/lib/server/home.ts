@@ -165,7 +165,7 @@ export async function getEmergencyAlerts(): Promise<Alert[]> {
   // Fetch influencer alerts
   try {
     const fifteenDaysAgo = format(
-      subDays(new Date(), 15),
+      subDays(new Date(), 45),
       "yyyy-MM-dd HH:mm:ss",
     );
     const ID_ORIGINAL_CONTENT = 11;
