@@ -6,6 +6,7 @@ import {
   Bookmark,
   ChevronDown,
   CreditCard,
+  Handshake,
   LogOut,
   Newspaper,
   Settings,
@@ -158,7 +159,10 @@ export function UserMenu({
 
         <DropdownMenuContent className="w-80" align="end">
           <DropdownMenuLabel className="flex flex-col gap-1 p-3">
-            <div className="flex items-center gap-3">
+            <Link
+              href={`/profile/${user.id}`}
+              className="flex items-center gap-3"
+            >
               <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={currentProfile.avatar ?? ""}
@@ -176,7 +180,7 @@ export function UserMenu({
                   </span>
                 )}
               </div>
-            </div>
+            </Link>
           </DropdownMenuLabel>
 
           <DropdownMenuSeparator />
@@ -208,6 +212,14 @@ export function UserMenu({
               </Link>
             </DropdownMenuItem>
           )}
+
+          <DropdownMenuItem asChild>
+            <Link href="/friends" className="cursor-pointer">
+              <Handshake className="mr-2 h-4 w-4" />
+              Friends
+            </Link>
+          </DropdownMenuItem>
+
           {/* Profile Settings */}
           <DropdownMenuItem asChild>
             <Link href="/profile" className="cursor-pointer">

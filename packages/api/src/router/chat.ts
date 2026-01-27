@@ -362,6 +362,7 @@ export const chatRouter = {
         userId: z.number(),
         limit: z.number().optional().default(100),
         cursor: z.number().optional().default(1),
+        sort: z.enum(["ASC", "DESC"]).optional().default("DESC"),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -377,6 +378,7 @@ export const chatRouter = {
             id_user: input.userId,
             page_size: input.limit,
             page: input.cursor,
+            sort: input.sort,
           }),
         },
       );
@@ -393,6 +395,13 @@ export const chatRouter = {
             metadata: ChatMessageEvent["metadata"];
             message: string;
             files: string[];
+            user?: {
+              id: number;
+              first_name: string;
+              last_name: string;
+              full_name: string;
+              photo: string | null;
+            };
             is_viewed: boolean;
             created_at: string;
             received_at: string;

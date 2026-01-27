@@ -464,9 +464,17 @@ export const paymentRouter = {
       z.object({
         plan_id: z.number(),
         card_id: z.number(),
+        pay_interval: z.number().optional().default(1),
+        affiliate_token: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // Get affiliate token from input or cookie
+      let affiliateToken = input.affiliate_token;
+      if (!affiliateToken && ctx.cookies?.affiliate_token) {
+        affiliateToken = ctx.cookies.affiliate_token;
+      }
+
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/product/pay`,
         {
@@ -475,7 +483,10 @@ export const paymentRouter = {
             Authorization: `Bearer ${ctx.session.session.token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(input),
+          body: JSON.stringify({
+            ...input,
+            affiliate_token: affiliateToken,
+          }),
         },
       );
 
@@ -490,6 +501,44 @@ export const paymentRouter = {
           message: result.error?.message ?? "Failed to switch plan",
         });
       }
+    }),
+  getPrice: protectedProcedure
+    .input(
+      z.object({
+        plan_id: z.number(),
+        pay_interval: z.number().optional().default(1),
+        affiliate_token: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/product/get-price`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      const result = (await request.json()) as {
+        status: "success" | "error";
+        data: {
+          price: number;
+        };
+        error?: { message?: string };
+      };
+
+      if (result.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: result.error?.message ?? "Failed to get price for the plan",
+        });
+      }
+
+      return result.data;
     }),
   downloadInvoice: protectedProcedure
     .input(

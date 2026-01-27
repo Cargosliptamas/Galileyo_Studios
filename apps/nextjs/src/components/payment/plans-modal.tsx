@@ -75,8 +75,8 @@ export function PlansModal({
 
         <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-hidden md:space-y-6">
           <div className="flex flex-shrink-0 items-center justify-between">
-            <p className="mt-1 text-sm text-muted-foreground md:text-base">
-              Choose the plan that best fits your needs
+            <p className="text-sm text-muted-foreground md:text-base">
+              Choose the plan that best fits your needs.
             </p>
             {isMobile && (
               <Button
@@ -88,8 +88,12 @@ export function PlansModal({
               </Button>
             )}
           </div>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Any eligible discounts will be automatically applied during
+            checkout.
+          </p>
           <ScrollArea className="h-[calc(90vh-180px)] md:h-[calc(85vh-180px)]">
-            <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
               {isLoading ? (
                 <>
                   {Array.from({ length: 3 }).map((_, index) => (

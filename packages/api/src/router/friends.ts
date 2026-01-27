@@ -2,6 +2,8 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
+import type { FriendListType } from "@galileyo/validators";
+
 import { protectedProcedure } from "../trpc";
 
 export const friendsRouter = {
@@ -136,25 +138,26 @@ export const friendsRouter = {
 
       const result = (await request.json()) as {
         status: "success" | "error";
-        data: {
-          search: string | null;
-          list: {
-            id: number;
-            full_name: string;
-            first_name: string;
-            last_name: string;
-            photo: string;
-            country: string;
-            state: string;
-            zip: string;
-            is_phone_visible: boolean;
-            is_address_visible: boolean;
-            is_deleted: boolean;
-          }[];
-          count: string;
-          page: number;
-          page_size: number;
-        };
+        // data: {
+        //   search: string | null;
+        //   list: {
+        //     id: number;
+        //     full_name: string;
+        //     first_name: string;
+        //     last_name: string;
+        //     photo: string;
+        //     country: string;
+        //     state: string;
+        //     zip: string;
+        //     is_phone_visible: boolean;
+        //     is_address_visible: boolean;
+        //     is_deleted: boolean;
+        //   }[];
+        //   count: string;
+        //   page: number;
+        //   page_size: number;
+        // };
+        data: FriendListType;
       };
 
       if (result.status !== "success") {

@@ -28,7 +28,7 @@ const additionalPlanData: Record<
   }
 > = {
   100: {
-    name: "BRONZE",
+    name: "Free",
     description: "Stay Aware",
     subtext: "Start with core alerts and map access.",
     features: [
@@ -41,24 +41,12 @@ const additionalPlanData: Record<
     popular: false,
     highlight: false,
   },
-  103: {
-    name: "BRONZE+",
-    description: "Stay Informed",
-    subtext: "Gain access to share your thoughts and comments on posts.",
-    features: [
-      "Everything in Bronze, plus:",
-      "Ability to create posts and comments",
-    ],
-    cta: "Upgrade to Bronze+",
-    popular: false,
-    highlight: false,
-  },
   101: {
-    name: "SILVER",
+    name: "Silver",
     description: "Stay Connected",
     subtext: "Unlock full map access and deeper insights.",
     features: [
-      "Everything in Bronze+, plus:",
+      "Everything in Bronze, plus:",
       "Ad-free experience",
       "Full regional map overlays + discovery zone",
       "Early feature access",
@@ -81,6 +69,18 @@ const additionalPlanData: Record<
       "Offline & device-linked alerts (via satellite partners)",
     ],
     cta: "Upgrade to Gold",
+    popular: false,
+    highlight: false,
+  },
+  103: {
+    name: "Bronze",
+    description: "Stay Informed",
+    subtext: "Gain access to share your thoughts and comments on posts.",
+    features: [
+      "Everything in Free, plus:",
+      "Ability to create posts and comments",
+    ],
+    cta: "Upgrade to Bronze",
     popular: false,
     highlight: false,
   },

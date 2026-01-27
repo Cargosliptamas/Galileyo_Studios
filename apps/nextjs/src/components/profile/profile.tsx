@@ -9,32 +9,30 @@ import {
 } from "@tanstack/react-query";
 import { differenceInSeconds, format } from "date-fns";
 import {
+  AlertCircle,
   ArrowLeftIcon,
-  Battery,
   Bell,
   CalendarIcon,
-  Clock,
+  CheckCircle,
   CopyIcon,
-  Download,
   Key,
-  Laptop,
+  // Laptop,
   Loader2,
   Lock,
-  MapPin,
-  Monitor,
+  // Monitor,
   MoreHorizontal,
+  Phone,
   Plus,
   RectangleEllipsis,
   Save,
+  Send,
   Shield,
   Smartphone,
-  Tablet,
+  // Tablet,
   Trash2,
   Upload,
   User,
   UserRoundIcon,
-  Wifi,
-  X,
   ZoomInIcon,
   ZoomOutIcon,
 } from "lucide-react";
@@ -186,18 +184,18 @@ async function getCroppedImg(
   }
 }
 
-interface Device {
-  id: number;
-  name: string;
-  type: "mobile" | "desktop" | "tablet";
-  os: string;
-  browser: string;
-  location: string;
-  lastActive: string;
-  isCurrentDevice: boolean;
-  batteryLevel?: number;
-  signalStrength: "excellent" | "good" | "fair" | "poor";
-}
+// interface Device {
+//   id: number;
+//   name: string;
+//   type: "mobile" | "desktop" | "tablet";
+//   os: string;
+//   browser: string;
+//   location: string;
+//   lastActive: string;
+//   isCurrentDevice: boolean;
+//   batteryLevel?: number;
+//   signalStrength: "excellent" | "good" | "fair" | "poor";
+// }
 
 const API_KEY_QUERY_KEY = ["profile", "api-keys"];
 
@@ -286,6 +284,57 @@ export function Profile() {
 
   const { data: currentUser } = useSuspenseQuery(
     trpc.profile.getProfile.queryOptions(),
+  );
+
+  const { data: satellitePhones, isLoading: isPhonesLoading } = useQuery(
+    trpc.phone.list.queryOptions(),
+  );
+
+  const verifyPhone = useMutation(
+    trpc.phone.verify.mutationOptions({
+      onSuccess: (data: { message: string }) => {
+        toast.success(data.message);
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to send verification");
+      },
+    }),
+  );
+
+  const updatePhoneSettings = useMutation(
+    trpc.phone.set.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.phone.pathFilter());
+        toast.success("Phone settings updated");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to update phone settings");
+      },
+    }),
+  );
+
+  const setPrimaryPhone = useMutation(
+    trpc.phone.setPrimary.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.phone.pathFilter());
+        toast.success("Primary phone updated");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to set primary phone");
+      },
+    }),
+  );
+
+  const deletePhone = useMutation(
+    trpc.phone.delete.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.phone.pathFilter());
+        toast.success("Phone deleted successfully");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete phone");
+      },
+    }),
   );
 
   const [activeTab, setActiveTab] = useState("general");
@@ -417,106 +466,106 @@ export function Profile() {
   });
 
   // Connected Devices State
-  const [devices, setDevices] = useState<Device[]>([
-    // {
-    //   id: 1,
-    //   name: "iPhone 15 Pro",
-    //   type: "mobile",
-    //   os: "iOS 17.2",
-    //   browser: "Safari",
-    //   location: "Houston, TX",
-    //   lastActive: "Active now",
-    //   isCurrentDevice: true,
-    //   batteryLevel: 85,
-    //   signalStrength: "excellent",
-    // },
-    // {
-    //   id: 2,
-    //   name: "MacBook Pro",
-    //   type: "desktop",
-    //   os: "macOS Sonoma",
-    //   browser: "Chrome",
-    //   location: "Houston, TX",
-    //   lastActive: "2 hours ago",
-    //   isCurrentDevice: false,
-    //   signalStrength: "excellent",
-    // },
-    // {
-    //   id: 3,
-    //   name: "iPad Air",
-    //   type: "tablet",
-    //   os: "iPadOS 17.2",
-    //   browser: "Safari",
-    //   location: "Dallas, TX",
-    //   lastActive: "1 day ago",
-    //   isCurrentDevice: false,
-    //   batteryLevel: 62,
-    //   signalStrength: "good",
-    // },
-    // {
-    //   id: 4,
-    //   name: "Windows Desktop",
-    //   type: "desktop",
-    //   os: "Windows 11",
-    //   browser: "Edge",
-    //   location: "Austin, TX",
-    //   lastActive: "3 days ago",
-    //   isCurrentDevice: false,
-    //   signalStrength: "fair",
-    // },
-  ]);
+  // const [devices, setDevices] = useState<Device[]>([
+  //   {
+  //     id: 1,
+  //     name: "iPhone 15 Pro",
+  //     type: "mobile",
+  //     os: "iOS 17.2",
+  //     browser: "Safari",
+  //     location: "Houston, TX",
+  //     lastActive: "Active now",
+  //     isCurrentDevice: true,
+  //     batteryLevel: 85,
+  //     signalStrength: "excellent",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "MacBook Pro",
+  //     type: "desktop",
+  //     os: "macOS Sonoma",
+  //     browser: "Chrome",
+  //     location: "Houston, TX",
+  //     lastActive: "2 hours ago",
+  //     isCurrentDevice: false,
+  //     signalStrength: "excellent",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "iPad Air",
+  //     type: "tablet",
+  //     os: "iPadOS 17.2",
+  //     browser: "Safari",
+  //     location: "Dallas, TX",
+  //     lastActive: "1 day ago",
+  //     isCurrentDevice: false,
+  //     batteryLevel: 62,
+  //     signalStrength: "good",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Windows Desktop",
+  //     type: "desktop",
+  //     os: "Windows 11",
+  //     browser: "Edge",
+  //     location: "Austin, TX",
+  //     lastActive: "3 days ago",
+  //     isCurrentDevice: false,
+  //     signalStrength: "fair",
+  //   },
+  // ]);
 
-  const handleDeviceRemove = (deviceId: number) => {
-    setDevices(devices.filter((device) => device.id !== deviceId));
-  };
+  // const handleDeviceRemove = (deviceId: number) => {
+  //   setDevices(devices.filter((device) => device.id !== deviceId));
+  // };
 
-  const getDeviceIcon = (type: string) => {
-    switch (type) {
-      case "mobile":
-        return <Smartphone className="h-5 w-5" />;
-      case "tablet":
-        return <Tablet className="h-5 w-5" />;
-      case "desktop":
-        return <Monitor className="h-5 w-5" />;
-      default:
-        return <Laptop className="h-5 w-5" />;
-    }
-  };
+  // const getDeviceIcon = (type: string) => {
+  //   switch (type) {
+  //     case "mobile":
+  //       return <Smartphone className="h-5 w-5" />;
+  //     case "tablet":
+  //       return <Tablet className="h-5 w-5" />;
+  //     case "desktop":
+  //       return <Monitor className="h-5 w-5" />;
+  //     default:
+  //       return <Laptop className="h-5 w-5" />;
+  //   }
+  // };
 
-  const getSignalColor = (strength: string) => {
-    switch (strength) {
-      case "excellent":
-        return "text-green-400";
-      case "good":
-        return "text-blue-400";
-      case "fair":
-        return "text-yellow-400";
-      case "poor":
-        return "text-red-400";
-      default:
-        return "text-slate-400";
-    }
-  };
+  // const getSignalColor = (strength: string) => {
+  //   switch (strength) {
+  //     case "excellent":
+  //       return "text-green-400";
+  //     case "good":
+  //       return "text-blue-400";
+  //     case "fair":
+  //       return "text-yellow-400";
+  //     case "poor":
+  //       return "text-red-400";
+  //     default:
+  //       return "text-slate-400";
+  //   }
+  // };
 
-  const getSignalBars = (strength: string) => {
-    const bars = [];
-    const levels = { excellent: 4, good: 3, fair: 2, poor: 1 };
-    const level = levels[strength as keyof typeof levels] || 0;
+  // const getSignalBars = (strength: string) => {
+  //   const bars = [];
+  //   const levels = { excellent: 4, good: 3, fair: 2, poor: 1 };
+  //   const level = levels[strength as keyof typeof levels] || 0;
 
-    for (let i = 0; i < 4; i++) {
-      bars.push(
-        <div
-          key={i}
-          className={`h-3 w-1 rounded-full ${
-            i < level
-              ? getSignalColor(strength)
-              : "bg-slate-300 dark:bg-slate-600"
-          } bg-current`}
-        />,
-      );
-    }
-    return bars;
-  };
+  //   for (let i = 0; i < 4; i++) {
+  //     bars.push(
+  //       <div
+  //         key={i}
+  //         className={`h-3 w-1 rounded-full ${
+  //           i < level
+  //             ? getSignalColor(strength)
+  //             : "bg-slate-300 dark:bg-slate-600"
+  //         } bg-current`}
+  //       />,
+  //     );
+  //   }
+  //   return bars;
+  // };
 
   const previewUrl = files[0]?.preview ?? null;
   const fileId = files[0]?.id;
@@ -623,6 +672,38 @@ export function Profile() {
     // Update the ref to the current fileId for the next render
     previousFileIdRef.current = fileId;
   }, [fileId]); // Depend only on fileId
+
+  const SatellitePhoneCreateSchema = z.object({
+    number: z.string().min(1, "Satellite phone number is required"),
+    type: z.string().min(1, "Device type is required"),
+  });
+
+  const satellitePhoneCreateForm = useForm({
+    schema: SatellitePhoneCreateSchema,
+    defaultValues: {
+      number: "",
+      type: "1",
+    },
+  });
+
+  const [
+    isCreateSatellitePhoneDialogOpen,
+    setIsCreateSatellitePhoneDialogOpen,
+  ] = useState(false);
+
+  const createSatellitePhone = useMutation(
+    trpc.phone.create.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.phone.pathFilter());
+        toast.success("Satellite phone added");
+        satellitePhoneCreateForm.reset();
+        setIsCreateSatellitePhoneDialogOpen(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to add satellite phone");
+      },
+    }),
+  );
 
   return (
     <div className="min-h-screen">
@@ -1648,7 +1729,7 @@ export function Profile() {
 
           {/* Connected Devices */}
           <TabsContent value="devices" className="space-y-6">
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Smartphone className="h-5 w-5" />
@@ -1762,6 +1843,308 @@ export function Profile() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card> */}
+
+            {/* Satellite Phones */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Phone className="h-5 w-5" />
+                  Satellite Phones
+                  {satellitePhones && satellitePhones.list.length > 0 && (
+                    <span className="rounded-full bg-blue-500/20 px-2 py-1 text-xs font-medium text-blue-400">
+                      {satellitePhones.list.length}{" "}
+                      {satellitePhones.list.length === 1 ? "phone" : "phones"}
+                    </span>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex justify-end">
+                  <Button
+                    className="flex items-center gap-2"
+                    onClick={() => setIsCreateSatellitePhoneDialogOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Satellite Phone
+                  </Button>
+                </div>
+                <Dialog
+                  open={isCreateSatellitePhoneDialogOpen}
+                  onOpenChange={setIsCreateSatellitePhoneDialogOpen}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Satellite Phone</DialogTitle>
+                      <DialogDescription>
+                        Register a new satellite phone number to receive alerts.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...satellitePhoneCreateForm}>
+                      <form
+                        className="space-y-4"
+                        onSubmit={satellitePhoneCreateForm.handleSubmit(
+                          (data) => {
+                            console.log(data);
+                            createSatellitePhone.mutate({
+                              ...data,
+                              type: Number(data.type),
+                              is_emergency_only: false,
+                              is_send: false,
+                            });
+                          },
+                        )}
+                      >
+                        <FormField
+                          control={satellitePhoneCreateForm.control}
+                          name="number"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Satellite phone number</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Enter satellite phone number"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={satellitePhoneCreateForm.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Device type</FormLabel>
+                              <FormControl>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="1">
+                                      Satellite phone
+                                    </SelectItem>
+                                    <SelectItem value="2">Bivy IMEI</SelectItem>
+                                    {/* <SelectItem value="3">
+                                      Pivotel
+                                    </SelectItem> */}
+                                    {/* <SelectItem value="4">
+                                      Mobile
+                                    </SelectItem> */}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <DialogFooter>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                              setIsCreateSatellitePhoneDialogOpen(false)
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={createSatellitePhone.isPending}
+                          >
+                            {createSatellitePhone.isPending
+                              ? "Adding..."
+                              : "Add Phone"}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+                {isPhonesLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                  </div>
+                ) : !satellitePhones || satellitePhones.list.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Phone className="mb-3 h-12 w-12 text-slate-300 dark:text-slate-600" />
+                    <p className="text-slate-600 dark:text-slate-400">
+                      No satellite phones registered
+                    </p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">
+                      Add a satellite phone to receive alerts
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {satellitePhones.list.map((phone) => (
+                      <div
+                        key={phone.id}
+                        className="rounded-xl border border-slate-200 bg-slate-100/50 p-6 transition-all duration-300 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex flex-1 items-start gap-4">
+                            <div className="rounded-xl bg-blue-500/20 p-3 text-blue-400">
+                              <Phone className="h-5 w-5" />
+                            </div>
+
+                            <div className="flex-1">
+                              <div className="mb-2 flex items-center gap-3">
+                                <h3 className="font-semibold text-slate-900 dark:text-white">
+                                  {phone.number}
+                                </h3>
+                                {phone.is_primary && (
+                                  <span className="flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-1 text-xs font-medium text-blue-400">
+                                    <Key className="h-3 w-3" />
+                                    Primary
+                                  </span>
+                                )}
+                                {phone.is_valid ? (
+                                  <span className="flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
+                                    <CheckCircle className="h-3 w-3" />
+                                    Verified
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 rounded-full bg-yellow-500/20 px-2 py-1 text-xs font-medium text-yellow-400">
+                                    <AlertCircle className="h-3 w-3" />
+                                    Unverified
+                                  </span>
+                                )}
+                              </div>
+
+                              <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+                                {phone.type}
+                              </p>
+
+                              {!phone.is_valid && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="mb-4"
+                                  onClick={() =>
+                                    verifyPhone.mutate({ id: phone.id })
+                                  }
+                                  disabled={verifyPhone.isPending}
+                                >
+                                  {verifyPhone.isPending ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Send className="mr-2 h-4 w-4" />
+                                  )}
+                                  Send Verification
+                                </Button>
+                              )}
+
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <Label className="text-sm font-medium">
+                                      Send Messages
+                                    </Label>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                      Receive alerts on this device
+                                    </p>
+                                  </div>
+                                  <LoadingSwitch
+                                    loading={updatePhoneSettings.isPending}
+                                    loadingComponent={
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    }
+                                    checked={phone.is_send}
+                                    onCheckedChange={(checked) => {
+                                      updatePhoneSettings.mutate({
+                                        id: phone.id,
+                                        is_send: checked,
+                                        is_emergency_only: checked
+                                          ? phone.is_emergency_only
+                                          : false,
+                                      });
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <Label className="text-sm font-medium">
+                                      Emergency Only
+                                    </Label>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                      Only receive emergency alerts
+                                    </p>
+                                  </div>
+                                  <LoadingSwitch
+                                    loading={updatePhoneSettings.isPending}
+                                    loadingComponent={
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    }
+                                    checked={phone.is_emergency_only}
+                                    disabled={!phone.is_send}
+                                    onCheckedChange={(checked) => {
+                                      updatePhoneSettings.mutate({
+                                        id: phone.id,
+                                        is_send: phone.is_send,
+                                        is_emergency_only: checked,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {!phone.is_primary && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      setPrimaryPhone.mutate({ id: phone.id })
+                                    }
+                                    disabled={setPrimaryPhone.isPending}
+                                  >
+                                    <Key className="mr-2 h-4 w-4" />
+                                    Set as Primary
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                </>
+                              )}
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      "Are you sure you want to delete this satellite phone?",
+                                    )
+                                  ) {
+                                    deletePhone.mutate({ id: phone.id });
+                                  }
+                                }}
+                                disabled={deletePhone.isPending}
+                                className="text-red-400 focus:text-red-400"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

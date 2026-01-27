@@ -31,10 +31,17 @@ export function initAuth(options: {
   productionUrl: string;
   secret: string | undefined;
   emailOptions: EmailOptions;
+  trustedOrigins?: string[];
 
   // discordClientId: string;
   // discordClientSecret: string;
 }) {
+  // Allow Next app to override Better Auth trusted origins (useful for ngrok/tunnels)
+  const trustedOrigins = options.trustedOrigins?.length
+    ? options.trustedOrigins
+    : ["expo://", "http://localhost:3000"]; // defaults for dev
+  console.log("[BetterAuth wrapper] trustedOrigins:", trustedOrigins);
+
   const config = {
     database: drizzleAdapter(db, {
       provider: "mysql",
@@ -136,7 +143,7 @@ export function initAuth(options: {
       //   redirectURI: `${options.productionUrl}/api/auth/callback/discord`,
       // },
     },
-    trustedOrigins: ["expo://"],
+    trustedOrigins,
   } satisfies BetterAuthOptions;
 
   return betterAuth(config);

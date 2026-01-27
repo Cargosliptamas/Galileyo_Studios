@@ -51,7 +51,7 @@ const features = [
   },
   {
     icon: <Bell className="h-6 w-6" />,
-    title: "Transparent feed - no algorithms",
+    title: "Transparent feed - no ad algorithms",
     image: "/why3c.jpg",
     description:
       "Use our satellite app to stay safe in remote areas — and if you don't have a satellite device, we'll give you one for free!",
@@ -173,7 +173,7 @@ export async function HomePageV2() {
                 <Questions items={questions} cycleMs={5000} />
                 <span className="relative mt-2 block">
                   <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-                    No Algorithms.
+                    No Ad Algorithms.
                   </span>
                   <motion.span
                     className="absolute -bottom-2 left-0 h-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500"

@@ -26,6 +26,7 @@ function isActive(chatId: string, friendId: string) {
 export function ChatRecipients() {
   const trpc = useTRPC();
   const router = useRouter();
+
   const { chatId } = useParams<{ chatId: string }>();
 
   const { data: friends } = useSuspenseQuery(
@@ -46,7 +47,7 @@ export function ChatRecipients() {
             }
           }}
           className={cn(
-            "flex w-60 cursor-pointer flex-row gap-2 rounded-lg p-2 hover:bg-muted/50",
+            "flex w-full cursor-pointer flex-row gap-2 rounded-lg p-2 hover:bg-muted/50 md:w-60",
             isActive(chatId, friend.id.toString()) && "bg-muted/50",
           )}
         >

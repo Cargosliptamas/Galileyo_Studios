@@ -39,6 +39,10 @@
     "./scraping": {
       "types": "./dist/scraping.d.ts",
       "default": "./src/scraping.ts"
+    },
+    "./phone": {
+      "types": "./dist/phone.d.ts",
+      "default": "./src/phone.ts"
     }
   },
   "license": "MIT",

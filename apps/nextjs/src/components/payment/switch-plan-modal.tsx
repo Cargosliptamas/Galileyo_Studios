@@ -26,6 +26,7 @@ import {
 import { formatCardNumber } from "~/lib/formatter";
 import { useTRPC } from "~/trpc/react";
 import { CreatePaymentForm } from "./create-payment-form";
+import { PaymentIntervalSwitcher } from "./payment-interval-switcher";
 
 export function SwitchPlanModal({
   plan,
@@ -38,6 +39,7 @@ export function SwitchPlanModal({
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }) {
+  const [payInterval, setPayInterval] = useState(1);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -51,6 +53,14 @@ export function SwitchPlanModal({
   });
 
   const cards = paymentData?.list ?? [];
+
+  const { data: priceData, isLoading: isLoadingPrice } = useQuery({
+    ...trpc.payment.getPrice.queryOptions({
+      plan_id: plan?.id ?? 0,
+      pay_interval: payInterval,
+    }),
+    enabled: open && !!plan,
+  });
 
   const switchPlan = useMutation(
     trpc.payment.switchPlan.mutationOptions({
@@ -101,6 +111,7 @@ export function SwitchPlanModal({
     switchPlan.mutate({
       plan_id: plan.id,
       card_id: +selectedPaymentMethod,
+      pay_interval: payInterval,
     });
   };
 
@@ -128,6 +139,13 @@ export function SwitchPlanModal({
           <DialogTitle>Switch Plan</DialogTitle>
         </DialogHeader>
 
+        <div className="flex items-center justify-center py-2">
+          <PaymentIntervalSwitcher
+            value={payInterval as 1 | 12}
+            onValueChange={(value) => setPayInterval(value)}
+          />
+        </div>
+
         <div className="space-y-6">
           {/* Plan Information */}
           {!showAddNewCard && (
@@ -139,9 +157,13 @@ export function SwitchPlanModal({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Price</span>
-                    <span className="text-2xl font-bold">
-                      {formatPrice(plan.price)}
-                    </span>
+                    {isLoadingPrice ? (
+                      <Skeleton className="h-8 w-24" />
+                    ) : (
+                      <span className="text-2xl font-bold">
+                        {formatPrice(priceData?.price ?? plan.price)}
+                      </span>
+                    )}
                   </div>
                   {plan.description && (
                     <p className="text-sm text-muted-foreground">

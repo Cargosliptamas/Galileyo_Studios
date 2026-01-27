@@ -154,7 +154,7 @@ export async function HomePage() {
 
                 {/* static gradient ending */}
                 <span className="block bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text pb-4 text-transparent dark:from-cyan-400 dark:to-blue-400">
-                  No Algorithms.
+                  No Ad Algorithms.
                 </span>
 
                 {/* local CSS for show→hold→hide */}

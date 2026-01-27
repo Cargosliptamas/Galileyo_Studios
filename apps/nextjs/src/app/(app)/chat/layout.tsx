@@ -1,11 +1,7 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { getSession } from "~/auth/server";
-import {
-  ChatRecipients,
-  ChatRecipientsSkeleton,
-} from "~/components/chat/chat-recipients";
+import { ChatPageProvider } from "~/components/chat/chat-page-provider";
 import { HydrateClient, prefetch, trpc } from "~/trpc/server";
 
 export default async function Layout({
@@ -28,19 +24,21 @@ export default async function Layout({
 
   return (
     <HydrateClient>
-      <div className="flex flex-row">
-        <div className="h-[calc(100vh-theme(spacing.16))] w-64 border-r border-red-500 px-2">
-          <div className="flex flex-row items-center justify-between">
-            <span className="text-lg font-semibold">Friends</span>
-          </div>
-          <div>
-            <Suspense fallback={<ChatRecipientsSkeleton />}>
-              <ChatRecipients />
-            </Suspense>
-          </div>
-        </div>
+      <ChatPageProvider>
+        {/* <div className="flex flex-row p-2 h-[calc(100vh-theme(spacing.20))]">
+          <div className="w-full h-full md:w-64 md:border-r px-2">
+            <div className="flex flex-row items-center justify-between">
+              <span className="text-lg font-semibold">Friends</span>
+            </div>
+            <div>
+              <Suspense fallback={<ChatRecipientsSkeleton />}>
+                <ChatRecipients />
+              </Suspense>
+            </div>
+          </div> */}
         {children}
-      </div>
+        {/* </div> */}
+      </ChatPageProvider>
     </HydrateClient>
   );
 }

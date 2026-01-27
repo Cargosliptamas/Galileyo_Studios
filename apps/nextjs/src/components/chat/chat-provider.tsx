@@ -1243,7 +1243,7 @@ export function ChatInput({
         if (conversationId) {
           if (isFriendChat) {
             await queryClient.invalidateQueries({
-              queryKey: trpc.chat.getFriendChat.infiniteQueryKey({
+              queryKey: trpc.chat.getFriendChat.queryKey({
                 userId: userId,
                 limit: 100,
               }),
