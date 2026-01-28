@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Turnstile } from "@marsidev/react-turnstile";
 import {
   CheckCircle,
-  Clock,
+  // Clock,
   Mail,
   MapPin,
-  MessageSquare,
+  // MessageSquare,
   Phone,
   Send,
 } from "lucide-react";
@@ -89,20 +89,20 @@ const ContactUs = () => {
       contact: "support@galileyo.com",
       available: "",
     },
-    {
-      icon: <Phone className="h-6 w-6" />,
-      title: "Phone",
-      description: "Phone calls will be returned within 24-48 hours.",
-      contact: "+1 (833) 774-7774",
-      available: "",
-    },
-    {
-      icon: <MessageSquare className="h-6 w-6" />,
-      title: "Live Chat",
-      description: "Real-time support",
-      contact: "",
-      available: "",
-    },
+    // {
+    //   icon: <Phone className="h-6 w-6" />,
+    //   title: "Phone",
+    //   description: "Phone calls will be returned within 24-48 hours.",
+    //   contact: "+1 (833) 774-7774",
+    //   available: "",
+    // },
+    // {
+    //   icon: <MessageSquare className="h-6 w-6" />,
+    //   title: "Live Chat",
+    //   description: "Real-time support",
+    //   contact: "",
+    //   available: "",
+    // },
     // {
     //   icon: <Headphones className="h-6 w-6" />,
     //   title: "Technical Support",
@@ -116,26 +116,23 @@ const ContactUs = () => {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Header */}
       <section className="bg-gradient-to-br from-slate-50 via-white to-slate-100 py-16 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-4">
           <h1 className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl">
-            Get in Touch
+            Send us a Message
           </h1>
-          <p className="mx-auto max-w-3xl text-xl text-slate-600 dark:text-slate-300">
-            Connect with us through email, chat, or phone
-          </p>
         </div>
       </section>
 
       {/* Contact Methods */}
-      <section className="py-16">
+      <section className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mb-16 grid grid-cols-1 gap-6">
             {contactMethods.map((method, index) => (
               <div
                 key={index}
-                className="rounded-xl border border-slate-200 bg-white/50 p-6 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                className="rounded-xl border border-slate-200 bg-white/50 p-6 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 text-center flex flex-col items-center justify-center"
               >
-                <div className="mb-4 text-cyan-500 dark:text-cyan-400">
+                <div className="mb-4 text-cyan-500 dark:text-cyan-400 mx-auto">
                   {method.icon}
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
@@ -162,7 +159,7 @@ const ContactUs = () => {
               </h2>
               <p className="mb-8 text-slate-600 dark:text-slate-300">
                 Fill out the form below and we'll get back to you as soon as
-                possible. For urgent matters, please use our emergency hotline.
+                possible.
               </p>
 
               {isSubmitted && (
@@ -176,24 +173,6 @@ const ContactUs = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
-                    >
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
-                      placeholder="John Doe"
-                    />
-                  </div>
                   <div>
                     <label
                       htmlFor="email"
@@ -210,6 +189,24 @@ const ContactUs = () => {
                       required
                       className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
                       placeholder="john@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
+                    >
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+                      placeholder="John Doe"
                     />
                   </div>
                 </div>
@@ -314,15 +311,13 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <Clock className="mt-1 h-6 w-6 text-cyan-500 dark:text-cyan-400" />
+                  <Phone className="mt-1 h-6 w-6 text-cyan-500 dark:text-cyan-400" />
                   <div>
                     <h4 className="mb-1 font-medium text-slate-900 dark:text-white">
-                      Support Hours
+                      Business Phone
                     </h4>
                     <p className="text-slate-600 dark:text-slate-300">
-                      General Support: Mon-Fri 9AM-6PM EST
-                      <br />
-                      Technical Support: Mon-Fri 8AM-8PM EST
+                      +1 (833) 774-7774
                     </p>
                   </div>
                 </div>
