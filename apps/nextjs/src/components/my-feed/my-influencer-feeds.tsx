@@ -27,8 +27,6 @@ import {
 import { Badge } from "@galileyo/ui/badge";
 import { Button } from "@galileyo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@galileyo/ui/card";
-import { Input } from "@galileyo/ui/input";
-import { Label } from "@galileyo/ui/label";
 import { toast } from "@galileyo/ui/toast";
 
 import type { ColumnDefWithLabel } from "../ui/table/columns/types";
@@ -48,8 +46,6 @@ export function MyInfluencerFeeds() {
   const [changeType, setChangeType] = useState<
     "create" | "edit" | "delete" | null
   >(null);
-  const [isPromocodeModalOpen, setIsPromocodeModalOpen] = useState(false);
-  const [promocodeValue, setPromocodeValue] = useState("");
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const trpc = useTRPC();
@@ -64,16 +60,6 @@ export function MyInfluencerFeeds() {
     setSelectedFeed(null);
   };
 
-  const handlePromocodeModalOpen = () => {
-    setPromocodeValue(data?.promocode ?? "");
-    setIsPromocodeModalOpen(true);
-  };
-
-  const handlePromocodeModalClose = () => {
-    setIsPromocodeModalOpen(false);
-    setPromocodeValue("");
-  };
-
   const deleteInfluencerFeed = useMutation(
     trpc.myFeeds.influencer.delete.mutationOptions({
       onSuccess: async () => {
@@ -86,21 +72,6 @@ export function MyInfluencerFeeds() {
       },
       onError: (err) => {
         toast.error(err.message || "Failed to delete feed");
-      },
-    }),
-  );
-
-  const editPromocode = useMutation(
-    trpc.myFeeds.influencer.editPromocode.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(
-          trpc.myFeeds.influencer.list.pathFilter(),
-        );
-        toast.success("Promocode updated successfully");
-        handlePromocodeModalClose();
-      },
-      onError: (err) => {
-        toast.error(err.message || "Failed to update promocode");
       },
     }),
   );
@@ -230,12 +201,8 @@ export function MyInfluencerFeeds() {
   return (
     <div className="space-y-4">
       {/* Stats and Info Card */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <InfluencerFeedStatsCards
-          data={data}
-          isLoading={isLoading}
-          onEditPromocode={handlePromocodeModalOpen}
-        />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <InfluencerFeedStatsCards data={data} isLoading={isLoading} />
       </div>
 
       <Card className="border-slate-200 bg-white/50 dark:border-slate-700 dark:bg-slate-800/50">
@@ -312,56 +279,6 @@ export function MyInfluencerFeeds() {
                   {deleteInfluencerFeed.isPending
                     ? "Deleting..."
                     : "Delete Feed"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog
-            open={isPromocodeModalOpen}
-            onOpenChange={handlePromocodeModalClose}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Promocode</DialogTitle>
-                <DialogDescription>
-                  Enter your promocode. It must be unique and between 1-25
-                  characters.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="promocode">Promocode</Label>
-                  <Input
-                    id="promocode"
-                    value={promocodeValue}
-                    onChange={(e) => setPromocodeValue(e.target.value)}
-                    placeholder="Enter promocode"
-                    maxLength={25}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePromocodeModalClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => {
-                    if (promocodeValue.trim()) {
-                      editPromocode.mutate({ text: promocodeValue.trim() });
-                    } else {
-                      toast.error("Promocode cannot be empty");
-                    }
-                  }}
-                  disabled={editPromocode.isPending || !promocodeValue.trim()}
-                >
-                  {editPromocode.isPending ? "Saving..." : "Save"}
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -329,7 +329,7 @@ function CreatePostComponent({ user }: { user: User }) {
             maxLength={512}
           >
             <div className="flex w-full items-center gap-2">
-              {profiles.length > 1 ? (
+              {profiles.length >= 1 ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

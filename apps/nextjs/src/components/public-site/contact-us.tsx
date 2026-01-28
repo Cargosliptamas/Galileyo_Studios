@@ -130,9 +130,9 @@ const ContactUs = () => {
             {contactMethods.map((method, index) => (
               <div
                 key={index}
-                className="rounded-xl border border-slate-200 bg-white/50 p-6 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 text-center flex flex-col items-center justify-center"
+                className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white/50 p-6 text-center transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
               >
-                <div className="mb-4 text-cyan-500 dark:text-cyan-400 mx-auto">
+                <div className="mx-auto mb-4 text-cyan-500 dark:text-cyan-400">
                   {method.icon}
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">

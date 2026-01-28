@@ -1,8 +1,7 @@
 "use client";
 
-import { Gift, Link2, Pencil, Send, TrendingUp } from "lucide-react";
+import { Link2, Send, TrendingUp } from "lucide-react";
 
-import { Button } from "@galileyo/ui/button";
 import { Card, CardContent } from "@galileyo/ui/card";
 import { Skeleton } from "@galileyo/ui/skeleton";
 
@@ -17,32 +16,13 @@ interface InfluencerFeedListData {
 export function InfluencerFeedStatsCards({
   data,
   isLoading,
-  onEditPromocode,
 }: {
   data?: InfluencerFeedListData;
   isLoading: boolean;
-  onEditPromocode: () => void;
 }) {
   if (isLoading) {
     return (
       <>
-        {/* Promocode Card Skeleton */}
-        <Card className="group relative overflow-hidden border-slate-200 bg-gradient-to-br from-purple-50 to-pink-50 transition-all duration-300 dark:border-slate-700 dark:from-purple-950/20 dark:to-pink-950/20">
-          <CardContent className="relative p-6">
-            <div className="mb-4">
-              <Skeleton className="h-12 w-12 rounded-xl bg-slate-200 dark:bg-slate-700" />
-            </div>
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-24 rounded bg-slate-200 dark:bg-slate-700" />
-              <div className="flex min-w-0 items-center gap-2">
-                <Skeleton className="h-8 w-32 rounded bg-slate-200 dark:bg-slate-700" />
-                <Skeleton className="h-8 w-8 rounded bg-slate-200 dark:bg-slate-700" />
-              </div>
-              <Skeleton className="mt-2 h-3 w-full rounded bg-slate-200 dark:bg-slate-700" />
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Affiliate Link Card Skeleton */}
         <Card className="group relative overflow-hidden border-slate-200 bg-gradient-to-br from-blue-50 to-cyan-50 transition-all duration-300 dark:border-slate-700 dark:from-blue-950/20 dark:to-cyan-950/20">
           <CardContent className="relative p-6">
@@ -84,41 +64,6 @@ export function InfluencerFeedStatsCards({
 
   return (
     <>
-      {/* Promocode Card */}
-      <Card className="group relative overflow-hidden border-slate-200 bg-gradient-to-br from-purple-50 to-pink-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-slate-700 dark:from-purple-950/20 dark:to-pink-950/20">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        <CardContent className="relative p-6">
-          <div className="mb-4">
-            <div className="w-fit rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-3 text-white shadow-lg">
-              <Gift className="h-6 w-6" />
-            </div>
-          </div>
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              Promocode
-            </p>
-            <div className="flex min-w-0 items-center gap-2">
-              <p className="flex-1 truncate text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {data?.promocode ?? "Not set"}
-              </p>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 flex-shrink-0 opacity-70 transition-opacity hover:opacity-100"
-                onClick={onEditPromocode}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </div>
-            {data?.promocode && (
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                Share this code with your audience
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Affiliate Link Card */}
       <Card className="group relative overflow-hidden border-slate-200 bg-gradient-to-br from-blue-50 to-cyan-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-slate-700 dark:from-blue-950/20 dark:to-cyan-950/20">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
