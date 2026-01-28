@@ -7,12 +7,10 @@ import { Providers } from "~/components/providers";
 
 import "~/app/globals.css";
 
-import { headers } from "next/headers";
-
 import { getSession } from "~/auth/server";
-import NativeBridgePing from "~/components/layout/native-app-bridge";
 import { env } from "~/env";
 import { fontVariables } from "~/lib/fonts";
+import { isNativeUserAgent } from "~/lib/server/headers";
 
 // import { ThemeToggle } from "@galileyo/ui/theme";
 
@@ -53,12 +51,9 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const h = await headers();
-  const isNativeUA = /\bGalileyoApp(?:\/|$)/.test(h.get("user-agent") ?? "");
+  const isNativeUA = await isNativeUserAgent();
 
   const session = await getSession();
-  const userId = session?.user.id ?? null;
-  const hasSession = Boolean(userId);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -69,12 +64,10 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           fontVariables,
         )}
       >
-        <Providers hasSession={!!session}>{props.children}</Providers>
-        <NativeBridgePing
-          hasSession={hasSession}
-          userId={userId}
-          isNativeUA={isNativeUA}
-        />
+        <Providers userId={session?.user.id ?? null} isNativeUA={isNativeUA}>
+          {props.children}
+        </Providers>
+
         <Toaster />
       </body>
     </html>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   ChevronDown,
   ChevronUp,
@@ -279,15 +280,15 @@ const FAQ = () => {
             </h3>
             <p className="mb-6 text-slate-600 dark:text-slate-300">
               Can't find what you're looking for? Our support team is available
-              24/7 to help you.
+              to help you.
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+              <Link
+                href="/contact"
+                className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
+              >
                 Contact Support
-              </button>
-              <button className="rounded-lg border border-slate-300 px-6 py-3 font-semibold text-slate-900 transition-colors hover:border-slate-400 dark:border-slate-600 dark:text-white dark:hover:border-slate-500">
-                Live Chat
-              </button>
+              </Link>
             </div>
           </div>
         </div>

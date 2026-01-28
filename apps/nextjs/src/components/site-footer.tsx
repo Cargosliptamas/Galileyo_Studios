@@ -7,15 +7,18 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@galileyo/ui/theme";
 
 import { AppIcon } from "./app-icon";
+import { useNativeBridge } from "./layout/native-app-bridge";
 import { SiteStatus } from "./site-status";
 
 const DISABLED_PATHS = ["/chat", "/dashboard"];
 
 export function SiteFooter() {
   const pathname = usePathname();
+  const { isRunningInNativeApp } = useNativeBridge();
+
   const isDisabled = DISABLED_PATHS.some((path) => pathname.includes(path));
 
-  if (isDisabled) {
+  if (isDisabled || isRunningInNativeApp) {
     return null;
   }
 

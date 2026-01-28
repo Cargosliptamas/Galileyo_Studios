@@ -282,6 +282,15 @@ export default function SignupPage({
           <Button type="submit" disabled={createProfile.isPending}>
             {createProfile.isPending ? "Creating..." : "Create"}
           </Button>
+
+          <div className="text-center">
+            <p>
+              Already have an account?{" "}
+              <Link href="/login" className="underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </form>
       </Form>
     </div>

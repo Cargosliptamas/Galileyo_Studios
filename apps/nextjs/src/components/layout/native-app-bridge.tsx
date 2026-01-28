@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 const BRIDGE_NAME = "GalileyoBridge" as const;
 
@@ -33,17 +33,25 @@ function getBridgeState(win: Window): BridgeState {
   return win.__NATIVE_BRIDGE_STATE__;
 }
 
-interface Props {
-  hasSession: boolean;
-  userId?: string | null;
-  isNativeUA: boolean;
+export const NativeBridgeContext = createContext<{
+  isRunningInNativeApp: boolean;
+}>({
+  isRunningInNativeApp: false,
+});
+
+export function useNativeBridge() {
+  return useContext(NativeBridgeContext);
 }
 
-export default function NativeBridgePing({
-  hasSession,
+export function NativeBridgeProvider({
+  children,
   userId,
   isNativeUA,
-}: Props) {
+}: {
+  children: React.ReactNode;
+  userId?: string | null;
+  isNativeUA: boolean;
+}) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -57,7 +65,7 @@ export default function NativeBridgePing({
     const state = getBridgeState(window);
 
     // LOGIN / USER SWITCH (send once per userId)
-    if (hasSession && userId && state.lastUserId !== userId) {
+    if (!!userId && state.lastUserId !== userId) {
       handler.postMessage({ type: "session", loggedIn: true, userId });
       state.lastUserId = userId;
       state.lastWasLoggedIn = true;
@@ -65,12 +73,52 @@ export default function NativeBridgePing({
     }
 
     // LOGOUT (send once when transitioning from logged in → logged out)
-    if (!hasSession && state.lastWasLoggedIn) {
+    if (!userId && state.lastWasLoggedIn) {
       handler.postMessage({ type: "session", loggedIn: false, userId: null });
       state.lastWasLoggedIn = false;
       state.lastUserId = null;
     }
-  }, [hasSession, userId, isNativeUA]);
+  }, [userId, isNativeUA]);
 
-  return null;
+  return (
+    <NativeBridgeContext.Provider value={{ isRunningInNativeApp: isNativeUA }}>
+      {children}
+    </NativeBridgeContext.Provider>
+  );
 }
+
+// export default function NativeBridgePing({
+//   hasSession,
+//   userId,
+//   isNativeUA,
+// }: Props) {
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+
+//     const handler = window.webkit?.messageHandlers?.[BRIDGE_NAME] as
+//       | { postMessage(data: BridgeMessage): void }
+//       | undefined;
+//     const hasBridge = Boolean(handler) && window.__NATIVE_BRIDGE__ === true;
+
+//     if (!isNativeUA || !hasBridge || !handler) return;
+
+//     const state = getBridgeState(window);
+
+//     // LOGIN / USER SWITCH (send once per userId)
+//     if (hasSession && userId && state.lastUserId !== userId) {
+//       handler.postMessage({ type: "session", loggedIn: true, userId });
+//       state.lastUserId = userId;
+//       state.lastWasLoggedIn = true;
+//       return;
+//     }
+
+//     // LOGOUT (send once when transitioning from logged in → logged out)
+//     if (!hasSession && state.lastWasLoggedIn) {
+//       handler.postMessage({ type: "session", loggedIn: false, userId: null });
+//       state.lastWasLoggedIn = false;
+//       state.lastUserId = null;
+//     }
+//   }, [hasSession, userId, isNativeUA]);
+
+//   return null;
+// }

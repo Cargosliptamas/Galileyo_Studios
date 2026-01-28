@@ -16,11 +16,13 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@galileyo/ui/popover";
 
 import { AppIcon } from "../app-icon";
+import { useNativeBridge } from "./native-app-bridge";
 import { navigationLinks } from "./navigation-items";
 
 export default function PublicNavbar() {
   const { scrollY } = useScroll();
   const pathname = usePathname();
+  const { isRunningInNativeApp } = useNativeBridge();
 
   const isHome = useMemo(
     () => pathname === "/" || pathname === "/home",
@@ -51,6 +53,10 @@ export default function PublicNavbar() {
       setIsAnimationActive(true);
     }
   }, [isHome]);
+
+  if (isRunningInNativeApp) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
