@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   AlertTriangle,
   // Bell,
@@ -414,27 +415,51 @@ export async function HomePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {influencers.map((influencer, index) => (
               <motion.div
-                className="relative min-h-[150px] overflow-hidden rounded-xl border border-secondary md:min-h-[200px]"
                 key={index}
+                className="group relative min-h-[150px] overflow-hidden rounded-xl border border-secondary [perspective:1000px] md:min-h-[200px]"
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                {influencer.image.startsWith("http") ? (
-                  <img src={influencer.image} alt={influencer.name} />
-                ) : (
-                  <Image
-                    src={influencer.image}
-                    alt={influencer.name}
-                    fill
-                    className="h-full w-full object-cover object-center"
-                  />
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1 text-center backdrop-blur-sm">
-                  <h3 className="text-center text-lg font-bold text-white opacity-90">
-                    {influencer.name}
-                  </h3>
+                <div className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                  {/* Front side */}
+                  <div className="absolute inset-0 [backface-visibility:hidden]">
+                    <div className="relative h-full w-full">
+                      {influencer.image.startsWith("http") ? (
+                        <img
+                          src={influencer.image}
+                          alt={influencer.name}
+                          className="h-full w-full object-cover object-center"
+                        />
+                      ) : (
+                        <Image
+                          src={influencer.image}
+                          alt={influencer.name}
+                          fill
+                          className="h-full w-full object-cover object-center"
+                        />
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1 text-center backdrop-blur-sm">
+                        <h3 className="text-center text-lg font-bold text-white opacity-90">
+                          {influencer.name}
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Back side */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-4 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <Link
+                      href="/signup"
+                      className="inline-flex flex-col items-center justify-center rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cyan-400"
+                    >
+                      <span>Sign up and check</span>
+                      <span className="mt-0.5 text-base">
+                        {influencer.name}
+                      </span>
+                    </Link>
+                  </div>
                 </div>
               </motion.div>
             ))}
