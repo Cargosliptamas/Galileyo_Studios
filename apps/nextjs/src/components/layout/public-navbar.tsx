@@ -108,7 +108,12 @@ export default function PublicNavbar() {
                         className="py-1.5"
                         // active={link.active}
                       >
-                        <Link href={link.href}>{link.label}</Link>
+                        <Link
+                          href={link.href}
+                          target={link.isExternal ? "_blank" : undefined}
+                        >
+                          {link.label}
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
@@ -145,7 +150,12 @@ export default function PublicNavbar() {
                       // active={link.active}
                       className="py-1.5 font-medium text-muted-foreground hover:text-primary"
                     >
-                      <Link href={link.href}>{link.label}</Link>
+                      <Link
+                        href={link.href}
+                        target={link.isExternal ? "_blank" : undefined}
+                      >
+                        {link.label}
+                      </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}

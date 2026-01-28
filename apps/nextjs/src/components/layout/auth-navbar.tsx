@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapIcon, MessageSquareIcon } from "lucide-react";
+import { MapIcon, MessageSquareIcon, ShoppingBag } from "lucide-react";
 
 import type { User } from "~/auth/client";
 import { AppIcon } from "../app-icon";
@@ -93,6 +93,13 @@ export default function AuthNavbar({
         </div>
         {/* Right side */}
         <div className="flex flex-1 items-center justify-end gap-2">
+          <Link
+            href="https://shop.galileyo.com/"
+            target="_blank"
+            className="icon-button"
+          >
+            <ShoppingBag className="h-5 w-5" />
+          </Link>
           <Link href="/chat" className="icon-button">
             <MessageSquareIcon className="h-5 w-5" />
           </Link>
