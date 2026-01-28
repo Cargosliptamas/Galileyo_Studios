@@ -40,7 +40,6 @@ export function initAuth(options: {
   const trustedOrigins = options.trustedOrigins?.length
     ? options.trustedOrigins
     : ["expo://", "http://localhost:3000"]; // defaults for dev
-  console.log("[BetterAuth wrapper] trustedOrigins:", trustedOrigins);
 
   const config = {
     database: drizzleAdapter(db, {

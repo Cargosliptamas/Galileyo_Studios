@@ -1,17 +1,18 @@
+import Image from "next/image";
 import {
   AlertTriangle,
-  Bell,
+  // Bell,
   Check,
   CheckCircle,
   Globe,
-  Lock,
+  // Lock,
   MapPin,
   Satellite,
   Shield,
   Star,
   TrendingUp,
   Users,
-  Wallet,
+  // Wallet,
   Zap,
 } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -34,41 +35,76 @@ import {
 
 const questions = ["Real Alerts.", "Real People."];
 
-const features = [
+// const features = [
+//   {
+//     icon: <Globe className="h-8 w-8" />,
+//     title: "Verified alerts, shared in real time",
+//     image: "/why1c.jpg",
+//     description:
+//       "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
+//   },
+//   {
+//     icon: <Shield className="h-8 w-8" />,
+//     title: "Map view that evolves with events and recovery efforts",
+//     image: "/why2c.jpg",
+//     description:
+//       "Connect with neighbors, influencers, and trusted sources to share vital information during crises.",
+//   },
+//   {
+//     icon: <Bell className="h-8 w-8" />,
+//     title: "Transparent feed - chronological, not algorithmic",
+//     image: "/why3c.jpg",
+//     description:
+//       "Use our satellite app to stay safe in remote areas — and if you don’t have a satellite device, we’ll give you one for free!",
+//   },
+//   {
+//     icon: <Lock className="h-8 w-8" />,
+//     title: "Works even in low-connectivity areas",
+//     image: "/why4c.jpg",
+//     description:
+//       "Share updates, messages, and location info seamlessly, keeping everyone safe and informed.",
+//   },
+//   {
+//     icon: <Wallet className="h-8 w-8" />,
+//     title: "Community coordination tools coming soon",
+//     image: "/why5c.jpg",
+//     description:
+//       "Get discounts and coins just for staying engaged and helping others.",
+//   },
+// ];
+
+const influencers = [
   {
-    icon: <Globe className="h-8 w-8" />,
-    title: "Verified alerts, shared in real time",
-    image: "/why1c.jpg",
-    description:
-      "Receive real-time alerts about emergencies, outages, and critical events — so you can act fast.",
+    name: "Zeee Media",
+    image: "/influencers/zeeemedia.webp",
   },
   {
-    icon: <Shield className="h-8 w-8" />,
-    title: "Map view that evolves with events and recovery efforts",
-    image: "/why2c.jpg",
-    description:
-      "Connect with neighbors, influencers, and trusted sources to share vital information during crises.",
+    name: "Seth Holehouse",
+    image: "/influencers/seth.jpg",
   },
   {
-    icon: <Bell className="h-8 w-8" />,
-    title: "Transparent feed - chronological, not algorithmic",
-    image: "/why3c.jpg",
-    description:
-      "Use our satellite app to stay safe in remote areas — and if you don’t have a satellite device, we’ll give you one for free!",
+    name: "Michael Yon",
+    image: "/influencers/yon.jpg",
   },
   {
-    icon: <Lock className="h-8 w-8" />,
-    title: "Works even in low-connectivity areas",
-    image: "/why4c.jpg",
-    description:
-      "Share updates, messages, and location info seamlessly, keeping everyone safe and informed.",
+    name: "Mike Adams",
+    image: "/influencers/mikeadams.jpg",
   },
   {
-    icon: <Wallet className="h-8 w-8" />,
-    title: "Community coordination tools coming soon",
-    image: "/why5c.jpg",
-    description:
-      "Get discounts and coins just for staying engaged and helping others.",
+    name: "Shannon Joy",
+    image: "/influencers/shannonjoy.jpg",
+  },
+  {
+    name: "Jeffrey Prather",
+    image: "/influencers/jeffreyprather.jpg",
+  },
+  {
+    name: "Mel K Show",
+    image: "/influencers/melk.jpg",
+  },
+  {
+    name: "Clay Clark",
+    image: "/influencers/clayclark.jpg",
   },
 ];
 
@@ -321,10 +357,10 @@ export async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 w-full text-center">
             <div className="mb-4">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl">
                 INSource Map
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              </h2>
+              <p className="text-l mt-8 text-center text-slate-600 opacity-70 dark:text-slate-300">
                 Influential News Source
               </p>
             </div>
@@ -341,19 +377,8 @@ export async function HomePage() {
               viewport={{ once: true }}
               className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
             >
-              Why Join Galileyo?
+              Featured Influencial News Sources On Galileyo
             </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-4xl text-xl text-slate-600 dark:text-slate-300"
-            >
-              Stay Informed. Stay Connected. Stay Human.
-              {/* Stay informed, when it matters. Galileyo unites communities to
-              protect what matters most. */}
-            </motion.p>
             <p className="text-l mt-8 text-center text-slate-600 opacity-70 dark:text-slate-300">
               Galileyo unites people who look out for each other. From local
               weather shifts to major outages, you’ll get timely alerts and see
@@ -362,7 +387,7 @@ export async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
+          {/* <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -380,6 +405,35 @@ export async function HomePage() {
                 <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                   <h3 className="mb-3 w-full text-center text-lg font-semibold text-white dark:text-white">
                     {feature.title}
+                  </h3>
+                </div>
+              </motion.div>
+            ))}
+          </div> */}
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {influencers.map((influencer, index) => (
+              <motion.div
+                className="relative min-h-[150px] overflow-hidden rounded-xl border border-secondary md:min-h-[200px]"
+                key={index}
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                {influencer.image.startsWith("http") ? (
+                  <img src={influencer.image} alt={influencer.name} />
+                ) : (
+                  <Image
+                    src={influencer.image}
+                    alt={influencer.name}
+                    fill
+                    className="h-full w-full object-cover object-center"
+                  />
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1 text-center backdrop-blur-sm">
+                  <h3 className="text-center text-lg font-bold text-white opacity-90">
+                    {influencer.name}
                   </h3>
                 </div>
               </motion.div>
