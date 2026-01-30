@@ -451,7 +451,7 @@ export async function HomePage() {
                   {/* Back side */}
                   <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-4 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]">
                     <Link
-                      href="/signup"
+                      href="/sign-up"
                       className="inline-flex flex-col items-center justify-center rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cyan-400"
                     >
                       <span>Sign up and check</span>
