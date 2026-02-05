@@ -81,6 +81,11 @@ const influencers: Influencer[] = [
       useBrowser: true,
     },
   },
+  {
+    id: 21747,
+    urls: ["https://worldviewtube.com/"],
+    skipUrls: ["https://videojs.com/html5-video-support/"],
+  },
 ];
 
 export default influencers;

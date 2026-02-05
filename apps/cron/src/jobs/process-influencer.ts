@@ -115,7 +115,7 @@ async function processInfluencer(job: ProcessInfluencerJob) {
     try {
       if (
         article.datePublished &&
-        isAfter(article.datePublished, ONLY_AFTER_DATE)
+        !isAfter(article.datePublished, ONLY_AFTER_DATE)
       ) {
         continue;
       }
