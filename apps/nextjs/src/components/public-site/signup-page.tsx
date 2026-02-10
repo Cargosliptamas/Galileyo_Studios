@@ -22,7 +22,7 @@ import { toast } from "@galileyo/ui/toast";
 import { SignupSchema } from "@galileyo/validators/profile";
 
 import type { PricingPlan } from "~/lib/server/types";
-import { removeAffiliateCookie } from "~/app/actions";
+// import { removeAffiliateCookie } from "~/app/actions";
 import { COUNTRIES, US_STATES } from "~/constants/country";
 import { useTRPC } from "~/trpc/react";
 import { PasswordInput } from "../ui/password-input";
@@ -64,7 +64,7 @@ export default function SignupPage({
         form.reset();
         await queryClient.invalidateQueries(trpc.profile.pathFilter());
         toast.success("Profile created successfully");
-        await removeAffiliateCookie();
+        // await removeAffiliateCookie();
         router.push("/login");
       },
       onError: (err) => {

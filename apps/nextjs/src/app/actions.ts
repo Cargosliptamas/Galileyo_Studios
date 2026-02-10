@@ -206,3 +206,16 @@ export async function removeAffiliateCookie() {
 
   return { success: true };
 }
+
+export async function setAffiliateCookie(affiliateToken: string) {
+  const cookieStore = await cookies();
+
+  cookieStore.set("affiliate_token", affiliateToken, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 24 * 10, // 10 days
+    secure: env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return { success: true };
+}

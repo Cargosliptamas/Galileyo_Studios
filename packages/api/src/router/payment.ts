@@ -511,6 +511,13 @@ export const paymentRouter = {
       }),
     )
     .query(async ({ ctx, input }) => {
+      let affiliateToken = input.affiliate_token;
+      if (!affiliateToken && ctx.cookies?.affiliate_token) {
+        affiliateToken = ctx.cookies.affiliate_token;
+      }
+
+      console.log("affiliateToken", affiliateToken);
+
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/product/get-price`,
         {
@@ -519,7 +526,10 @@ export const paymentRouter = {
             Authorization: `Bearer ${ctx.session.session.token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(input),
+          body: JSON.stringify({
+            ...input,
+            affiliate_token: affiliateToken,
+          }),
         },
       );
 

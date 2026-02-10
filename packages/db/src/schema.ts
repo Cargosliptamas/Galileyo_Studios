@@ -1382,6 +1382,8 @@ export const promocode = mysqlTable(
     trialPeriod: int("trial_period"),
     showOnFrontend: tinyint("show_on_frontend").default(0).notNull(),
     description: text(),
+    idInfluencer: bigint("id_influencer", { mode: "number" }),
+    serviceId: bigint("service_id", { mode: "number" }),
   },
   (table) => [
     primaryKey({ columns: [table.id], name: "promocode_id" }),

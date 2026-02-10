@@ -704,9 +704,17 @@ export const invoicePromocodeRelations = relations(
   }),
 );
 
-export const promocodeRelations = relations(promocode, ({ many }) => ({
+export const promocodeRelations = relations(promocode, ({ many, one }) => ({
   invoicePromocodes: many(invoicePromocode),
   promocodeInfluencers: many(promocodeInfluencer),
+  influencer: one(user, {
+    fields: [promocode.idInfluencer],
+    references: [user.id],
+  }),
+  service: one(service, {
+    fields: [promocode.serviceId],
+    references: [service.id],
+  }),
 }));
 
 export const invoiceServiceRelations = relations(invoiceService, ({ one }) => ({
