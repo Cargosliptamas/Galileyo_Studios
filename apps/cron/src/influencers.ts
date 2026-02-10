@@ -33,7 +33,7 @@ const influencers: Influencer[] = [
   },
   {
     id: 207,
-    urls: ["https://rumble.com/c/TheMelKShow/videos"],
+    urls: ["https://rumble.com/c/TheMelKShow"],
   },
   {
     id: 221,
@@ -49,7 +49,7 @@ const influencers: Influencer[] = [
   },
   {
     id: 20511,
-    urls: ["https://rumble.com/user/ZeeeMedia/videos"],
+    urls: ["https://rumble.com/user/ZeeeMedia"],
   },
   {
     id: 20520,
@@ -68,7 +68,7 @@ const influencers: Influencer[] = [
   },
   {
     id: 21122,
-    urls: ["https://rumble.com/c/TheInfoWarrior/videos"],
+    urls: ["https://rumble.com/c/TheInfoWarrior"],
   },
   {
     id: 21123,
