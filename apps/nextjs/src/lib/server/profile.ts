@@ -35,8 +35,13 @@ export async function getProfileInfoBySubscription(
   id: string,
   userId?: string,
 ): Promise<ProfileInfo | null> {
+  const idNumber = Number(id);
+  if (isNaN(idNumber)) {
+    return null;
+  }
+
   const data = await db.query.subscription.findFirst({
-    where: eq(subscriptionSchema.id, Number(id)),
+    where: eq(subscriptionSchema.id, idNumber),
     with: {
       influencerPages: true,
     },
@@ -55,7 +60,7 @@ export async function getProfileInfoBySubscription(
       },
       where: and(
         eq(userSubscription.idUser, Number(userId)),
-        eq(userSubscription.idSubscription, Number(id)),
+        eq(userSubscription.idSubscription, idNumber),
       ),
     });
 
@@ -135,8 +140,13 @@ export async function getProfileInfoByFollowerList(
   id: string,
   userId?: string,
 ): Promise<ProfileInfo | null> {
+  const idNumber = Number(id);
+  if (isNaN(idNumber)) {
+    return null;
+  }
+
   const data = await db.query.followerList.findFirst({
-    where: eq(followerList.id, Number(id)),
+    where: eq(followerList.id, idNumber),
   });
 
   if (!data) {
@@ -174,6 +184,10 @@ export async function getProfileInfoByFollowerList(
 }
 
 export async function getUserProfile(id: number, authenticatedUser?: string) {
+  if (isNaN(id)) {
+    return null;
+  }
+
   const authenticatedUserId = authenticatedUser
     ? Number(authenticatedUser)
     : null;

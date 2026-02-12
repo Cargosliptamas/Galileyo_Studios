@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
@@ -21,8 +21,9 @@ import { PasswordInput } from "../ui/password-input";
 
 export function LoginForm({
   className,
+  callbackURL = "/dashboard",
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { callbackURL?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordLogin, setIsPasswordLogin] = useState(false);
@@ -34,6 +35,17 @@ export function LoginForm({
     password?: string;
   }>({});
   const [isSuccess, setIsSuccess] = useState(false);
+  const normalizedCallbackURL = useMemo(() => {
+    if (!callbackURL) {
+      return "/dashboard";
+    }
+
+    if (!callbackURL.startsWith("/") || callbackURL.startsWith("//")) {
+      return "/dashboard";
+    }
+
+    return callbackURL;
+  }, [callbackURL]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +69,7 @@ export function LoginForm({
       } else {
         result = await authClient.signIn.magicLink({
           email: email,
-          callbackURL: "/dashboard",
+          callbackURL: normalizedCallbackURL,
         });
       }
 
@@ -93,12 +105,12 @@ export function LoginForm({
       if (result.data?.status && !isPasswordLogin) {
         setIsSuccess(true);
       } else if (result.data?.status && isPasswordLogin) {
-        window.location.href = "/dashboard";
+        window.location.href = normalizedCallbackURL;
       }
 
       setIsLoading(false);
     },
-    [email, isPasswordLogin, password],
+    [email, isPasswordLogin, normalizedCallbackURL, password],
   );
 
   // const handleSubmit = useCallback(

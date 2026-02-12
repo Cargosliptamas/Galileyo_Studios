@@ -12,6 +12,7 @@ import {
   MapPin,
   MessageCircle,
   MoreHorizontal,
+  Repeat2,
   Satellite,
   TrendingDown,
   TrendingUp,
@@ -59,11 +60,14 @@ import { useTRPC } from "~/trpc/react";
 import { AlertMap } from "../alert-map/alert-map";
 import ImageWithAuth from "../image-with-auth";
 import FeedThirdPartyContent from "./feed-third-party-contet";
+import { PostShareModal } from "./post-share-modal";
 import { UserAvatar } from "./user-avatar";
 
 import "leaflet/dist/leaflet.css";
 
 import { useRouter } from "next/navigation";
+
+import type { FeedItemVideoType } from "@galileyo/validators/feed";
 
 import Interweave from "../ui/interweave";
 
@@ -87,6 +91,101 @@ const reactionOptions = [
   { type: "fire" as const, emoji: "🔥", label: "Fire", id: "5" },
   { type: "disgust" as const, emoji: "🤢", label: "Disgust", id: "6" },
 ];
+
+function isInfiniteFeedListQueryData(
+  value: unknown,
+): value is InfiniteData<{ list: FeedItem[] }> {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "pages" in value &&
+      Array.isArray((value as { pages?: unknown }).pages),
+  );
+}
+
+function isFeedItemQueryData(value: unknown): value is FeedItem {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "id" in value &&
+      "reactions" in value &&
+      Array.isArray((value as { reactions?: unknown }).reactions),
+  );
+}
+
+function applySetReactionToItem(
+  item: FeedItem,
+  data: { id: string; reaction: string },
+): FeedItem {
+  if (item.id !== Number(data.id)) {
+    return item;
+  }
+
+  const hasNewReaction = item.reactions.find(
+    (reaction) => reaction.id === data.reaction,
+  );
+
+  const mappedReactions = item.reactions.map((reaction) => {
+    if (reaction.id === data.reaction) {
+      return {
+        ...reaction,
+        cnt: reaction.cnt + 1,
+        selected: true,
+      };
+    }
+
+    if (reaction.selected) {
+      return {
+        ...reaction,
+        cnt: reaction.cnt - 1,
+        selected: false,
+      };
+    }
+
+    return {
+      ...reaction,
+    };
+  });
+
+  if (!hasNewReaction) {
+    mappedReactions.push({
+      id: data.reaction,
+      cnt: 1,
+      selected: true,
+    });
+  }
+
+  return {
+    ...item,
+    reactions: mappedReactions.filter((reaction) => reaction.cnt > 0),
+  };
+}
+
+function applyRemoveReactionFromItem(
+  item: FeedItem,
+  data: { id: string; reaction: string },
+): FeedItem {
+  if (item.id !== Number(data.id)) {
+    return item;
+  }
+
+  const mappedReactions = item.reactions.map((reaction) => {
+    if (reaction.id === data.reaction) {
+      return {
+        ...reaction,
+        cnt: reaction.cnt - 1,
+        selected: false,
+      };
+    }
+
+    return reaction;
+  });
+
+  return {
+    ...item,
+    reactions: mappedReactions.filter((reaction) => reaction.cnt > 0),
+  };
+}
 
 export function getFeedImageUrls(feedImages: FeedItem["images"]) {
   const images: string[] = [];
@@ -124,6 +223,7 @@ export default function FeedCard({
   isOnAlertMap = false,
   className,
   actionsDisabled = false,
+  showOriginalPost = true,
 }: {
   item: FeedItem;
   isMocked?: boolean;
@@ -132,6 +232,7 @@ export default function FeedCard({
   isOnAlertMap?: boolean;
   className?: string;
   actionsDisabled?: boolean;
+  showOriginalPost?: boolean;
 }) {
   const router = useRouter();
   const { ref, inView } = useInView();
@@ -188,77 +289,32 @@ export default function FeedCard({
         //   limit,
         //   type: type as "subscriptions" | "discover",
         // });
-        const queryKey = getQueryKeys() as ReturnType<
-          typeof trpc.feed.getLatestNews.infiniteQueryKey
-        >;
+        const queryKey = getQueryKeys();
 
         const previousData = queryClient.getQueryData(queryKey);
 
-        queryClient.setQueryData<
-          InfiniteData<{
-            list: FeedItem[];
-          }>
-        >(queryKey, (old) => {
-          if (isOnAlertMap) {
+        queryClient.setQueryData(queryKey, (old) => {
+          if (isOnAlertMap || !old) {
             return old;
           }
 
-          const mapped = {
-            ...old,
-            pageParams: old?.pageParams ?? [],
-            pages:
-              old?.pages.map((page) => ({
+          if (isInfiniteFeedListQueryData(old)) {
+            return {
+              ...old,
+              pages: old.pages.map((page) => ({
                 ...page,
-                list: page.list.map((item) => {
-                  if (item.id !== Number(data.id)) {
-                    return item;
-                  }
+                list: page.list.map((feedItem) =>
+                  applySetReactionToItem(feedItem, data),
+                ),
+              })),
+            };
+          }
 
-                  const hasNewReaction = item.reactions.find(
-                    (reaction) => reaction.id === data.reaction,
-                  );
+          if (isFeedItemQueryData(old)) {
+            return applySetReactionToItem(old, data);
+          }
 
-                  const mappedReactions = item.reactions.map((reaction) => {
-                    if (reaction.id === data.reaction) {
-                      return {
-                        ...reaction,
-                        cnt: reaction.cnt + 1,
-                        selected: true,
-                      };
-                    }
-
-                    if (reaction.selected) {
-                      return {
-                        ...reaction,
-                        cnt: reaction.cnt - 1,
-                        selected: false,
-                      };
-                    }
-
-                    return {
-                      ...reaction,
-                    };
-                  });
-
-                  if (!hasNewReaction) {
-                    mappedReactions.push({
-                      id: data.reaction,
-                      cnt: 1,
-                      selected: true,
-                    });
-                  }
-
-                  return {
-                    ...item,
-                    reactions: mappedReactions.filter(
-                      (reaction) => reaction.cnt > 0,
-                    ),
-                  };
-                }),
-              })) ?? [],
-          };
-
-          return mapped;
+          return old;
         });
 
         return { previousData };
@@ -278,9 +334,7 @@ export default function FeedCard({
         //   limit: 100,
         //   type: type as "subscriptions" | "discover",
         // });
-        const queryKey = getQueryKeysOnError() as ReturnType<
-          typeof trpc.feed.getLatestNews.infiniteQueryKey
-        >;
+        const queryKey = getQueryKeysOnError();
 
         queryClient.setQueryData(queryKey, context?.previousData);
       },
@@ -297,55 +351,32 @@ export default function FeedCard({
         //   limit,
         //   type: type as "subscriptions" | "discover",
         // });
-        const queryKey = getQueryKeys() as ReturnType<
-          typeof trpc.feed.getLatestNews.infiniteQueryKey
-        >;
+        const queryKey = getQueryKeys();
 
         const previousData = queryClient.getQueryData(queryKey);
 
-        queryClient.setQueryData<
-          InfiniteData<{
-            list: FeedItem[];
-          }>
-        >(queryKey, (old) => {
-          if (isOnAlertMap) {
+        queryClient.setQueryData(queryKey, (old) => {
+          if (isOnAlertMap || !old) {
             return old;
           }
 
-          const mapped = {
-            ...old,
-            pageParams: old?.pageParams ?? [],
-            pages:
-              old?.pages.map((page) => ({
+          if (isInfiniteFeedListQueryData(old)) {
+            return {
+              ...old,
+              pages: old.pages.map((page) => ({
                 ...page,
-                list: page.list.map((item) => {
-                  if (item.id !== Number(data.id)) {
-                    return item;
-                  }
+                list: page.list.map((feedItem) =>
+                  applyRemoveReactionFromItem(feedItem, data),
+                ),
+              })),
+            };
+          }
 
-                  const mappedReactions = item.reactions.map((reaction) => {
-                    if (reaction.id === data.reaction) {
-                      return {
-                        ...reaction,
-                        cnt: reaction.cnt - 1,
-                        selected: false,
-                      };
-                    }
+          if (isFeedItemQueryData(old)) {
+            return applyRemoveReactionFromItem(old, data);
+          }
 
-                    return reaction;
-                  });
-
-                  return {
-                    ...item,
-                    reactions: mappedReactions.filter(
-                      (reaction) => reaction.cnt > 0,
-                    ),
-                  };
-                }),
-              })) ?? [],
-          };
-
-          return mapped;
+          return old;
         });
 
         return { previousData };
@@ -365,9 +396,7 @@ export default function FeedCard({
         //   limit: 100,
         //   type: type as "subscriptions" | "discover",
         // });
-        const queryKey = getQueryKeysOnError() as ReturnType<
-          typeof trpc.feed.getLatestNews.infiniteQueryKey
-        >;
+        const queryKey = getQueryKeysOnError();
 
         queryClient.setQueryData(queryKey, context?.previousData);
       },
@@ -378,7 +407,7 @@ export default function FeedCard({
     return item.reactions.find((reaction) => reaction.selected);
   }, [item.reactions]);
 
-  const pendingReaction = useMemo(() => {
+  const pendingReactionId = useMemo(() => {
     if (
       setReaction.variables?.id === String(item.id) &&
       setReaction.isPending
@@ -401,6 +430,8 @@ export default function FeedCard({
     setReaction.isPending,
     removeReaction.isPending,
   ]);
+
+  const activeReactionId = pendingReactionId ?? userReaction?.id ?? null;
 
   const getPostTypeIcon = (type: string, emergencyLevel?: string) => {
     switch (type) {
@@ -488,6 +519,14 @@ export default function FeedCard({
     [userReaction?.id, item.id, setReaction, removeReaction],
   );
 
+  const handlePrimaryReaction = useCallback(() => {
+    const activeReaction = reactionOptions.find(
+      (reaction) => reaction.id === activeReactionId,
+    );
+
+    handleReactionClick(activeReaction?.type ?? "love");
+  }, [activeReactionId, handleReactionClick]);
+
   const profileLink = useMemo(() => {
     if (isMocked || item.type === "financial" || item.type === "emergency") {
       return undefined;
@@ -534,6 +573,7 @@ export default function FeedCard({
   }, [item.images]);
 
   const [zoomedImageIndex, setZoomedImageIndex] = useState<number | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Keyboard navigation for image zoom
   useEffect(() => {
@@ -617,8 +657,16 @@ export default function FeedCard({
     [router],
   );
 
+  const postBody = useMemo(() => {
+    if (item.is_repost) {
+      return item.repost_caption ?? "";
+    }
+
+    return item.body;
+  }, [item.body, item.is_repost, item.repost_caption]);
+
   const { links } = useMemo(() => {
-    const result = detectLinks(item.body, true);
+    const result = detectLinks(postBody, true);
     return {
       text: result.text,
       links: [
@@ -626,14 +674,14 @@ export default function FeedCard({
         { link: item.url ?? "", type: detectLinkType(item.url, "direct-url") },
       ].filter((link) => link.link !== ""),
     };
-  }, [item.body, item.url]);
+  }, [item.url, postBody]);
 
   return (
     // <Card className="max-w-3xl mx-auto">
     <Card
       ref={ref}
       className={cn(
-        "transform border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
+        "border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
         className,
       )}
     >
@@ -666,10 +714,15 @@ export default function FeedCard({
             </UserAvatar>
           </div>
 
-          {!item.is_owner && item.type !== "emergency" && (
+          {!actionsDisabled && !item.is_owner && item.type !== "emergency" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open post actions"
+                  className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                >
                   <MoreHorizontal className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -707,27 +760,51 @@ export default function FeedCard({
       {inView || wasInView ? (
         <CardContent className="pt-0">
           {/* Post Content */}
-          {item.type !== "financial" && (
+          {item.type !== "financial" && postBody.trim().length > 0 && (
             // <p className="mb-4 break-words leading-relaxed">{text}</p>
             <div className="mb-4 break-words leading-relaxed">
-              <Interweave content={item.body} />
+              <Interweave content={postBody} />
             </div>
           )}
 
+          {/* Video Preview */}
+          {"video" in item &&
+            (item as { video: FeedItemVideoType | null }).video && (
+              <FeedVideoPreview
+                video={(item as { video: FeedItemVideoType }).video}
+              />
+            )}
+
           {/* Post Image */}
           {feedImageUrls.length > 0 && (
-            <div className="grid grid-cols-2 gap-3">
+            <div
+              className={cn(
+                "grid gap-3",
+                feedImageUrls.length === 1 ? "grid-cols-1" : "grid-cols-2",
+              )}
+            >
               {feedImageUrls.map((url, index) => (
                 <button
                   key={`feed-image-${item.id}-${index}`}
                   onClick={() => setZoomedImageIndex(index)}
-                  className="cursor-pointer overflow-hidden rounded-lg transition-transform hover:scale-105"
+                  className={cn(
+                    "group relative overflow-hidden rounded-xl border border-transparent bg-slate-100/40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/60 dark:bg-slate-800/40",
+                    feedImageUrls.length === 1
+                      ? "max-h-[30rem]"
+                      : "aspect-square",
+                  )}
                   type="button"
+                  aria-label={`Open image ${index + 1} of ${feedImageUrls.length}`}
                 >
                   <ImageWithAuth
                     url={url}
                     alt="Post content"
-                    className="h-auto w-full object-cover"
+                    className={cn(
+                      "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
+                      feedImageUrls.length === 1
+                        ? "h-auto max-h-[30rem]"
+                        : "h-full",
+                    )}
                   />
                 </button>
               ))}
@@ -735,6 +812,22 @@ export default function FeedCard({
           )}
 
           <FeedThirdPartyContent links={links} />
+
+          {showOriginalPost && item.original_post && (
+            <div className="mb-4 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 dark:border-slate-700/80 dark:bg-slate-900/40">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Original Post
+              </p>
+              <FeedCard
+                item={item.original_post}
+                getQueryKeys={getQueryKeys}
+                getQueryKeysOnError={getQueryKeysOnError}
+                actionsDisabled={true}
+                showOriginalPost={false}
+                className="border-slate-200 bg-white/80 shadow-none dark:border-slate-700 dark:bg-slate-900/70"
+              />
+            </div>
+          )}
 
           {item.meta_data?.location && (
             <div className="my-4 rounded-lg border border-slate-600 bg-slate-900/50 p-3">
@@ -895,75 +988,62 @@ export default function FeedCard({
               <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
 
               {/* Post Actions */}
-              <div className="grid grid-cols-3 items-baseline justify-between">
-                <div className="col-span-3 flex">
-                  {item.reactions.length > 0 && (
-                    <div className="mt-1 flex items-center gap-1">
-                      {item.reactions.map((reaction) => (
-                        <div
-                          key={reaction.id}
-                          className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
-                        >
-                          <span>
-                            {
-                              reactionOptions.find((r) => r.id === reaction.id)
-                                ?.emoji
-                            }
-                          </span>
-                          <span>{formatNumber(reaction.cnt)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="col-span-2 flex items-center gap-6">
-                  <HoverCard openDelay={300}>
-                    <HoverCardTrigger asChild>
-                      {/* <div className="flex flex-col items-center gap-2"> */}
-                      <Button
-                        disabled={isMocked || !item.show_reactions}
-                        variant="ghost"
-                        // size="icon"
-                        className={cn(
-                          "flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400",
-                          // pendingReaction ? "animate-pulse" : "",
-                        )}
-                        onClick={() => {
-                          if (pendingReaction) {
-                            handleReactionClick(pendingReaction);
-                            return;
-                          }
-
-                          const reaction = reactionOptions.find(
-                            (r) => r.id === userReaction?.id,
-                          );
-
-                          if (reaction) {
-                            handleReactionClick(reaction.type);
-                          } else {
-                            handleReactionClick("love");
-                          }
-                        }}
+              <div className="space-y-2">
+                {item.reactions.length > 0 && (
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    {item.reactions.map((reaction) => (
+                      <div
+                        key={reaction.id}
+                        className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                       >
-                        {/* <Heart className="h-5 w-5" /> */}
-                        {userReaction || pendingReaction ? (
-                          <div className="flex max-h-5 max-w-5 items-center gap-1 text-xl">
-                            {
-                              reactionOptions.find(
-                                (r) =>
-                                  r.id ===
-                                  (pendingReaction ?? userReaction?.id),
-                              )?.emoji
-                            }
+                        <span>
+                          {reactionOptions.find((r) => r.id === reaction.id)
+                            ?.emoji ?? ""}
+                        </span>
+                        <span>{formatNumber(reaction.cnt)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-1 sm:gap-2">
+                    <HoverCard openDelay={300}>
+                      <HoverCardTrigger asChild>
+                        {/* <div className="flex flex-col items-center gap-2"> */}
+                        <Button
+                          disabled={isMocked || !item.show_reactions}
+                          variant="ghost"
+                          className={cn(
+                            "h-9 rounded-full px-3 text-slate-500 transition-colors hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-cyan-500/60 dark:text-slate-400 dark:hover:text-slate-200",
+                            (setReaction.isPending ||
+                              removeReaction.isPending) &&
+                              "opacity-80",
+                          )}
+                          onClick={handlePrimaryReaction}
+                          aria-label={
+                            activeReactionId
+                              ? "Change reaction"
+                              : "Add reaction"
+                          }
+                        >
+                          {/* <Heart className="h-5 w-5" /> */}
+                          {activeReactionId ? (
+                            <div className="flex max-h-5 max-w-5 items-center gap-1 text-xl">
+                              {
+                                reactionOptions.find(
+                                  (r) => r.id === activeReactionId,
+                                )?.emoji
+                              }
+                            </div>
+                          ) : (
+                            <Heart className="h-5 w-5" />
+                          )}
+                          <div className="text-sm font-medium">
+                            {formatNumber(getTotalReactions())}
                           </div>
-                        ) : (
-                          <Heart className="h-5 w-5" />
-                        )}
-                        <div className="text-sm font-medium">
-                          {formatNumber(getTotalReactions())}
-                        </div>
-                      </Button>
-                      {/* {item.reactions.length > 0 && (
+                        </Button>
+                        {/* {item.reactions.length > 0 && (
                             <div className="mt-1 flex items-center gap-1">
                               {item.reactions.map((reaction) => (
                                 <div
@@ -982,84 +1062,100 @@ export default function FeedCard({
                               ))}
                             </div>
                           )} */}
-                      {/* </div> */}
-                    </HoverCardTrigger>
-                    <HoverCardContent
-                      className="w-full bg-white dark:bg-slate-900"
-                      side="top"
-                      align="start"
-                    >
-                      <div className="flex items-center gap-2">
-                        {reactionOptions.map((reaction) => (
-                          <Button
-                            disabled={isMocked}
-                            variant="ghost"
-                            size="icon"
-                            key={reaction.type}
-                            onClick={() => handleReactionClick(reaction.type)}
-                            aria-label={reaction.label}
-                          >
-                            {reaction.emoji}
-                          </Button>
-                        ))}
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                        {/* </div> */}
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        className="w-auto rounded-full border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+                        side="top"
+                        align="start"
+                      >
+                        <div className="flex items-center gap-2">
+                          {reactionOptions.map((reaction) => (
+                            <Button
+                              disabled={isMocked}
+                              variant="ghost"
+                              size="icon"
+                              key={reaction.type}
+                              onClick={() => handleReactionClick(reaction.type)}
+                              aria-label={reaction.label}
+                              className={cn(
+                                "h-9 w-9 rounded-full text-lg transition-transform hover:scale-110",
+                                activeReactionId === reaction.id &&
+                                  "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white",
+                              )}
+                            >
+                              {reaction.emoji}
+                            </Button>
+                          ))}
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
 
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
-                    onClick={() => openModal(item)}
-                    disabled={isMocked || !item.show_comments}
-                    data-phid="show-comments"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    <span className="text-sm font-medium">
-                      {formatNumber(item.comment_quantity)}
-                    </span>
-                  </Button>
-
-                  {/* <Button
-                      variant="ghost"
-                      className="flex items-center gap-2 text-slate-500 transition-colors dark:text-slate-400"
-                      disabled={isMocked}
-                    >
-                      <Share className="h-5 w-5" />
-                      <span className="text-sm font-medium">{formatNumber(0)}</span>
-                    </Button> */}
-                </div>
-
-                <div className="flex items-end justify-end gap-2">
-                  {item.id && (
                     <Button
                       variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        item.is_bookmarked
-                          ? handleDeleteBookmark()
-                          : handleBookmark()
-                      }
-                      disabled={
-                        isMocked ||
-                        createBookmark.isPending ||
-                        deleteBookmark.isPending
-                      }
-                      data-phid="bookmark-post"
-                      className={`p-2 transition-colors ${
-                        (item.is_bookmarked ?? false)
-                          ? "text-yellow-400 hover:text-yellow-300"
-                          : "text-slate-500 hover:text-yellow-400 dark:text-slate-400"
-                      }`}
+                      className="h-9 rounded-full px-3 text-slate-500 transition-colors hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-cyan-500/60 dark:text-slate-400 dark:hover:text-slate-200"
+                      onClick={() => openModal(item)}
+                      disabled={isMocked || !item.show_comments}
+                      data-phid="show-comments"
+                      aria-label="Open comments"
                     >
-                      {createBookmark.isPending || deleteBookmark.isPending ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <Bookmark
-                          className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
-                        />
-                      )}
+                      <MessageCircle className="h-5 w-5" />
+                      <span className="text-sm font-medium">
+                        {formatNumber(item.comment_quantity)}
+                      </span>
                     </Button>
-                  )}
+
+                    <Button
+                      variant="ghost"
+                      className="h-9 rounded-full px-3 text-slate-500 transition-colors hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-cyan-500/60 dark:text-slate-400 dark:hover:text-slate-200"
+                      disabled={isMocked}
+                      onClick={() => setIsShareModalOpen(true)}
+                      data-phid="share-post"
+                      aria-label="Repost"
+                    >
+                      <Repeat2 className="h-5 w-5" />
+                      <span className="text-sm font-medium">Repost</span>
+                    </Button>
+                  </div>
+
+                  <div className="ml-auto flex items-center justify-end gap-2">
+                    {item.id && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          item.is_bookmarked
+                            ? handleDeleteBookmark()
+                            : handleBookmark()
+                        }
+                        disabled={
+                          isMocked ||
+                          createBookmark.isPending ||
+                          deleteBookmark.isPending
+                        }
+                        data-phid="bookmark-post"
+                        aria-label={
+                          item.is_bookmarked
+                            ? "Remove bookmark"
+                            : "Bookmark post"
+                        }
+                        className={`p-2 transition-colors ${
+                          (item.is_bookmarked ?? false)
+                            ? "h-9 w-9 rounded-full text-yellow-400 hover:text-yellow-300"
+                            : "h-9 w-9 rounded-full text-slate-500 hover:text-yellow-400 dark:text-slate-400"
+                        }`}
+                      >
+                        {createBookmark.isPending ||
+                        deleteBookmark.isPending ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Bookmark
+                            className={`h-5 w-5 ${item.is_bookmarked ? "fill-current" : ""}`}
+                          />
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </>
@@ -1067,7 +1163,20 @@ export default function FeedCard({
         </CardContent>
       ) : (
         <CardContent className="pt-0">
-          <Skeleton className="h-64 w-64" />
+          <div className="space-y-3 pb-1">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-52 w-full rounded-xl" />
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-9 w-20 rounded-full" />
+                <Skeleton className="h-9 w-20 rounded-full" />
+                <Skeleton className="h-9 w-24 rounded-full" />
+              </div>
+              <Skeleton className="h-9 w-9 rounded-full" />
+            </div>
+          </div>
         </CardContent>
       )}
 
@@ -1080,17 +1189,21 @@ export default function FeedCard({
           }
         }}
       >
-        <DialogContent className="h-auto max-h-[95vh] w-auto max-w-[95vw] border-none bg-transparent p-0 [&>button]:hidden">
-          <DialogHeader>
-            <DialogTitle></DialogTitle>
+        <DialogContent className="h-auto max-h-[95vh] w-auto max-w-[95vw] border-none bg-transparent p-0 shadow-none [&>button]:hidden">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Image preview</DialogTitle>
+            <DialogDescription>
+              Expanded image preview. Use left and right arrow keys to navigate.
+            </DialogDescription>
           </DialogHeader>
           {zoomedImageIndex !== null && (
             <div className="relative flex h-full w-full items-center justify-center">
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-4"
+                className="absolute right-4 top-4 z-20 h-10 w-10 rounded-full bg-black/60 text-white backdrop-blur transition-colors hover:bg-black/80"
                 onClick={() => setZoomedImageIndex(null)}
+                aria-label="Close image preview"
               >
                 <XIcon className="h-5 w-5" />
               </Button>
@@ -1098,7 +1211,7 @@ export default function FeedCard({
               <ImageWithAuth
                 url={feedImageUrls[zoomedImageIndex] ?? ""}
                 alt="Post image"
-                className="object-fit max-h-full w-full"
+                className="max-h-[88vh] w-auto max-w-[95vw] object-contain"
                 skeletonClassName="w-96 h-96"
               />
 
@@ -1112,7 +1225,7 @@ export default function FeedCard({
                           : feedImageUrls.length - 1,
                       );
                     }}
-                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 p-2 text-white backdrop-blur transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     type="button"
                     aria-label="Previous image"
                   >
@@ -1139,7 +1252,7 @@ export default function FeedCard({
                           : 0,
                       );
                     }}
-                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 p-2 text-white backdrop-blur transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     type="button"
                     aria-label="Next image"
                   >
@@ -1167,6 +1280,108 @@ export default function FeedCard({
           )}
         </DialogContent>
       </Dialog>
+
+      {item.id !== null && !actionsDisabled && (
+        <PostShareModal
+          postId={item.id}
+          postTitle={item.title}
+          postBody={item.body}
+          open={isShareModalOpen}
+          onOpenChange={setIsShareModalOpen}
+        />
+      )}
     </Card>
+  );
+}
+
+/**
+ * Video preview card for feed items that have a linked video.
+ * Shows thumbnail with play button overlay and duration badge.
+ * Clicking navigates to the video page.
+ */
+function FeedVideoPreview({ video }: { video: FeedItemVideoType }) {
+  const router = useRouter();
+
+  const formatDuration = (seconds: number | null) => {
+    if (!seconds) return null;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <button
+      type="button"
+      className="group relative mb-4 w-full cursor-pointer overflow-hidden rounded-xl bg-slate-900 transition-all hover:shadow-lg hover:ring-2 hover:ring-cyan-500/30"
+      onClick={() => router.push(`/videos/${video.id}`)}
+      style={{
+        aspectRatio: video.aspectRatio ?? "16/9",
+        maxHeight: "400px",
+      }}
+    >
+      {/* Thumbnail */}
+      {video.thumbnailUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={video.thumbnailUrl}
+          alt="Video thumbnail"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-slate-800">
+          <svg
+            className="h-12 w-12 text-slate-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* Play button overlay */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
+        <div className="rounded-full bg-black/60 p-4 transition-transform group-hover:scale-110">
+          <svg
+            className="h-8 w-8 text-white"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Duration badge */}
+      {video.duration && (
+        <div className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs font-medium text-white">
+          {formatDuration(video.duration)}
+        </div>
+      )}
+
+      {/* Video indicator icon */}
+      <div className="absolute left-2 top-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white/80">
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+          />
+        </svg>
+        Video
+      </div>
+    </button>
   );
 }

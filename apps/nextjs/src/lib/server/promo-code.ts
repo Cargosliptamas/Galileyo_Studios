@@ -1,4 +1,5 @@
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
+
 import type {
   service as serviceSchema,
   user as userSchema,
@@ -38,11 +39,7 @@ export interface InfluencerPromoCodeData {
 export async function getInfluencerPromoCode(
   code: string,
 ): Promise<InfluencerPromoCodeData | null> {
-  const now = format(new Date(),"yyyy-MM-dd 00:00:00");
-  const yesterday = format(subDays(new Date(), 1),"yyyy-MM-dd 23:59:59");
-
-  console.log("now", now);
-  console.log("yesterday", yesterday);
+  const now = format(new Date(), "yyyy-MM-dd 00:00:00");
 
   const promoCode = await db.query.promocode.findFirst({
     where: and(

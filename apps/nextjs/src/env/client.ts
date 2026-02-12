@@ -35,6 +35,16 @@ export function clientEnv() {
       NEXT_PUBLIC_AD_SPACING: z.coerce.number().default(5),
       NEXT_PUBLIC_AD_NUMBER: z.coerce.number().default(1),
       NEXT_PUBLIC_UPGRADE_AD_SPACING: z.coerce.number().default(18),
+      NEXT_PUBLIC_VIDEO_FEED_INITIAL_LIMIT: z.coerce
+        .number()
+        .int()
+        .min(1)
+        .default(1),
+      NEXT_PUBLIC_VIDEO_FEED_PREFETCH_AHEAD: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .default(1),
       NEXT_PUBLIC_WEBHOOKS_ENABLED: z
         .enum(["true", "false"])
         .default("true")
@@ -51,6 +61,10 @@ export function clientEnv() {
       NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT: z
         .enum(["true", "false"])
         .default("false")
+        .transform((val) => val === "true"),
+      NEXT_PUBLIC_VIDEO_PROXY_ENABLED: z
+        .enum(["true", "false"])
+        .default("true")
         .transform((val) => val === "true"),
     },
     /**
@@ -70,12 +84,18 @@ export function clientEnv() {
       NEXT_PUBLIC_AD_NUMBER: process.env.NEXT_PUBLIC_AD_NUMBER,
       NEXT_PUBLIC_UPGRADE_AD_SPACING:
         process.env.NEXT_PUBLIC_UPGRADE_AD_SPACING,
+      NEXT_PUBLIC_VIDEO_FEED_INITIAL_LIMIT:
+        process.env.NEXT_PUBLIC_VIDEO_FEED_INITIAL_LIMIT,
+      NEXT_PUBLIC_VIDEO_FEED_PREFETCH_AHEAD:
+        process.env.NEXT_PUBLIC_VIDEO_FEED_PREFETCH_AHEAD,
       NEXT_PUBLIC_WEBHOOKS_ENABLED: process.env.NEXT_PUBLIC_WEBHOOKS_ENABLED,
       NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
       NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
       NEXT_PUBLIC_PREVIEW_ENABLED: process.env.NEXT_PUBLIC_PREVIEW_ENABLED,
       NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT:
         process.env.NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT,
+      NEXT_PUBLIC_VIDEO_PROXY_ENABLED:
+        process.env.NEXT_PUBLIC_VIDEO_PROXY_ENABLED,
     },
     skipValidation:
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",

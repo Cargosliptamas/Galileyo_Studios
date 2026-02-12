@@ -17,6 +17,15 @@ export interface FeedItemImageType {
   }[];
 }
 
+export interface FeedItemVideoType {
+  id: number;
+  thumbnailUrl: string | null;
+  playbackId: string | null;
+  duration: number | null;
+  aspectRatio: string | null;
+  s3Url: string | null;
+}
+
 export interface BaseFeedItem {
   type: string;
   id: number | null;
@@ -38,6 +47,9 @@ export interface BaseFeedItem {
   show_reactions: boolean | undefined;
   show_comments: boolean | undefined;
   id_user: number | null;
+  is_repost?: boolean | null;
+  repost_caption?: string | null;
+  original_post?: FeedItem | null;
 }
 
 export interface FollowerListItem extends BaseFeedItem {
@@ -48,6 +60,7 @@ export interface FollowerListItem extends BaseFeedItem {
   url: string | null;
   reactions: ReactionType[];
   images: FeedItemImageType[];
+  video: FeedItemVideoType | null;
   comment_quantity: number;
 }
 
@@ -60,6 +73,7 @@ export interface NotSendedYetItem extends BaseFeedItem {
   image: string | null;
   reactions: ReactionType[];
   images: FeedItemImageType[];
+  video: FeedItemVideoType | null;
   comment_quantity: number;
 }
 
@@ -98,6 +112,7 @@ export interface InfluencerItem extends BaseFeedItem {
   id_subscription: number | null;
   reactions: ReactionType[];
   images: FeedItemImageType[];
+  video: FeedItemVideoType | null;
   comment_quantity: number;
 }
 

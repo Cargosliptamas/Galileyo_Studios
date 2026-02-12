@@ -43,6 +43,10 @@
     "./phone": {
       "types": "./dist/phone.d.ts",
       "default": "./src/phone.ts"
+    },
+    "./video": {
+      "types": "./dist/video.d.ts",
+      "default": "./src/video.ts"
     }
   },
   "license": "MIT",

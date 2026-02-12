@@ -23,6 +23,7 @@ export function useFeedSubscription(props?: {
   ) => void | Promise<void>;
 }) {
   const trpc = useTRPC();
+  const { onSuccess, onError } = props ?? {};
 
   const handleSubscrition = useMutation(
     trpc.feed.setSubscription.mutationOptions({
@@ -43,12 +44,12 @@ export function useFeedSubscription(props?: {
           subscribed,
         },
         {
-          onSuccess: () => void props?.onSuccess?.(subscribed),
-          onError: (err) => void props?.onError?.(subscribed, err),
+          onSuccess: () => void onSuccess?.(subscribed),
+          onError: (err) => void onError?.(subscribed, err),
         },
       );
     },
-    [handleSubscrition, props?.onSuccess, props?.onError],
+    [handleSubscrition, onSuccess, onError],
   );
 
   return {

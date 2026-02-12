@@ -1,6 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 
 import { alertsRouter } from "./router/alerts";
+import { analyticsRouter } from "./router/analytics";
 import { authRouter } from "./router/auth";
 import { bookmarkRouter } from "./router/bookmark";
 import { chatRouter } from "./router/chat";
@@ -16,10 +17,13 @@ import { phoneRouter } from "./router/phone";
 import { profileRouter } from "./router/profile";
 import { scraperRouter } from "./router/scraper";
 import { searchRouter } from "./router/search";
+import { studioRouter } from "./router/studio";
+import { videoRouter } from "./router/video";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   alerts: alertsRouter,
+  analytics: analyticsRouter,
   auth: authRouter,
   bookmark: bookmarkRouter,
   chat: chatRouter,
@@ -33,6 +37,8 @@ export const appRouter = createTRPCRouter({
   profile: profileRouter,
   scraper: scraperRouter,
   search: searchRouter,
+  studio: studioRouter,
+  video: videoRouter,
   myFeeds: {
     private: privateFeedsRouter,
     influencer: influencerFeedsRouter,

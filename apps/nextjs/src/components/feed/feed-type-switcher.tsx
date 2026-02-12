@@ -1,81 +1,193 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Settings, Sparkles, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Settings, Sparkles, Users, Video } from "lucide-react";
 import { useQueryState } from "nuqs";
 
-import { Button } from "@galileyo/ui";
-import { Tabs, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
+import { cn } from "@galileyo/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@galileyo/ui/dialog";
 
 import type { User } from "~/auth/client";
+import { VideoUpload } from "~/components/video/video-upload";
 import { CreatePostInput } from "./create-post-input";
 import FeedCardSkeleton from "./feed-card-skeleton";
 import FeedList from "./feed-list";
 import { FeedSettingsDialog } from "./feed-settings-dialog";
 
-export function FeedTypeSwitcher({ user }: { user: User }) {
+interface TabItem {
+  id: string;
+  label: string;
+  icon: typeof Users;
+  isAction?: boolean;
+  gradient?: string;
+}
+
+const tabs: TabItem[] = [
+  {
+    id: "subscriptions",
+    label: "Following",
+    icon: Users,
+    gradient: "from-cyan-500 to-blue-500",
+  },
+  {
+    id: "discover",
+    label: "Discover",
+    icon: Sparkles,
+    gradient: "from-purple-500 to-pink-500",
+  },
+  // {
+  //   id: "upload",
+  //   label: "Upload",
+  //   icon: Video,
+  //   isAction: true,
+  //   gradient: "from-emerald-500 to-teal-500",
+  // },
+  {
+    id: "videos",
+    label: "Videos",
+    icon: Video,
+    isAction: true,
+    gradient: "from-emerald-500 to-teal-500",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings,
+    isAction: true,
+    gradient: "from-slate-500 to-slate-600",
+  },
+];
+
+export function FeedTypeSwitcher({
+  user,
+  initialPostId,
+}: {
+  user: User;
+  initialPostId?: number;
+}) {
+  const router = useRouter();
+
   const [tabState, setTabState] = useQueryState("tab");
   const [showSettings, setShowSettings] = useState(false);
+  const [showVideoUpload, setShowVideoUpload] = useState(false);
   const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    void setTabState(tab);
+  const handleTabClick = (tab: TabItem) => {
+    // if (tab.id === "upload") {
+    //   setShowVideoUpload(true);
+    // } else if (tab.id === "settings") {
+    //   setShowSettings(true);
+    // } else {
+    //   setActiveTab(tab.id);
+    //   void setTabState(tab.id);
+    // }
+
+    switch (tab.id) {
+      case "upload":
+        setShowVideoUpload(true);
+        break;
+      case "settings":
+        setShowSettings(true);
+        break;
+      case "videos":
+        router.push("/videos");
+        break;
+      default:
+        setActiveTab(tab.id);
+        void setTabState(tab.id);
+        break;
+    }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-0 md:grid-cols-12 md:gap-2">
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="col-span-11 mb-4 w-full"
-        >
-          <TabsList className="grid w-full grid-cols-2 rounded-xl border border-slate-200 bg-white/50 p-1 dark:border-slate-700 dark:bg-slate-800/50">
-            <TabsTrigger
-              value="subscriptions"
-              className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25"
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Subscriptions
-            </TabsTrigger>
-            <TabsTrigger
-              value="discover"
-              className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25"
-            >
-              <Sparkles className="mr-2 h-4 w-4" />
-              Discover
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+    <div>
+      {/* Tab Bar */}
+      <nav className="mb-6">
+        <div className="flex items-center justify-center gap-1 rounded-2xl border border-slate-200/80 bg-white/80 p-1.5 shadow-sm backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/80">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = !tab.isAction && activeTab === tab.id;
 
-        <Button
-          variant="outline"
-          onClick={() => setShowSettings(true)}
-          className="col-span-1"
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab)}
+                className={cn(
+                  "group relative flex flex-1 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-sm font-medium transition-all duration-200 sm:px-4",
+                  isActive
+                    ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
+                  tab.isAction && "text-slate-500 dark:text-slate-500",
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "h-4 w-4 transition-transform duration-200 group-hover:scale-110",
+                    isActive && "text-white",
+                  )}
+                />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {isActive && (
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full bg-gradient-to-r opacity-60",
+                      tab.gradient,
+                    )}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Content Area */}
+      <div className="space-y-4">
+        <CreatePostInput user={user} />
+
+        <Suspense
+          fallback={
+            <div className="space-y-4">
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+              <FeedCardSkeleton />
+            </div>
+          }
         >
-          <Settings className="h-4 w-4" />
-          <span className="ml-2 md:hidden">Settings</span>
-        </Button>
+          <FeedList
+            activeTab={activeTab}
+            user={user}
+            initialPostId={initialPostId}
+          />
+        </Suspense>
       </div>
 
-      <CreatePostInput user={user} />
-
-      <Suspense
-        fallback={
-          <div className="space-y-4">
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-            <FeedCardSkeleton />
-          </div>
-        }
-      >
-        <FeedList activeTab={activeTab} user={user} />
-      </Suspense>
-
+      {/* Dialogs */}
       <FeedSettingsDialog open={showSettings} onOpenChange={setShowSettings} />
+
+      <Dialog open={showVideoUpload} onOpenChange={setShowVideoUpload}>
+        <DialogContent className="max-h-[90dvh] w-[calc(100%-1rem)] max-w-md overflow-hidden p-0">
+          <DialogHeader className="border-b px-4 py-3 sm:px-6 sm:py-4">
+            <DialogTitle>Upload Video</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[calc(90dvh-64px)] overflow-y-auto p-4 sm:p-6">
+            <VideoUpload
+              onUploadComplete={() => {
+                setShowVideoUpload(false);
+              }}
+              onCancel={() => setShowVideoUpload(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

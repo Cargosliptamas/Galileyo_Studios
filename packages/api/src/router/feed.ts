@@ -14,7 +14,7 @@ import {
   GetLatestNewsParams,
 } from "@galileyo/validators/feed";
 
-import { mapFeedItem } from "../lib/feed";
+import { enrichFeedItemsWithVideos, mapFeedItem } from "../lib/feed";
 import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const feedRouter = {
@@ -66,24 +66,32 @@ export const feedRouter = {
       const result = feedJson;
 
       if (result.status !== "success") {
+        console.log(result);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 
+      const mappedList = result.data.list.map((item) => {
+        if (item.type === "financial") {
+          const financialItem = item as FinancialItemBackend;
+
+          return {
+            ...item,
+            percent: Number(financialItem.percent.replace("%", "")),
+            price: Number(financialItem.price),
+          };
+        }
+
+        return item;
+      });
+
+      // Enrich feed items with linked video data
+      const enrichedList = await enrichFeedItemsWithVideos(
+        mappedList as FeedItem[],
+      );
+
       return {
         ...result.data,
-        list: result.data.list.map((item) => {
-          if (item.type === "financial") {
-            const financialItem = item as FinancialItemBackend;
-
-            return {
-              ...item,
-              percent: Number(financialItem.percent.replace("%", "")),
-              price: Number(financialItem.price),
-            };
-          }
-
-          return item;
-        }),
+        list: enrichedList,
       };
     }),
   setReaction: protectedProcedure
@@ -177,11 +185,49 @@ export const feedRouter = {
         data: FeedItem | null;
       };
 
-      console.log(responseJson);
-
       if (responseJson.status !== "success") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
+    }),
+  share: protectedProcedure
+    .input(
+      z.object({
+        id_original_news: z.number(),
+        caption: z.string().max(512).optional(),
+        user_feed: z.enum(["public", "friends"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/news/share`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${ctx.session.session.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      const responseJson = (await response.json()) as {
+        status: "success" | "error";
+        data: FeedItem;
+        error?: {
+          text?: string;
+        };
+      };
+
+      if (responseJson.status !== "success") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: responseJson.error?.text ?? "Failed to share post",
+        });
+      }
+
+      const mappedItem = mapFeedItem(responseJson.data);
+      const enrichedList = await enrichFeedItemsWithVideos([mappedItem]);
+      return enrichedList[0] ?? mappedItem;
     }),
   getPrivateFeeds: protectedProcedure.query(async ({ ctx }) => {
     const response = await fetch(
@@ -322,7 +368,15 @@ export const feedRouter = {
         },
       };
 
-      return responseJson.data;
+      // Enrich feed items with linked video data
+      const enrichedList = await enrichFeedItemsWithVideos(
+        responseJson.data.list ?? [],
+      );
+
+      return {
+        ...responseJson.data,
+        list: enrichedList,
+      };
     }),
   getNewsById: protectedProcedure
     .input(
@@ -354,7 +408,9 @@ export const feedRouter = {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 
-      return mapFeedItem(responseJson.data);
+      const mappedItem = mapFeedItem(responseJson.data);
+      const enriched = await enrichFeedItemsWithVideos([mappedItem]);
+      return enriched[0] ?? mappedItem;
     }),
   setSubscription: protectedProcedure
     .input(

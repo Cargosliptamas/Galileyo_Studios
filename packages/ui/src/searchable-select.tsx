@@ -21,10 +21,12 @@ export function SearchableSelect({
   options,
   value,
   onChange,
+  popoverModal = false,
 }: {
   options: { value: string; label: string }[];
   value: string;
   onChange: (value: string) => void;
+  popoverModal?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
@@ -32,7 +34,7 @@ export function SearchableSelect({
 
   return (
     <div className="*:not-first:mt-2">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={popoverModal}>
         <PopoverTrigger asChild>
           <Button
             id={id}
@@ -54,8 +56,9 @@ export function SearchableSelect({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          className="max-h-[var(--radix-popover-content-available-height)] w-full min-w-[var(--radix-popper-anchor-width)] overflow-hidden border-input p-0"
           align="start"
+          collisionPadding={8}
         >
           <Command
             filter={(value, search, keywords) => {
@@ -69,7 +72,7 @@ export function SearchableSelect({
             }}
           >
             <CommandInput placeholder="Search options..." />
-            <CommandList>
+            <CommandList className="max-h-[16rem] overflow-y-auto overscroll-contain">
               <CommandEmpty>No options found.</CommandEmpty>
               <CommandGroup>
                 {options.map((option) => (

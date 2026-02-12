@@ -1,4 +1,5 @@
 export * from "./alert";
+export * from "./analytics";
 export * from "./bookmark";
 export * from "./feed";
 export * from "./friend";
@@ -8,3 +9,4 @@ export * from "./phone";
 export * from "./profile";
 export * from "./search";
 export * from "./scraping";
+export * from "./video";

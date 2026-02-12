@@ -381,7 +381,26 @@ export const profileRouter = {
       });
     }
 
-    return result.data;
+    let data = result.data;
+
+    if (ctx.session.user.isInfluencer) {
+      const subjects = ["can_comment_on_posts", "can_post"];
+      data = data.filter((item) => !subjects.includes(item.subject));
+
+      data = [
+        ...data,
+        {
+          action: "use",
+          subject: "can_post",
+        },
+        {
+          action: "use",
+          subject: "can_comment_on_posts",
+        },
+      ];
+    }
+
+    return data;
   }),
   getProfiles: protectedProcedure.query(async ({ ctx }) => {
     const request = await fetch(

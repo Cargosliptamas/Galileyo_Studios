@@ -10,7 +10,7 @@ import { AppIcon } from "./app-icon";
 import { useNativeBridge } from "./layout/native-app-bridge";
 import { SiteStatus } from "./site-status";
 
-const DISABLED_PATHS = ["/chat", "/dashboard"];
+const DISABLED_PATHS = ["/chat", "/dashboard", "/studio", "/videos"];
 
 export function SiteFooter() {
   const pathname = usePathname();

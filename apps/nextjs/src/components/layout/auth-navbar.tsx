@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MapIcon, MessageSquareIcon, ShoppingBag } from "lucide-react";
+
+import { useIsMobile } from "@galileyo/ui/hooks";
 
 import type { User } from "~/auth/client";
 import { AppIcon } from "../app-icon";
 import CommandMenu from "./command-menu";
 import { NotificationCenter } from "./notification-center";
 import { UserMenu } from "./user-menu";
+
+const DISABLED_PATHS = ["/videos"];
 
 export default function AuthNavbar({
   user,
@@ -16,6 +21,15 @@ export default function AuthNavbar({
   user: User;
   showMap: boolean;
 }) {
+  const pathname = usePathname();
+  const isMobile = useIsMobile();
+
+  const isDisabled = DISABLED_PATHS.some((path) => pathname.includes(path));
+
+  if (isDisabled && isMobile) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-950/95 md:px-6">
       <div className="lg:px-8* mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 py-8 sm:px-6">

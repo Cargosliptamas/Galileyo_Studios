@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Bookmark,
+  ChartBar,
   ChevronDown,
   CreditCard,
   Handshake,
@@ -198,6 +199,15 @@ export function UserMenu({
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
+
+          {user.isInfluencer && (
+            <DropdownMenuItem asChild>
+              <Link href="/analytics" className="cursor-pointer">
+                <ChartBar className="mr-2 h-4 w-4" />
+                Analytics
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem asChild>
             <Link href="/my-feeds" className="cursor-pointer">

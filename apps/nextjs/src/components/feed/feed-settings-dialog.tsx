@@ -1,34 +1,48 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { SaveIcon, Search } from "lucide-react";
+import {
+  Check,
+  MapPin,
+  Search,
+  Sparkles,
+  TrendingUp,
+  Users,
+  X,
+} from "lucide-react";
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
   Avatar,
   AvatarFallback,
   AvatarImage,
+  Badge,
   Button,
-  Checkbox,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   Input,
   Label,
+  ScrollArea,
+  ScrollBar,
+  Separator,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
   Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   toast,
 } from "@galileyo/ui";
 
 import { useTRPC } from "~/trpc/react";
 
-// import { fuzzySearch } from "~/lib/fuzzy-search";
+// ---------------------------------------------------------------------------
+// Types (from API response)
+// ---------------------------------------------------------------------------
 
-// Type inferred from the API response
 interface SubscribeableFeedItemType {
   id: string;
   title: string;
@@ -53,96 +67,431 @@ interface SubscribeableFeedType {
   feeds?: SubscribeableFeedItemType[];
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+const numberFormatter = new Intl.NumberFormat();
+
+function formatSubscribers(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+  return numberFormatter.format(count);
+}
+
+function getItemChecked(
+  item: SubscribeableFeedItemType,
+  overrides: Record<string, boolean>,
+) {
+  return overrides[item.id] ?? item.checked;
+}
+
 function searchTerm(needle: string, haystack: string) {
-  // return fuzzySearch(needle, haystack);
-  const term = needle.toLowerCase();
-  const searchTerm = haystack.toLowerCase();
-
-  return searchTerm.includes(term);
+  return haystack.toLowerCase().includes(needle.toLowerCase());
 }
 
-interface FeedInputDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  feedItem: {
-    id: string;
-    title: string;
-    description: string | null;
-    need_zip: boolean;
-    zip?: string | null;
-  } | null;
-  onSave: (zip: string) => void;
-}
-
-function FeedInputDialog({
-  open,
-  onOpenChange,
-  feedItem,
-  onSave,
-}: FeedInputDialogProps) {
-  const [zip, setZip] = useState(feedItem?.zip ?? "");
-
-  const handleSave = () => {
-    if (feedItem?.need_zip && !zip.trim()) {
-      toast.error("Please enter a zip code");
-      return;
-    }
-    onSave(zip);
-    onOpenChange(false);
-  };
-
-  // Reset zip when dialog opens/closes or feedItem changes
-  useEffect(() => {
-    if (open && feedItem) {
-      setZip(feedItem.zip ?? "");
-    }
-  }, [open, feedItem]);
-
-  if (!feedItem) return null;
-
+function itemMatchesQuery(item: SubscribeableFeedItemType, query: string) {
+  if (!query.trim()) return true;
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{feedItem.title}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          {feedItem.description && (
-            <p className="text-sm text-muted-foreground">
-              {feedItem.description}
-            </p>
-          )}
-          {feedItem.need_zip && (
-            <div className="space-y-2">
-              <Label htmlFor="zip-code">Zip Code</Label>
-              <Input
-                id="zip-code"
-                type="text"
-                placeholder="Enter zip code"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSave();
-                  }
-                }}
-              />
-            </div>
-          )}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              <SaveIcon className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+    searchTerm(query, item.title) ||
+    (item.subtitle ? searchTerm(query, item.subtitle) : false) ||
+    (item.description ? searchTerm(query, item.description) : false)
   );
 }
+
+/** Flatten all feed items from the hierarchical tree. */
+function collectAllItems(
+  feeds: SubscribeableFeedType[] | undefined,
+): SubscribeableFeedItemType[] {
+  if (!feeds) return [];
+  const items: SubscribeableFeedItemType[] = [];
+  const walk = (node: SubscribeableFeedType) => {
+    if (node.feeds) items.push(...node.feeds);
+    node.childs?.forEach(walk);
+  };
+  feeds.forEach(walk);
+  return items;
+}
+
+/** Collect items grouped by top-level category. */
+function collectItemsByCategory(
+  feeds: SubscribeableFeedType[] | undefined,
+): Map<string, SubscribeableFeedItemType[]> {
+  const map = new Map<string, SubscribeableFeedItemType[]>();
+  if (!feeds) return map;
+  for (const feed of feeds) {
+    const items = collectAllItems([feed]);
+    if (items.length > 0) {
+      map.set(feed.title, items);
+    }
+  }
+  return map;
+}
+
+/** Extract unique top-level category names. */
+function collectCategories(
+  feeds: SubscribeableFeedType[] | undefined,
+): string[] {
+  if (!feeds) return [];
+  return feeds.map((f) => f.title).filter(Boolean);
+}
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+/** Category pill navigation */
+function CategoryPills({
+  categories,
+  selected,
+  onSelect,
+}: {
+  categories: string[];
+  selected: string;
+  onSelect: (cat: string) => void;
+}) {
+  return (
+    <nav aria-label="Feed categories">
+      <ScrollArea className="w-full whitespace-nowrap">
+        <div className="flex gap-2 pb-2">
+          <Button
+            type="button"
+            variant={selected === "all" ? "primary" : "secondary"}
+            size="sm"
+            onClick={() => onSelect("all")}
+            className="shrink-0"
+          >
+            All
+          </Button>
+          {categories.map((cat) => (
+            <Button
+              key={cat}
+              type="button"
+              variant={selected === cat ? "primary" : "secondary"}
+              size="sm"
+              onClick={() => onSelect(cat)}
+              className="shrink-0"
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </nav>
+  );
+}
+
+/** Individual feed item card with Follow/Following toggle */
+function FeedCard({
+  item,
+  isFollowing,
+  onToggle,
+  isPending,
+  zipValue,
+  onZipChange,
+  showZipInput,
+  onZipSave,
+  onZipCancel,
+  onEditZip,
+}: {
+  item: SubscribeableFeedItemType;
+  isFollowing: boolean;
+  onToggle: (item: SubscribeableFeedItemType, follow: boolean) => void;
+  isPending: boolean;
+  zipValue: string;
+  onZipChange: (val: string) => void;
+  showZipInput: boolean;
+  onZipSave: () => void;
+  onZipCancel: () => void;
+  onEditZip: (item: SubscribeableFeedItemType) => void;
+}) {
+  const [isHovering, setIsHovering] = useState(false);
+
+  return (
+    <div className="group border bg-card p-4 transition-shadow hover:shadow-md">
+      <div className="flex items-start gap-3">
+        <Avatar className="h-11 w-11 shrink-0">
+          {item.image ? (
+            <AvatarImage src={item.image} alt={item.title} />
+          ) : null}
+          <AvatarFallback className="bg-muted text-sm font-semibold">
+            {item.title.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium leading-tight">{item.title}</p>
+              {item.description ? (
+                <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+              ) : null}
+            </div>
+
+            {/* Follow / Following button */}
+            <Button
+              type="button"
+              size="sm"
+              variant={
+                isFollowing
+                  ? isHovering
+                    ? "destructive"
+                    : "outline"
+                  : "primary"
+              }
+              disabled={isPending}
+              onClick={() => onToggle(item, !isFollowing)}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              className="shrink-0 gap-1.5"
+            >
+              {isFollowing ? (
+                isHovering ? (
+                  <>
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                    Unfollow
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                    Following
+                  </>
+                )
+              ) : (
+                "Follow"
+              )}
+            </Button>
+          </div>
+
+          {/* Meta row: subtitle, subscriber count, zip badge */}
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+            {item.subscribers > 10 ? (
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Users className="h-3 w-3" aria-hidden="true" />
+                <span className="tabular-nums">
+                  {formatSubscribers(item.subscribers)}
+                </span>
+              </span>
+            ) : null}
+            {item.subtitle ? (
+              <span className="text-xs text-muted-foreground">
+                {item.subtitle}
+              </span>
+            ) : null}
+            {item.need_zip && item.zip && !showZipInput ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditZip(item)}
+                className="h-auto gap-1 px-1.5 py-0.5 text-xs font-normal text-muted-foreground hover:text-foreground"
+                aria-label={`Change zip code for ${item.title}`}
+              >
+                <MapPin className="h-3 w-3" aria-hidden="true" />
+                {item.zip}
+              </Button>
+            ) : null}
+            {item.need_zip && !item.zip && isFollowing && !showZipInput ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditZip(item)}
+                className="h-auto gap-1 border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-xs font-normal text-amber-600 hover:bg-amber-500/20 dark:text-amber-400"
+                aria-label={`Add zip code for ${item.title}`}
+              >
+                <MapPin className="h-3 w-3" aria-hidden="true" />
+                Zip required
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Inline zip code input */}
+      {showZipInput ? (
+        <div className="mt-3 flex items-center gap-2 border border-dashed border-primary/30 bg-primary/5 p-3">
+          <MapPin
+            className="h-4 w-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <div className="min-w-0 flex-1">
+            <Label htmlFor={`zip-${item.id}`} className="sr-only">
+              Zip code for {item.title}
+            </Label>
+            <Input
+              id={`zip-${item.id}`}
+              name="zipCode"
+              type="text"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              placeholder="Enter zip code"
+              value={zipValue}
+              onChange={(e) => onZipChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onZipSave();
+                if (e.key === "Escape") onZipCancel();
+              }}
+              spellCheck={false}
+              maxLength={10}
+              className="h-8 text-sm"
+              autoFocus
+            />
+          </div>
+          <Button type="button" size="sm" onClick={onZipSave} className="h-8">
+            Save
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onZipCancel}
+            className="h-8"
+            aria-label="Cancel zip code entry"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** Compact card for the "You Might Also Like" horizontal row */
+function SuggestionCard({
+  item,
+  onFollow,
+  isPending,
+}: {
+  item: SubscribeableFeedItemType;
+  onFollow: (item: SubscribeableFeedItemType) => void;
+  isPending: boolean;
+}) {
+  return (
+    <div className="flex w-44 shrink-0 flex-col items-center gap-2.5 border bg-card p-4 text-center transition-shadow hover:shadow-md">
+      <Avatar className="h-14 w-14">
+        {item.image ? <AvatarImage src={item.image} alt={item.title} /> : null}
+        <AvatarFallback className="bg-muted text-lg font-semibold">
+          {item.title.charAt(0).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <div className="w-full min-w-0">
+        <p className="truncate text-sm font-medium">{item.title}</p>
+        {item.subscribers > 0 ? (
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            <span className="tabular-nums">
+              {formatSubscribers(item.subscribers)}
+            </span>{" "}
+            subscribers
+          </p>
+        ) : null}
+      </div>
+      <Button
+        type="button"
+        size="sm"
+        disabled={isPending}
+        onClick={() => onFollow(item)}
+        className="h-7 w-full text-xs"
+      >
+        Follow
+      </Button>
+    </div>
+  );
+}
+
+/** "You Might Also Like" horizontal scroll row */
+function SuggestionsRow({
+  suggestions,
+  onFollow,
+  pendingIds,
+}: {
+  suggestions: SubscribeableFeedItemType[];
+  onFollow: (item: SubscribeableFeedItemType) => void;
+  pendingIds: Set<string>;
+}) {
+  if (suggestions.length === 0) return null;
+
+  return (
+    <section aria-label="Suggested feeds">
+      <div className="mb-3 flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-purple-500" aria-hidden="true" />
+        <h3 className="text-sm font-semibold">You Might Also Like</h3>
+      </div>
+      <ScrollArea className="w-full whitespace-nowrap">
+        <div className="flex gap-3 pb-3">
+          {suggestions.map((item) => (
+            <SuggestionCard
+              key={item.id}
+              item={item}
+              onFollow={onFollow}
+              isPending={pendingIds.has(item.id)}
+            />
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </section>
+  );
+}
+
+/** Loading skeleton for the sheet content */
+function FeedSettingsSkeleton() {
+  return (
+    <div className="space-y-4">
+      {/* Category pills skeleton */}
+      <div className="flex gap-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-8 w-20" />
+        ))}
+      </div>
+      {/* Card skeletons */}
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="flex items-start gap-3 border p-4">
+          <Skeleton className="h-11 w-11" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+          <Skeleton className="h-8 w-24" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Empty state */
+function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+}: {
+  icon: typeof Users;
+  title: string;
+  description: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-3 py-12 text-center">
+      <div className="bg-muted p-3">
+        <Icon className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+      </div>
+      <div>
+        <p className="font-medium">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
 
 export function FeedSettingsDialog({
   open,
@@ -152,25 +501,38 @@ export function FeedSettingsDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [checkedStates, setCheckedStates] = useState<Record<string, boolean>>(
     {},
   );
-  const [inputDialogOpen, setInputDialogOpen] = useState(false);
-  const [selectedFeedItem, setSelectedFeedItem] = useState<{
-    id: string;
-    title: string;
-    description: string | null;
-    need_zip: boolean;
-    zip?: string | null;
-  } | null>(null);
-  const wasSavedRef = useRef(false);
+  const [activeTab, setActiveTab] = useState("browse");
 
+  // Zip code inline input state
+  const [zipTargetId, setZipTargetId] = useState<string | null>(null);
+  const [zipValue, setZipValue] = useState("");
+  const [isEditingZip, setIsEditingZip] = useState(false);
+
+  // Reset state when sheet closes
+  useEffect(() => {
+    if (!open) {
+      setSearchQuery("");
+      setSelectedCategory("all");
+      setCheckedStates({});
+      setActiveTab("browse");
+      setZipTargetId(null);
+      setZipValue("");
+      setIsEditingZip(false);
+    }
+  }, [open]);
+
+  // ---- Data fetching ----
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
   const { data: subscribeableFeeds, isLoading } = useQuery({
     ...trpc.feed.getSubscribeableFeeds.queryOptions(),
     enabled: open,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   const subscriptionMutation = useMutation(
@@ -185,475 +547,412 @@ export function FeedSettingsDialog({
     }),
   );
 
-  // Helper function to count all feeds recursively (including child feeds)
-  const countAllFeeds = (feed: SubscribeableFeedType): number => {
-    let count = feed.feeds?.length ?? 0;
-    if (feed.childs) {
-      count += feed.childs.reduce(
-        (sum: number, child: SubscribeableFeedType) =>
-          sum + countAllFeeds(child),
-        0,
-      );
-    }
-    return count;
-  };
+  // ---- Derived data ----
 
-  // Helper function to count checked feeds recursively
-  const countCheckedFeeds = (feed: SubscribeableFeedType): number => {
-    let count =
-      feed.feeds?.filter((item: SubscribeableFeedItemType) => item.checked)
-        .length ?? 0;
-    if (feed.childs) {
-      count += feed.childs.reduce(
-        (sum: number, child: SubscribeableFeedType) =>
-          sum + countCheckedFeeds(child),
-        0,
-      );
-    }
-    return count;
-  };
+  const categories = useMemo(
+    () => collectCategories(subscribeableFeeds),
+    [subscribeableFeeds],
+  );
 
-  // Helper function to filter child feeds recursively
-  const filterChildFeeds = (
-    child: SubscribeableFeedType,
-    query: string,
-  ): SubscribeableFeedType | null => {
-    const matchesTitle = searchTerm(query, child.title);
-    const matchingItems = child.feeds?.filter(
-      (item: SubscribeableFeedItemType) =>
-        searchTerm(query, item.title) ||
-        ((item.description && searchTerm(query, item.description)) ??
-          (item.subtitle && searchTerm(query, item.subtitle))),
-    );
+  const itemsByCategory = useMemo(
+    () => collectItemsByCategory(subscribeableFeeds),
+    [subscribeableFeeds],
+  );
 
-    const filteredChilds = child.childs
-      ?.map((c: SubscribeableFeedType) => filterChildFeeds(c, query))
-      .filter(
-        (c: SubscribeableFeedType | null): c is SubscribeableFeedType =>
-          c !== null,
-      );
+  const allItems = useMemo(
+    () => collectAllItems(subscribeableFeeds),
+    [subscribeableFeeds],
+  );
 
-    if (matchesTitle) {
-      return child;
-    }
+  /** Top unsubscribed feeds by subscriber count for "You Might Also Like" */
+  const suggestions = useMemo(() => {
+    return allItems
+      .filter((item) => !getItemChecked(item, checkedStates))
+      .sort((a, b) => b.subscribers - a.subscribers)
+      .slice(0, 8);
+  }, [allItems, checkedStates]);
 
-    if (matchingItems && matchingItems.length > 0) {
-      return {
-        ...child,
-        feeds: matchingItems,
-        childs: filteredChilds,
-      };
-    }
+  /** Filter items based on search + selected category */
+  const getFilteredItems = useCallback(
+    (onlySubscribed: boolean) => {
+      let items: SubscribeableFeedItemType[];
 
-    if (filteredChilds && filteredChilds.length > 0) {
-      return {
-        ...child,
-        childs: filteredChilds,
-      };
-    }
-
-    return null;
-  };
-
-  // Helper function to collect all accordion keys recursively
-  // This matches the key generation pattern used in renderChildFeeds
-  const collectAccordionKeys = (
-    feeds: SubscribeableFeedType[] | undefined,
-    parentKey = "",
-  ): string[] => {
-    if (!feeds) return [];
-
-    const keys: string[] = [];
-    feeds.forEach((feed, index) => {
-      // For top-level feeds, use the pattern: ${feed.id}-${index}
-      // For nested feeds, parentKey is already set from the parent
-      const feedKey = parentKey || `${feed.id}-${index}`;
-      const hasFeeds = feed.feeds && feed.feeds.length > 0;
-      const hasChilds = feed.childs && feed.childs.length > 0;
-
-      if (hasFeeds || hasChilds) {
-        // Only add the key if this is a child (has parentKey) or top-level
-        if (parentKey) {
-          // This is a child feed, key pattern: ${parentKey}-child-${child.id}
-          const childKey = `${parentKey}-child-${feed.id}`;
-          keys.push(childKey);
-
-          // Recursively collect nested child keys
-          if (hasChilds && feed.childs) {
-            feed.childs.forEach((nestedChild, nestedIndex) => {
-              const nestedParentKey = `${childKey}-${nestedIndex}`;
-              keys.push(
-                ...collectAccordionKeys([nestedChild], nestedParentKey),
-              );
-            });
-          }
-        } else {
-          // This is a top-level feed
-          keys.push(feedKey);
-
-          if (hasChilds && feed.childs) {
-            feed.childs.forEach((child, childIndex) => {
-              const childParentKey = `${feedKey}-${childIndex}`;
-              keys.push(...collectAccordionKeys([child], childParentKey));
-            });
-          }
-        }
+      if (selectedCategory === "all") {
+        items = allItems;
+      } else {
+        items = itemsByCategory.get(selectedCategory) ?? [];
       }
-    });
-    return keys;
-  };
 
-  // Filter feeds based on search query
-  const filteredFeeds = useMemo(() => {
-    if (!subscribeableFeeds || !searchQuery.trim()) {
-      return subscribeableFeeds;
-    }
+      if (onlySubscribed) {
+        items = items.filter((item) => getItemChecked(item, checkedStates));
+      }
 
-    const query = searchQuery.trim();
-    return subscribeableFeeds
-      .map((feed) => {
-        const matchesTitle = searchTerm(query, feed.title);
-        const matchingItems = feed.feeds?.filter(
-          (item) =>
-            searchTerm(query, item.title) ||
-            ((item.description && searchTerm(query, item.description)) ??
-              (item.subtitle && searchTerm(query, item.subtitle))),
-        );
+      const query = searchQuery.trim();
+      if (query) {
+        items = items.filter((item) => itemMatchesQuery(item, query));
+      }
 
-        const filteredChilds = feed.childs
-          ?.map((child: SubscribeableFeedType) =>
-            filterChildFeeds(child, query),
-          )
-          .filter(
-            (
-              child: SubscribeableFeedType | null,
-            ): child is SubscribeableFeedType => child !== null,
-          );
-
-        if (matchesTitle) {
-          return feed;
-        }
-
-        if (matchingItems && matchingItems.length > 0) {
-          return {
-            ...feed,
-            feeds: matchingItems,
-            childs: filteredChilds,
-          };
-        }
-
-        if (filteredChilds && filteredChilds.length > 0) {
-          return {
-            ...feed,
-            childs: filteredChilds,
-          };
-        }
-
-        return null;
-      })
-      .filter((feed): feed is NonNullable<typeof feed> => feed !== null);
-  }, [subscribeableFeeds, searchQuery]);
-
-  // Compute which accordion items should be open based on searchQuery
-  const openAccordionValues = useMemo(() => {
-    if (!searchQuery.trim() || !filteredFeeds) {
-      return undefined; // Let accordion manage its own state when no search
-    }
-    return collectAccordionKeys(filteredFeeds);
-  }, [filteredFeeds, searchQuery]);
-
-  const handleSubscriptionChange = ({
-    id,
-    checked,
-    needZip = false,
-    zip,
-  }: {
-    id: string;
-    checked: boolean;
-    needZip?: boolean;
-    zip?: string | null;
-  }) => {
-    if (needZip && !zip) {
-      toast.error("Please enter a zip code");
-      return;
-    }
-
-    subscriptionMutation.mutate({
-      id: Number(id),
-      subscribed: checked,
-      zip: zip ?? undefined,
-    });
-  };
-
-  const handleCheckboxChange = (
-    item: {
-      id: string;
-      title: string;
-      description: string | null;
-      need_zip: boolean;
-      zip?: string | null;
+      return items;
     },
-    checked: boolean,
-  ) => {
-    setCheckedStates((prev) => ({
-      ...prev,
-      [item.id]: checked,
-    }));
+    [allItems, itemsByCategory, selectedCategory, searchQuery, checkedStates],
+  );
 
-    // If the item needs zip and is being checked, open the input dialog
-    if (checked && item.need_zip && !item.zip) {
-      setSelectedFeedItem(item);
-      setInputDialogOpen(true);
-    } else if (!checked || !item.need_zip || item.zip) {
-      // If unchecking or doesn't need zip or already has zip, save immediately
+  const browseItems = useMemo(
+    () => getFilteredItems(false),
+    [getFilteredItems],
+  );
+  const followingItems = useMemo(
+    () => getFilteredItems(true),
+    [getFilteredItems],
+  );
+
+  /** Group following items by category for the "Following" tab */
+  const followingByCategory = useMemo(() => {
+    const map = new Map<string, SubscribeableFeedItemType[]>();
+    for (const [category, items] of itemsByCategory) {
+      const query = searchQuery.trim();
+      const subscribed = items.filter((item) => {
+        const isChecked = getItemChecked(item, checkedStates);
+        const matchesSearch = query ? itemMatchesQuery(item, query) : true;
+        return isChecked && matchesSearch;
+      });
+      if (subscribed.length > 0) {
+        map.set(category, subscribed);
+      }
+    }
+    return map;
+  }, [itemsByCategory, checkedStates, searchQuery]);
+
+  const totalSubscribed = useMemo(
+    () => allItems.filter((item) => getItemChecked(item, checkedStates)).length,
+    [allItems, checkedStates],
+  );
+
+  // ---- Handlers ----
+
+  const handleSubscriptionChange = useCallback(
+    ({
+      id,
+      checked,
+      needZip = false,
+      zip,
+    }: {
+      id: string;
+      checked: boolean;
+      needZip?: boolean;
+      zip?: string | null;
+    }) => {
+      if (needZip && checked && !zip) {
+        toast.error("Please enter a zip code");
+        return;
+      }
+      subscriptionMutation.mutate({
+        id: Number(id),
+        subscribed: checked,
+        zip: zip ?? undefined,
+      });
+    },
+    [subscriptionMutation],
+  );
+
+  const handleToggle = useCallback(
+    (item: SubscribeableFeedItemType, follow: boolean) => {
+      setCheckedStates((prev) => ({ ...prev, [item.id]: follow }));
+
+      if (follow && item.need_zip && !item.zip) {
+        // Open inline zip input for a new subscription
+        setZipTargetId(item.id);
+        setZipValue("");
+        setIsEditingZip(false);
+        return;
+      }
+
       handleSubscriptionChange({
         id: item.id,
-        checked,
+        checked: follow,
         needZip: item.need_zip,
         zip: item.zip,
       });
+    },
+    [handleSubscriptionChange],
+  );
+
+  const handleEditZip = useCallback((item: SubscribeableFeedItemType) => {
+    setZipTargetId(item.id);
+    setZipValue(item.zip ?? "");
+    setIsEditingZip(true);
+  }, []);
+
+  const handleZipSave = useCallback(() => {
+    if (!zipTargetId) return;
+    if (!zipValue.trim()) {
+      toast.error("Please enter a zip code");
+      return;
     }
-  };
-
-  const handleInputDialogSave = (zip: string) => {
-    if (!selectedFeedItem) return;
-
-    wasSavedRef.current = true;
     handleSubscriptionChange({
-      id: selectedFeedItem.id,
-      checked: checkedStates[selectedFeedItem.id] ?? true,
-      needZip: selectedFeedItem.need_zip,
-      zip,
+      id: zipTargetId,
+      checked: true,
+      needZip: true,
+      zip: zipValue.trim(),
     });
-  };
+    setZipTargetId(null);
+    setZipValue("");
+    setIsEditingZip(false);
+  }, [zipTargetId, zipValue, handleSubscriptionChange]);
 
-  const handleInputDialogClose = (open: boolean) => {
-    setInputDialogOpen(open);
-    // If dialog is being closed without saving, uncheck the checkbox
-    if (!open && selectedFeedItem && !wasSavedRef.current) {
-      const wasChecked = checkedStates[selectedFeedItem.id] ?? false;
-      if (wasChecked) {
-        setCheckedStates((prev) => ({
-          ...prev,
-          [selectedFeedItem.id]: false,
-        }));
-      }
+  const handleZipCancel = useCallback(() => {
+    // Only revert the checkbox if this was a fresh subscribe (not editing existing zip)
+    if (zipTargetId && !isEditingZip) {
+      setCheckedStates((prev) => ({ ...prev, [zipTargetId]: false }));
     }
-    // Reset the ref for next time
-    if (!open) {
-      wasSavedRef.current = false;
-    }
-  };
+    setZipTargetId(null);
+    setZipValue("");
+    setIsEditingZip(false);
+  }, [zipTargetId, isEditingZip]);
 
-  // Component to render feed items
-  const renderFeedItems = (
-    items: SubscribeableFeedItemType[] | undefined,
-    parentKey: string,
-  ) => {
-    if (!items || items.length === 0) return null;
+  const handleSuggestionFollow = useCallback(
+    (item: SubscribeableFeedItemType) => {
+      handleToggle(item, true);
+    },
+    [handleToggle],
+  );
 
-    return (
-      <div className="space-y-3">
-        {items.map((item: SubscribeableFeedItemType, itemIndex: number) => (
-          <div
-            key={`${parentKey}-item-${itemIndex}-${item.id}`}
-            className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
-          >
-            <Avatar className="h-10 w-10 shrink-0">
-              {item.image && <AvatarImage src={item.image} alt={item.title} />}
-              <AvatarFallback>
-                {item.title.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{item.title}</span>
-                {item.need_zip && item.zip && (
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                    {item.zip}
-                  </span>
-                )}
-              </div>
-              {item.description && (
-                <p className="text-sm text-muted-foreground">
-                  {item.description}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                className="h-5 w-5"
-                checked={checkedStates[item.id] ?? item.checked}
-                onCheckedChange={(checked: boolean) => {
-                  handleCheckboxChange(item, checked);
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // Component to render child feeds recursively
-  const renderChildFeeds = (
-    child: SubscribeableFeedType,
-    parentKey: string,
-    level = 0,
-  ) => {
-    const childKey = `${parentKey}-child-${child.id}`;
-    const hasFeeds = child.feeds && child.feeds.length > 0;
-    const hasChilds = child.childs && child.childs.length > 0;
-
-    if (!hasFeeds && !hasChilds) return null;
-
-    // Filter open values for nested accordions based on parent key prefix
-    const nestedOpenValues = openAccordionValues
-      ? openAccordionValues.filter((key) => key.startsWith(`${childKey}-`))
-      : undefined;
-
-    return (
-      <AccordionItem
-        key={childKey}
-        value={childKey}
-        className={level > 0 ? "ml-4 border-l-2 pl-4" : ""}
-      >
-        <AccordionTrigger>
-          <div className="mr-2 flex w-full items-center justify-between">
-            <p className={`font-medium ${level > 0 ? "text-sm" : ""}`}>
-              {child.title}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {countCheckedFeeds(child)} / {countAllFeeds(child)} subscribed
-            </p>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-4">
-            {hasFeeds && renderFeedItems(child.feeds, childKey)}
-            {hasChilds && (
-              <Accordion
-                type="multiple"
-                className="w-full"
-                value={nestedOpenValues}
-              >
-                {child.childs?.map(
-                  (nestedChild: SubscribeableFeedType, nestedIndex: number) =>
-                    renderChildFeeds(
-                      nestedChild,
-                      `${childKey}-${nestedIndex}`,
-                      level + 1,
-                    ),
-                )}
-              </Accordion>
-            )}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    );
-  };
+  // ---- Render ----
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="h-auto max-h-[90vh] max-w-4xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Subscription Settings</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search feeds..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-                disabled={isLoading}
-              />
-            </div>
-
-            {/* Feeds List */}
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : filteredFeeds && filteredFeeds.length > 0 ? (
-              <Accordion
-                type="multiple"
-                className="w-full"
-                value={openAccordionValues}
-              >
-                {filteredFeeds.map((feed, index) => {
-                  const feedKey = `${feed.id}-${index}`;
-                  const hasFeeds = feed.feeds && feed.feeds.length > 0;
-                  const hasChilds = feed.childs && feed.childs.length > 0;
-
-                  if (!hasFeeds && !hasChilds) return null;
-
-                  // Filter open values for nested accordions based on feed key prefix
-                  const nestedOpenValues = openAccordionValues
-                    ? openAccordionValues.filter((key) =>
-                        key.startsWith(`${feedKey}-`),
-                      )
-                    : undefined;
-
-                  return (
-                    <AccordionItem key={feedKey} value={feedKey}>
-                      <AccordionTrigger>
-                        <div className="mr-2 flex w-full items-center justify-between">
-                          <p className="font-medium">{feed.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {countCheckedFeeds(feed)} / {countAllFeeds(feed)}{" "}
-                            subscribed
-                          </p>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4">
-                          {hasFeeds && renderFeedItems(feed.feeds, feedKey)}
-                          {hasChilds && (
-                            <Accordion
-                              type="multiple"
-                              className="w-full"
-                              value={nestedOpenValues}
-                            >
-                              {feed.childs?.map((child, childIndex) =>
-                                renderChildFeeds(
-                                  child,
-                                  `${feedKey}-${childIndex}`,
-                                  0,
-                                ),
-                              )}
-                            </Accordion>
-                          )}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
-              </Accordion>
-            ) : (
-              <div className="py-8 text-center text-muted-foreground">
-                {searchQuery
-                  ? "No feeds found matching your search."
-                  : "No feeds available."}
-              </div>
-            )}
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-lg md:max-w-xl"
+      >
+        {/* Header */}
+        <SheetHeader className="space-y-3 border-b px-5 pb-4 pt-6">
+          <div>
+            <SheetTitle className="text-balance text-lg">
+              Manage Subscriptions
+            </SheetTitle>
+            <SheetDescription className="mt-1">
+              <span className="tabular-nums">
+                {numberFormatter.format(totalSubscribed)}
+              </span>{" "}
+              of{" "}
+              <span className="tabular-nums">
+                {numberFormatter.format(allItems.length)}
+              </span>{" "}
+              feeds followed
+            </SheetDescription>
           </div>
-        </DialogContent>
-      </Dialog>
 
-      {/* Input Dialog for feeds that need additional information */}
-      <FeedInputDialog
-        open={inputDialogOpen}
-        onOpenChange={handleInputDialogClose}
-        feedItem={selectedFeedItem}
-        onSave={handleInputDialogSave}
-      />
-    </>
+          {/* Search */}
+          <div className="relative">
+            <Label htmlFor="feed-search" className="sr-only">
+              Search feeds
+            </Label>
+            <Search
+              aria-hidden="true"
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              id="feed-search"
+              name="feedSearch"
+              type="search"
+              inputMode="search"
+              autoComplete="off"
+              placeholder="Search feeds, topics & descriptions"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+              disabled={isLoading}
+              spellCheck={false}
+            />
+          </div>
+        </SheetHeader>
+
+        {/* Body */}
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <div className="border-b px-5 pt-3">
+            <TabsList className="w-full">
+              <TabsTrigger value="browse" className="flex-1 gap-1.5">
+                <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
+                Browse
+              </TabsTrigger>
+              <TabsTrigger value="following" className="flex-1 gap-1.5">
+                <Users className="h-3.5 w-3.5" aria-hidden="true" />
+                Following
+                {totalSubscribed > 0 ? (
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                  >
+                    {totalSubscribed}
+                  </Badge>
+                ) : null}
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* ============ Browse Tab ============ */}
+          <TabsContent
+            value="browse"
+            className="mt-0 flex-1 overflow-y-auto overscroll-contain"
+          >
+            <div className="space-y-5 px-5 py-4">
+              {isLoading ? (
+                <FeedSettingsSkeleton />
+              ) : (
+                <>
+                  {/* Suggestions row */}
+                  {!searchQuery.trim() && selectedCategory === "all" ? (
+                    <>
+                      <SuggestionsRow
+                        suggestions={suggestions}
+                        onFollow={handleSuggestionFollow}
+                        pendingIds={
+                          new Set(
+                            subscriptionMutation.isPending
+                              ? [String(subscriptionMutation.variables.id)]
+                              : [],
+                          )
+                        }
+                      />
+                      {suggestions.length > 0 ? <Separator /> : null}
+                    </>
+                  ) : null}
+
+                  {/* Category pills */}
+                  {categories.length > 1 ? (
+                    <CategoryPills
+                      categories={categories}
+                      selected={selectedCategory}
+                      onSelect={setSelectedCategory}
+                    />
+                  ) : null}
+
+                  {/* Feed cards */}
+                  {browseItems.length > 0 ? (
+                    <div className="space-y-3">
+                      {browseItems.map((item) => (
+                        <FeedCard
+                          key={item.id}
+                          item={item}
+                          isFollowing={getItemChecked(item, checkedStates)}
+                          onToggle={handleToggle}
+                          isPending={
+                            subscriptionMutation.isPending &&
+                            String(subscriptionMutation.variables.id) ===
+                              item.id
+                          }
+                          zipValue={zipTargetId === item.id ? zipValue : ""}
+                          onZipChange={setZipValue}
+                          showZipInput={zipTargetId === item.id}
+                          onZipSave={handleZipSave}
+                          onZipCancel={handleZipCancel}
+                          onEditZip={handleEditZip}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={Search}
+                      title="No Feeds Found"
+                      description="Try adjusting your search or category filter."
+                      action={
+                        searchQuery.trim() || selectedCategory !== "all" ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSearchQuery("");
+                              setSelectedCategory("all");
+                            }}
+                          >
+                            Clear Filters
+                          </Button>
+                        ) : undefined
+                      }
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* ============ Following Tab ============ */}
+          <TabsContent
+            value="following"
+            className="mt-0 flex-1 overflow-y-auto overscroll-contain"
+          >
+            <div className="space-y-5 px-5 py-4">
+              {isLoading ? (
+                <FeedSettingsSkeleton />
+              ) : followingItems.length > 0 ? (
+                <>
+                  {Array.from(followingByCategory).map(([category, items]) => (
+                    <section key={category} aria-label={category}>
+                      <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {category}
+                        <Badge
+                          variant="secondary"
+                          className="h-5 min-w-5 justify-center px-1.5 text-[10px] tabular-nums"
+                        >
+                          {items.length}
+                        </Badge>
+                      </h3>
+                      <div className="space-y-3">
+                        {items.map((item) => (
+                          <FeedCard
+                            key={item.id}
+                            item={item}
+                            isFollowing={getItemChecked(item, checkedStates)}
+                            onToggle={handleToggle}
+                            isPending={
+                              subscriptionMutation.isPending &&
+                              String(subscriptionMutation.variables.id) ===
+                                item.id
+                            }
+                            zipValue={zipTargetId === item.id ? zipValue : ""}
+                            onZipChange={setZipValue}
+                            showZipInput={zipTargetId === item.id}
+                            onZipSave={handleZipSave}
+                            onZipCancel={handleZipCancel}
+                            onEditZip={handleEditZip}
+                          />
+                        ))}
+                      </div>
+                      <Separator className="mt-5" />
+                    </section>
+                  ))}
+                </>
+              ) : (
+                <EmptyState
+                  icon={Users}
+                  title="No Subscriptions Yet"
+                  description="Browse feeds and follow the ones that interest you."
+                  action={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("browse")}
+                    >
+                      <TrendingUp
+                        className="mr-1.5 h-4 w-4"
+                        aria-hidden="true"
+                      />
+                      Browse Feeds
+                    </Button>
+                  }
+                />
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </SheetContent>
+    </Sheet>
   );
 }

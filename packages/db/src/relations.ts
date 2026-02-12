@@ -49,6 +49,7 @@ import {
   page,
   pageContent,
   phoneNumber,
+  postView,
   productPhoto,
   promocode,
   promocodeInfluencer,
@@ -79,6 +80,11 @@ import {
   userService,
   userSubscription,
   userSubscriptionAddress,
+  video,
+  videoLike,
+  videoReaction,
+  videoShare,
+  videoView,
 } from "./schema";
 
 export const addressRelations = relations(address, ({ one }) => ({
@@ -1111,3 +1117,87 @@ export const userSubscriptionAddressRelations = relations(
     }),
   }),
 );
+
+// Video relations
+export const videoRelations = relations(video, ({ one, many }) => ({
+  user: one(user, {
+    fields: [video.idUser],
+    references: [user.id],
+  }),
+  subscription: one(subscription, {
+    fields: [video.idSubscription],
+    references: [subscription.id],
+  }),
+  smsPool: one(smsPool, {
+    fields: [video.idSmsPool],
+    references: [smsPool.id],
+  }),
+  likes: many(videoLike),
+  reactions: many(videoReaction),
+  views: many(videoView),
+  shares: many(videoShare, {
+    relationName: "videoShare_idVideo_video_id",
+  }),
+}));
+
+export const videoLikeRelations = relations(videoLike, ({ one }) => ({
+  video: one(video, {
+    fields: [videoLike.idVideo],
+    references: [video.id],
+  }),
+  user: one(user, {
+    fields: [videoLike.idUser],
+    references: [user.id],
+  }),
+}));
+
+export const videoViewRelations = relations(videoView, ({ one }) => ({
+  video: one(video, {
+    fields: [videoView.idVideo],
+    references: [video.id],
+  }),
+  user: one(user, {
+    fields: [videoView.idUser],
+    references: [user.id],
+  }),
+}));
+
+export const videoShareRelations = relations(videoShare, ({ one }) => ({
+  video: one(video, {
+    fields: [videoShare.idVideo],
+    references: [video.id],
+    relationName: "videoShare_idVideo_video_id",
+  }),
+  user: one(user, {
+    fields: [videoShare.idUser],
+    references: [user.id],
+    relationName: "videoShare_idUser_user_id",
+  }),
+  originalUser: one(user, {
+    fields: [videoShare.idOriginalUser],
+    references: [user.id],
+    relationName: "videoShare_idOriginalUser_user_id",
+  }),
+}));
+
+export const videoReactionRelations = relations(videoReaction, ({ one }) => ({
+  video: one(video, {
+    fields: [videoReaction.idVideo],
+    references: [video.id],
+  }),
+  user: one(user, {
+    fields: [videoReaction.idUser],
+    references: [user.id],
+  }),
+}));
+
+export const postViewRelations = relations(postView, ({ one }) => ({
+  smsPool: one(smsPool, {
+    fields: [postView.idSmsPool],
+    references: [smsPool.id],
+  }),
+  user: one(user, {
+    fields: [postView.idUser],
+    references: [user.id],
+  }),
+}));

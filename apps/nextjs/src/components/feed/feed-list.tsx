@@ -3,10 +3,18 @@
 import type { QueryFunction } from "@tanstack/react-query";
 import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useQuery, useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 
 import type { FeedItem } from "@galileyo/validators/feed";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@galileyo/ui/dialog";
+import { toast } from "@galileyo/ui/toast";
 
 import type { User } from "~/auth/client";
 // import { Button } from "@galileyo/ui/button";
@@ -116,16 +124,23 @@ import UpgradeAdCard from "./upgrade-ad-card";
 export default function FeedList({
   activeTab,
   user,
+  initialPostId,
 }: {
   activeTab: string;
   user: User;
+  initialPostId?: number;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const trpc = useTRPC();
 
   const { ref, inView } = useInView();
   // const [showMockedFeeds, setShowMockedFeeds] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState<FeedItem | null>(null);
+  const [deepLinkedPost, setDeepLinkedPost] = useState<FeedItem | null>(null);
+  const [isDeepLinkDialogOpen, setIsDeepLinkDialogOpen] = useState(false);
 
   const queryOptions = trpc.feed.getLatestNews.infiniteQueryOptions({
     limit: FEED_LIMIT,
@@ -195,11 +210,53 @@ export default function FeedList({
     [trpc, activeTab],
   );
 
+  const deepLinkPostQuery = useQuery({
+    ...trpc.feed.getNewsById.queryOptions({
+      id: initialPostId ?? 0,
+    }),
+    enabled: Boolean(initialPostId && initialPostId > 0),
+    retry: false,
+  });
+
+  const buildDashboardUrl = useCallback(() => {
+    const tab = searchParams.get("tab");
+    return tab ? `/dashboard?tab=${encodeURIComponent(tab)}` : "/dashboard";
+  }, [searchParams]);
+
+  const handleCloseDeepLinkDialog = useCallback(() => {
+    setIsDeepLinkDialogOpen(false);
+    if (pathname.startsWith("/dashboard/")) {
+      router.replace(buildDashboardUrl());
+    }
+  }, [buildDashboardUrl, pathname, router]);
+
   useEffect(() => {
     if (inView) {
       void fetchNextPage();
     }
   }, [inView, fetchNextPage]);
+
+  useEffect(() => {
+    if (deepLinkPostQuery.data) {
+      setDeepLinkedPost(deepLinkPostQuery.data);
+      setIsDeepLinkDialogOpen(true);
+    }
+  }, [deepLinkPostQuery.data]);
+
+  useEffect(() => {
+    if (deepLinkPostQuery.isError && initialPostId) {
+      toast.error("Post not found");
+      if (pathname.startsWith("/dashboard/")) {
+        router.replace(buildDashboardUrl());
+      }
+    }
+  }, [
+    buildDashboardUrl,
+    deepLinkPostQuery.isError,
+    initialPostId,
+    pathname,
+    router,
+  ]);
 
   return (
     <CommentsModalContext.Provider value={{ handleOpenCommentsModal }}>
@@ -317,6 +374,40 @@ export default function FeedList({
           post={post}
         />
       )}
+
+      <Dialog
+        open={isDeepLinkDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDeepLinkDialog();
+          }
+        }}
+      >
+        <DialogContent className="h-[100dvh] w-screen max-w-none translate-x-[-50%] translate-y-[-50%] overflow-y-auto rounded-none p-2 sm:h-auto sm:max-h-[90vh] sm:w-full sm:max-w-3xl sm:rounded-lg sm:p-6">
+          <DialogHeader>
+            <DialogTitle>Post</DialogTitle>
+          </DialogHeader>
+          {deepLinkPostQuery.isLoading && (
+            <FeedCardSkeleton className="mx-auto w-full" />
+          )}
+          {deepLinkedPost && (
+            <FeedCard
+              className="w-full"
+              item={deepLinkedPost}
+              getQueryKeys={() =>
+                trpc.feed.getNewsById.queryKey({
+                  id: deepLinkedPost.id ? Number(deepLinkedPost.id) : 0,
+                })
+              }
+              getQueryKeysOnError={() =>
+                trpc.feed.getNewsById.queryKey({
+                  id: deepLinkedPost.id ? Number(deepLinkedPost.id) : 0,
+                })
+              }
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <ReportModal />
     </CommentsModalContext.Provider>

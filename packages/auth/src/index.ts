@@ -8,6 +8,7 @@ import {
   lastLoginMethod,
   magicLink,
 } from "better-auth/plugins";
+import { z } from "zod/v4";
 
 import { db } from "@galileyo/db/client";
 import * as schema from "@galileyo/db/schema";
@@ -79,6 +80,10 @@ export function initAuth(options: {
           type: "boolean",
           required: false,
           defaultValue: false,
+          validator: {
+            input: z.coerce.boolean(),
+            output: z.coerce.boolean(),
+          },
         },
         isVerified: {
           type: "boolean",

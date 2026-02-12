@@ -9,8 +9,9 @@ export default function FeedCardSkeleton({
 }) {
   return (
     <Card
+      aria-hidden="true"
       className={cn(
-        "animate-pulse border-slate-200 bg-white/50 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600",
+        "border-slate-200 bg-white/50 dark:border-slate-700 dark:bg-slate-800/50",
         className,
       )}
     >
@@ -48,18 +49,23 @@ export default function FeedCardSkeleton({
         {/* Post Content */}
         <Skeleton className="mb-2 h-4 w-full rounded bg-slate-200 dark:bg-slate-700" />
         <Skeleton className="mb-2 h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700" />
-        <Skeleton className="mb-4 h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
-        {/* Post Image */}
-        {/* <Skeleton className="w-full h-48 mb-4 rounded-lg bg-slate-700" />
-        <Separator className="my-4 bg-slate-700" /> */}
+        <Skeleton className="mb-3 h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
+        <Skeleton className="mb-4 h-52 w-full rounded-xl bg-slate-200 dark:bg-slate-700" />
+
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Skeleton className="h-5 w-12 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <Skeleton className="h-5 w-12 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <Skeleton className="h-5 w-14 rounded-full bg-slate-200 dark:bg-slate-700" />
+        </div>
+
         {/* Post Actions */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Skeleton className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700" />
-            <Skeleton className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700" />
-            <Skeleton className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-16 rounded-full bg-slate-200 dark:bg-slate-700" />
+            <Skeleton className="h-9 w-16 rounded-full bg-slate-200 dark:bg-slate-700" />
+            <Skeleton className="h-9 w-20 rounded-full bg-slate-200 dark:bg-slate-700" />
           </div>
-          <Skeleton className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700" />
+          <Skeleton className="h-9 w-9 rounded-full bg-slate-200 dark:bg-slate-700" />
         </div>
       </CardContent>
     </Card>

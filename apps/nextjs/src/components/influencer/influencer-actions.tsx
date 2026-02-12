@@ -98,9 +98,18 @@ export function InfluencerActions({ id, isLoggedIn, type }: Props) {
   }
 
   return !isSubscribed ? (
-    <Button onClick={handleSubscription}>Subscribe</Button>
+    <Button
+      className="rounded-full px-4 font-semibold"
+      onClick={handleSubscription}
+    >
+      Subscribe
+    </Button>
   ) : (
-    <Button variant="outline" onClick={handleUnSubscribe}>
+    <Button
+      variant="outline"
+      className="rounded-full px-4 font-semibold"
+      onClick={handleUnSubscribe}
+    >
       Unsubscribe
     </Button>
   );

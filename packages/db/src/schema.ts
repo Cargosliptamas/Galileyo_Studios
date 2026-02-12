@@ -2275,6 +2275,320 @@ export const verification = mysqlTable(
   (table) => [primaryKey({ columns: [table.id], name: "verification_id" })],
 );
 
+export const video = mysqlTable(
+  "video",
+  {
+    id: int().autoincrement().notNull(),
+    idSmsPool: bigint("id_sms_pool", { mode: "number" }),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    idSubscription: bigint("id_subscription", { mode: "number" }),
+    caption: text(),
+    s3Key: varchar("s3_key", { length: 512 }),
+    s3Url: varchar("s3_url", { length: 1024 }),
+    s3Status: varchar("s3_status", { length: 50 }).default("pending"),
+    muxAssetId: varchar("mux_asset_id", { length: 255 }),
+    muxUploadId: varchar("mux_upload_id", { length: 255 }),
+    playbackId: varchar("playback_id", { length: 255 }),
+    transcodingStatus: varchar("transcoding_status", { length: 50 }).default(
+      "pending",
+    ),
+    duration: int(),
+    aspectRatio: varchar("aspect_ratio", { length: 20 }),
+    thumbnailUrl: varchar("thumbnail_url", { length: 512 }),
+    width: int(),
+    height: int(),
+    fileSize: bigint("file_size", { mode: "number" }),
+    likeCount: int("like_count").default(0),
+    commentCount: int("comment_count").default(0),
+    viewCount: int("view_count").default(0),
+    shareCount: int("share_count").default(0),
+    allowSharing: tinyint("allow_sharing").default(1),
+    allowDuet: tinyint("allow_duet").default(1), // allow duets
+    allowStitch: tinyint("allow_stitch").default(1), // allow stitches
+    publishStatus: varchar("publish_status", { length: 20 }).default(
+      "published",
+    ), // draft, scheduled, published
+    scheduledAt: timestamp("scheduled_at", { mode: "string" }), // for scheduled posts
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "video_id" })],
+);
+
+export const videoLike = mysqlTable(
+  "video_like",
+  {
+    id: int().autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "video_like_id" })],
+);
+
+export const videoView = mysqlTable(
+  "video_view",
+  {
+    id: int().autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    watchDuration: int("watch_duration").default(0),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.id], name: "video_view_id" })],
+);
+
+// Video share/repost table
+export const videoShare = mysqlTable(
+  "video_share",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(), // who shared
+    idOriginalUser: bigint("id_original_user", { mode: "number" }).notNull(), // original creator
+    caption: varchar({ length: 500 }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_share_id" }),
+    index("idx_video_share_user").on(table.idUser),
+    index("idx_video_share_video").on(table.idVideo),
+    unique("uniq_user_video").on(table.idUser, table.idVideo),
+  ],
+);
+
+// Video comments with nested reply support
+export const videoComment = mysqlTable(
+  "video_comment",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    idParent: bigint("id_parent", { mode: "number" }), // null for top-level comments
+    content: text().notNull(),
+    likeCount: int("like_count").default(0),
+    replyCount: int("reply_count").default(0),
+    isPinned: tinyint("is_pinned").default(0), // creator can pin comments
+    isHearted: tinyint("is_hearted").default(0), // creator heart/like
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_comment_id" }),
+    index("idx_video_comment_video").on(table.idVideo),
+    index("idx_video_comment_user").on(table.idUser),
+    index("idx_video_comment_parent").on(table.idParent),
+    index("idx_video_comment_created").on(table.createdAt),
+  ],
+);
+
+// Video comment likes
+export const videoCommentLike = mysqlTable(
+  "video_comment_like",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idComment: bigint("id_comment", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_comment_like_id" }),
+    index("idx_video_comment_like_comment").on(table.idComment),
+    index("idx_video_comment_like_user").on(table.idUser),
+    unique("uniq_comment_user").on(table.idComment, table.idUser),
+  ],
+);
+
+// Hashtags for videos
+export const hashtag = mysqlTable(
+  "hashtag",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    name: varchar({ length: 100 }).notNull(), // hashtag without #
+    videoCount: int("video_count").default(0),
+    viewCount: bigint("view_count", { mode: "number" }).default(0),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "hashtag_id" }),
+    unique("uniq_hashtag_name").on(table.name),
+    index("idx_hashtag_video_count").on(table.videoCount),
+  ],
+);
+
+// Video-Hashtag relationship (many-to-many)
+export const videoHashtag = mysqlTable(
+  "video_hashtag",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idHashtag: bigint("id_hashtag", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_hashtag_id" }),
+    index("idx_video_hashtag_video").on(table.idVideo),
+    index("idx_video_hashtag_hashtag").on(table.idHashtag),
+    unique("uniq_video_hashtag").on(table.idVideo, table.idHashtag),
+  ],
+);
+
+// Post view tracking for text posts (smsPool)
+export const postView = mysqlTable(
+  "post_view",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idSmsPool: bigint("id_sms_pool", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "post_view_id" }),
+    index("idx_post_view_sms_pool").on(table.idSmsPool),
+    index("idx_post_view_created").on(table.createdAt),
+  ],
+);
+
+// Video collections for organizing saved videos
+export const videoCollection = mysqlTable(
+  "video_collection",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    name: varchar({ length: 100 }).notNull(),
+    description: varchar({ length: 255 }),
+    isPublic: tinyint("is_public").default(0), // 0 = private, 1 = public
+    isDefault: tinyint("is_default").default(0), // 1 = default "Saved" collection
+    videoCount: int("video_count").default(0),
+    coverUrl: varchar("cover_url", { length: 512 }), // thumbnail from first video
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_collection_id" }),
+    index("idx_video_collection_user").on(table.idUser),
+  ],
+);
+
+// Video saves/bookmarks (links videos to collections)
+export const videoSave = mysqlTable(
+  "video_save",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    idCollection: bigint("id_collection", { mode: "number" }), // null = default saved
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_save_id" }),
+    index("idx_video_save_user").on(table.idUser),
+    index("idx_video_save_video").on(table.idVideo),
+    index("idx_video_save_collection").on(table.idCollection),
+    unique("uniq_video_user_collection").on(
+      table.idVideo,
+      table.idUser,
+      table.idCollection,
+    ),
+  ],
+);
+
+// Sounds/audio for videos
+export const sound = mysqlTable(
+  "sound",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    name: varchar({ length: 255 }).notNull(),
+    artistName: varchar("artist_name", { length: 255 }),
+    originalVideoId: bigint("original_video_id", { mode: "number" }), // first video to use this sound
+    idUser: bigint("id_user", { mode: "number" }).notNull(), // creator of original sound
+    audioUrl: varchar("audio_url", { length: 512 }).notNull(),
+    coverUrl: varchar("cover_url", { length: 512 }), // album art or video thumbnail
+    duration: int(), // in seconds
+    usageCount: int("usage_count").default(0), // how many videos use this sound
+    isOriginal: tinyint("is_original").default(1), // 1 = original sound, 0 = licensed/uploaded
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "sound_id" }),
+    index("idx_sound_user").on(table.idUser),
+    index("idx_sound_usage").on(table.usageCount),
+    index("idx_sound_name").on(table.name),
+  ],
+);
+
+// Link between videos and sounds
+export const videoSound = mysqlTable(
+  "video_sound",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idSound: bigint("id_sound", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_sound_id" }),
+    index("idx_video_sound_video").on(table.idVideo),
+    index("idx_video_sound_sound").on(table.idSound),
+    unique("uniq_video_sound").on(table.idVideo, table.idSound),
+  ],
+);
+
+// User's saved/favorite sounds
+export const soundFavorite = mysqlTable(
+  "sound_favorite",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idSound: bigint("id_sound", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "sound_favorite_id" }),
+    index("idx_sound_favorite_user").on(table.idUser),
+    index("idx_sound_favorite_sound").on(table.idSound),
+    unique("uniq_sound_user").on(table.idSound, table.idUser),
+  ],
+);
+
+// Video reactions (6-type system replacing simple likes)
+export const videoReaction = mysqlTable(
+  "video_reaction",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(),
+    idUser: bigint("id_user", { mode: "number" }).notNull(),
+    idReaction: tinyint("id_reaction").notNull(), // 1=like, 2=dislike, 3=laugh, 4=love, 5=fire, 6=disgust
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_reaction_id" }),
+    unique("UK_video_reaction_video_user").on(table.idVideo, table.idUser),
+    index("IDX_video_reaction_video").on(table.idVideo),
+    index("IDX_video_reaction_user").on(table.idUser),
+  ],
+);
+
+// Duet and Stitch relationships between videos
+export const videoDuetStitch = mysqlTable(
+  "video_duet_stitch",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    idVideo: bigint("id_video", { mode: "number" }).notNull(), // the new video (duet/stitch)
+    idOriginalVideo: bigint("id_original_video", { mode: "number" }).notNull(), // original video being reacted to
+    type: varchar({ length: 10 }).notNull(), // 'duet' or 'stitch'
+    createdAt: timestamp("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "video_duet_stitch_id" }),
+    index("idx_duet_stitch_video").on(table.idVideo),
+    index("idx_duet_stitch_original").on(table.idOriginalVideo),
+    unique("uniq_duet_stitch_video").on(table.idVideo), // one video can only be one duet/stitch
+  ],
+);
+
 export const weatherGovProcess = mysqlTable(
   "weather_gov_process",
   {

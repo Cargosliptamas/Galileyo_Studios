@@ -19,6 +19,7 @@ export function ImageWithFallback({
 
   useEffect(() => {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => setState("success");
     img.onerror = () => setState("error");
     img.src = src ?? "";
@@ -29,7 +30,12 @@ export function ImageWithFallback({
       {state === "loading" && <Skeleton className={className} />}
       {state === "error" && (fallback ?? <Skeleton className={className} />)}
       {state === "success" && (
-        <img src={src ?? ""} className={className} {...props} />
+        <img
+          src={src ?? ""}
+          className={className}
+          {...props}
+          crossOrigin="anonymous"
+        />
       )}
     </>
   );

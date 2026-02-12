@@ -11,24 +11,24 @@ import {
 } from "~/app/api/helper";
 import { env } from "~/env";
 
-export const QueryParamsSchema = z.object({
+const QueryParamsSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(100).optional(),
   offset: z.coerce.number().int().min(0).default(0).optional(),
 });
 
-export const ValidationError = z.object({
-  code: z.string(),
-  error: z.array(
-    z.object({
-      expected: z.string().describe("The expected type of the value"),
-      code: z.string().describe("The error code"),
-      path: z
-        .array(z.string())
-        .describe("The path of the value that caused the error"),
-      message: z.string().describe("The error message"),
-    }),
-  ),
-});
+// const ValidationError = z.object({
+//   code: z.string(),
+//   error: z.array(
+//     z.object({
+//       expected: z.string().describe("The expected type of the value"),
+//       code: z.string().describe("The error code"),
+//       path: z
+//         .array(z.string())
+//         .describe("The path of the value that caused the error"),
+//       message: z.string().describe("The error message"),
+//     }),
+//   ),
+// });
 
 const InfluencersResponse = z.object({
   data: z.array(
