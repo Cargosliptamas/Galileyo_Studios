@@ -15,10 +15,12 @@ import { PushNotificationProvider } from "./layout/push-notification-provider";
 export function Providers({
   children,
   userId,
+  isTestAccount,
   isNativeUA,
 }: {
   children: React.ReactNode;
   userId?: string | null;
+  isTestAccount: boolean;
   isNativeUA: boolean;
 }) {
   return (
@@ -36,7 +38,7 @@ export function Providers({
         <NuqsAdapter>
           <NativeBridgeProvider userId={userId} isNativeUA={isNativeUA}>
             <AbilityProvider hasSession={!!userId}>
-              <PlanSwitchProvider>
+              <PlanSwitchProvider isTestAccount={isTestAccount}>
                 <CallProvider>
                   <ChatProvider>
                     <PushNotificationProvider>

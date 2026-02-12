@@ -281,6 +281,12 @@ function CreatePostComponent({ user }: { user: User }) {
     return ability.can("use", "can_post");
   }, [ability, user]);
 
+  const isTestAccount = user.email.trim().toLowerCase() === "test@galileyo.com";
+
+  if (isTestAccount) {
+    return null;
+  }
+
   if (!canPost) {
     return (
       <div className="flex w-full items-center justify-between gap-4 rounded-lg border bg-muted/40 px-4 py-3 text-sm">

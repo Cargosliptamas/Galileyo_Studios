@@ -49,6 +49,8 @@ export function UserMenu({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
+  const isTestAccount = user.email.trim().toLowerCase() === "test@galileyo.com";
+
   // Get the currently active profile or fall back to main user
   const getCurrentProfile = () => {
     const profilePicture = getProfilePicture(user);
@@ -237,12 +239,14 @@ export function UserMenu({
           </DropdownMenuItem>
 
           {/* Profile Settings */}
-          <DropdownMenuItem asChild>
-            <Link href="/payment" className="cursor-pointer">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Payment Details
-            </Link>
-          </DropdownMenuItem>
+          {!isTestAccount && (
+            <DropdownMenuItem asChild>
+              <Link href="/payment" className="cursor-pointer">
+                <CreditCard className="mr-2 h-4 w-4" />
+                Payment Details
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           {/* Sign Out */}
           <DropdownMenuItem onClick={signOut} className="cursor-pointer">

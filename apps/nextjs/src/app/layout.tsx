@@ -54,6 +54,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const isNativeUA = await isNativeUserAgent();
 
   const session = await getSession();
+  const isTestAccount =
+    session?.user.email.trim().toLowerCase() === "test@galileyo.com";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -64,7 +66,11 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           fontVariables,
         )}
       >
-        <Providers userId={session?.user.id ?? null} isNativeUA={isNativeUA}>
+        <Providers
+          userId={session?.user.id ?? null}
+          isNativeUA={isNativeUA}
+          isTestAccount={isTestAccount}
+        >
           {props.children}
         </Providers>
 

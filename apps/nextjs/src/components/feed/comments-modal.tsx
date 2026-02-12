@@ -396,6 +396,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     setReplyingTo(null);
   };
 
+  const isTestAccount =
+    session?.user.email.trim().toLowerCase() === "test@galileyo.com";
+
   // const CommentComponent: React.FC<{
   //   comment: CommentType;
   //   isReply?: boolean;
@@ -455,7 +458,12 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         <Separator className="bg-slate-700" />
 
         {/* Comment Input */}
-        {ability.can("use", "can_comment_on_posts") ? (
+        {isTestAccount ? (
+          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-200">
+            For commenting, you need to switch between plans. Log in to
+            galileyo.com on your browser.
+          </div>
+        ) : ability.can("use", "can_comment_on_posts") ? (
           <div className="mb-4 flex gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={getProfilePicture(session.user) ?? ""} />

@@ -20,6 +20,7 @@ import * as motion from "motion/react-client";
 
 import type { PricingPlan } from "~/lib/server/types";
 import { getSession } from "~/auth/server";
+import { isNativeUserAgent } from "~/lib/server/headers";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { PhoneMockup } from "../phone-mockup";
 import PromoBanner from "../ui/promo-banner";
@@ -167,6 +168,8 @@ export async function HomePage() {
   const session = await getSession();
   const pricingPlans = await getPricingPlans();
   const alerts = await getEmergencyAlerts();
+
+  const isNativeUA = await isNativeUserAgent();
 
   return (
     <>
@@ -690,100 +693,102 @@ export async function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="bg-white py-20 dark:bg-slate-950">
-        <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-0">
-          <div className="mb-16 text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
-            >
-              Simple Plans for Every Level of Readiness.
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
-            >
-              Whether you’re monitoring your neighborhood or planning off-grid,
-              Galileyo keeps you connected.
-            </motion.p>
-          </div>
-
-          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {pricingPlans.map((plan: PricingPlan, index: number) => (
-              <div
-                key={index}
-                className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
-                  plan.highlight
-                    ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
-                    : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
-                }`}
+      {!isNativeUA && (
+        <section id="pricing" className="bg-white py-20 dark:bg-slate-950">
+          <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-0">
+            <div className="mb-16 text-center">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl"
               >
-                {plan.popular && (
-                  <div
-                    // initial={{ opacity: 0, y: -10 }}
-                    // animate={{ opacity: 1, y: 0 }}
-                    // transition={{ duration: 0.6, delay: 0.5 }}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                  >
-                    <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                      <Star className="h-4 w-4 fill-current" />
-                      Most Popular
+                Simple Plans for Every Level of Readiness.
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="mx-auto max-w-5xl text-xl text-slate-600 dark:text-slate-300"
+              >
+                Whether you’re monitoring your neighborhood or planning
+                off-grid, Galileyo keeps you connected.
+              </motion.p>
+            </div>
+
+            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+              {pricingPlans.map((plan: PricingPlan, index: number) => (
+                <div
+                  key={index}
+                  className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                    plan.highlight
+                      ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                      : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                  }`}
+                >
+                  {plan.popular && (
+                    <div
+                      // initial={{ opacity: 0, y: -10 }}
+                      // animate={{ opacity: 1, y: 0 }}
+                      // transition={{ duration: 0.6, delay: 0.5 }}
+                      className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
+                    >
+                      <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                        <Star className="h-4 w-4 fill-current" />
+                        Most Popular
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-8 text-center">
+                    <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                      {plan.name}
+                    </h3>
+                    <p className="mb-4 text-slate-600 dark:text-slate-300">
+                      {plan.description}
+                    </p>
+                    <div className="flex items-center justify-center">
+                      <span
+                        className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                      >
+                        ${plan.price}
+                      </span>
+                      {plan.period && (
+                        <span className="ml-1 text-slate-500 dark:text-slate-400">
+                          {plan.period}
+                        </span>
+                      )}
                     </div>
                   </div>
-                )}
 
-                <div className="mb-8 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                    {plan.name}
-                  </h3>
-                  <p className="mb-4 text-slate-600 dark:text-slate-300">
-                    {plan.description}
+                  <p className="mb-12 text-center text-slate-600 opacity-70 dark:text-slate-300">
+                    {plan.subtext}
                   </p>
-                  <div className="flex items-center justify-center">
-                    <span
-                      className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
-                    >
-                      ${plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className="ml-1 text-slate-500 dark:text-slate-400">
-                        {plan.period}
-                      </span>
-                    )}
+
+                  <ul className="mb-8 flex-1 space-y-4">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start gap-3">
+                        <Check
+                          className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
+                        />
+                        <span className="text-slate-600 dark:text-slate-300">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-auto">
+                    <PricingPlanButton plan={plan} />
                   </div>
                 </div>
-
-                <p className="mb-12 text-center text-slate-600 opacity-70 dark:text-slate-300">
-                  {plan.subtext}
-                </p>
-
-                <ul className="mb-8 flex-1 space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check
-                        className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
-                      />
-                      <span className="text-slate-600 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-auto">
-                  <PricingPlanButton plan={plan} />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Newsletter Signup */}
       <section className="py-20 lg:py-20">
