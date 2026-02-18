@@ -5,23 +5,41 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --emitDeclarationOnly false",
+    "dev": "tsc --emitDeclarationOnly false",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "studio": "email dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./env": "./env.ts",
+    "./templates": {
+      "types": "./dist/templates.d.ts",
+      "default": "./dist/emails/index.js"
+    }
+  },
   "dependencies": {
     "@galileyo/utils": "workspace:*",
     "@react-email/components": "catalog:",
-    "react-email": "4.1.0"
+    "@t3-oss/env-core": "^0.13.8",
+    "nodemailer": "^7.0.11",
+    "react-email": "4.1.0",
+    "resend": "^6.6.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@galileyo/eslint-config": "workspace:*",
     "@galileyo/prettier-config": "workspace:*",
     "@galileyo/tsconfig": "workspace:*",
     "@react-email/preview-server": "4.1.0",
+    "@types/node": "catalog:",
+    "@types/nodemailer": "^7.0.4",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
