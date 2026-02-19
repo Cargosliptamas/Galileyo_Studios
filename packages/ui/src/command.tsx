@@ -27,17 +27,26 @@ Command.displayName = CommandPrimitive.displayName;
 const CommandDialog = ({
   children,
   shouldFilter = true,
+  contentClassName,
+  commandClassName,
   ...props
-}: DialogProps & { shouldFilter?: boolean }) => {
+}: DialogProps & {
+  shouldFilter?: boolean;
+  contentClassName?: string;
+  commandClassName?: string;
+}) => {
   return (
     <Dialog {...props}>
       <DialogContent
-        className="overflow-hidden p-0"
+        className={cn("overflow-hidden p-0", contentClassName)}
         aria-describedby={undefined}
       >
         <DialogTitle className="sr-only">Command</DialogTitle>
         <Command
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          className={cn(
+            "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5",
+            commandClassName,
+          )}
           shouldFilter={shouldFilter}
         >
           {children}

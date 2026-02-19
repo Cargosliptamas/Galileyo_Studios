@@ -1,5 +1,6 @@
 "use client";
 
+import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -53,6 +54,7 @@ export function Questions({
 export function CTAButtons() {
   const [signupEmail, setSignupEmail] = useState("");
   const router = useRouter();
+  const emailInputId = "homepage-signup-email";
 
   const handleSignupCTA = useCallback(() => {
     if (!signupEmail) {
@@ -63,23 +65,42 @@ export function CTAButtons() {
     router.push(`/sign-up?email=${signupEmail}`);
   }, [signupEmail, router]);
 
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      handleSignupCTA();
+    },
+    [handleSignupCTA],
+  );
+
   return (
-    <div className="mb-12 flex flex-col gap-4 sm:flex-row">
+    <form
+      className="mb-12 flex flex-col gap-4 sm:flex-row"
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      <label htmlFor={emailInputId} className="sr-only">
+        Email address
+      </label>
       <input
+        id={emailInputId}
+        name="email"
         type="email"
-        placeholder="Enter your email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder="Enter your email address"
         className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
         value={signupEmail}
         onChange={(e) => setSignupEmail(e.target.value)}
       />
       <button
-        className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400"
-        onClick={handleSignupCTA}
+        type="submit"
+        className="flex min-h-[44px] items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
       >
-        <Satellite className="h-4 w-4 text-white" />
+        <Satellite aria-hidden="true" className="h-4 w-4 text-white" />
         Get Free Alerts
       </button>
-    </div>
+    </form>
   );
 }
 
@@ -532,7 +553,8 @@ export function Alerts() {
           className={`flex items-start gap-3 rounded-lg p-4 ${getSeverityBgColor(alert.severity)}`}
         >
           <AlertTriangle
-            className={`mt-0.5 h-5 w-5 ${getSeverityTextColor(alert.severity)} ${alert.severity === "critical" ? "animate-pulse" : ""}`}
+            aria-hidden="true"
+            className={`mt-0.5 h-5 w-5 ${getSeverityTextColor(alert.severity)} ${alert.severity === "critical" ? "animate-pulse motion-reduce:animate-none" : ""}`}
           />
           <div>
             <p
@@ -573,10 +595,11 @@ export function PricingPlanButton({
 
   return (
     <motion.button
+      type="button"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.15 }}
-      className={`w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+      className={`min-h-[44px] w-full rounded-lg px-6 py-3 font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 ${
         plan.highlight
           ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-400"
           : "bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"

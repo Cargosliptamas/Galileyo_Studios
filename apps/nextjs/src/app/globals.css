@@ -99,6 +99,13 @@
   animation: marquee 35s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+    transform: translateX(0);
+  }
+}
+
 /* Custom styles for alert map */
 .leaflet-popup-content-wrapper {
   border-radius: 8px;

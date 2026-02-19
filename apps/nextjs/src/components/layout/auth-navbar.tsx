@@ -102,7 +102,7 @@ export default function AuthNavbar({
         {/* Middle area */}
         <div className="grow">
           <div className="relative mx-auto w-full max-w-xs">
-            <CommandMenu />
+            <CommandMenu user={user} showMap={showMap} />
           </div>
         </div>
         {/* Right side */}

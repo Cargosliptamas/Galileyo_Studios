@@ -11,3 +11,11 @@ export interface PricingPlan {
   popular: boolean;
   highlight: boolean;
 }
+
+export interface Partner {
+  id: number;
+  name: string;
+  image: string | null;
+  description: string;
+  link: string;
+}

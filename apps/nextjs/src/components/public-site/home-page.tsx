@@ -22,6 +22,7 @@ import type { PricingPlan } from "~/lib/server/types";
 import { getSession } from "~/auth/server";
 import { isNativeUserAgent } from "~/lib/server/headers";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
+import { getFeaturedPartners } from "~/lib/server/partners";
 import { PhoneMockup } from "../phone-mockup";
 import PromoBanner from "../ui/promo-banner";
 import { HomeBackground } from "./home-backround";
@@ -32,6 +33,7 @@ import {
   PricingPlanButton,
   Questions,
 } from "./home-client";
+import { PartnersGrid } from "./partners-grid";
 
 // import { AlertMap } from "../map/alert-map";
 
@@ -168,6 +170,7 @@ export async function HomePage() {
   const session = await getSession();
   const pricingPlans = await getPricingPlans();
   const alerts = await getEmergencyAlerts();
+  const featuredPartners = await getFeaturedPartners(4);
 
   const isNativeUA = await isNativeUserAgent();
 
@@ -184,7 +187,10 @@ export async function HomePage() {
             <div className="lg:order-1">
               {/* Badge */}
               <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/90">
-                <Shield className="mr-2 h-4 w-4 text-green-400" />
+                <Shield
+                  aria-hidden="true"
+                  className="mr-2 h-4 w-4 text-green-400"
+                />
                 Trusted by Thousands Worldwide Since 2020.
               </div>
 
@@ -202,8 +208,9 @@ export async function HomePage() {
 
               {/* Supporting Tagline */}
               <p className="mb-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
-                Galileyo keeps you connected when networks fail - real alerts,
-                real people, real time.
+                Galileyo keeps you connected when networks fail with real
+                alerts, short-form video updates from people on the ground, and
+                real-time community context.
                 {/* Join the Only Global Social Emergency App that works Off Grid.*/}
                 {/* The social emergency app designed that keeps you and your loved ones safe. */}
               </p>
@@ -215,7 +222,7 @@ export async function HomePage() {
               <div className="mt-16">
                 <div className="mb-6">
                   <div className="text-white-700 mb-4 inline-flex items-center gap-2 rounded-full border-2 border-[#4a85ed] px-4 py-2">
-                    <Zap className="h-4 w-4" />
+                    <Zap aria-hidden="true" className="h-4 w-4" />
                     <span className="font-medium">Emergency Alerts</span>
                   </div>
                   <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
@@ -291,6 +298,8 @@ export async function HomePage() {
                     loop
                     controls={false}
                     preload="metadata"
+                    aria-label="Galileyo mobile app preview with alerts and real-time video updates"
+                    title="Galileyo mobile app preview"
                   />
                 </PhoneMockup>
 
@@ -301,7 +310,7 @@ export async function HomePage() {
                   className="absolute -left-32 top-16 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500"></div>
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500 motion-reduce:animate-none"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Emergency Alerts 24./7
                     </span>
@@ -319,7 +328,7 @@ export async function HomePage() {
                   className="absolute -right-40 top-64 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500 motion-reduce:animate-none"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Critical Influencer Info
                     </span>
@@ -337,7 +346,7 @@ export async function HomePage() {
                   className="absolute -left-36 bottom-32 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-purple-500"></div>
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-purple-500 motion-reduce:animate-none"></div>
                     <span className="text-sm font-medium text-slate-900 dark:text-white">
                       Earn Rewards Speaking Truth
                     </span>
@@ -353,10 +362,87 @@ export async function HomePage() {
         </div>
       </section>
 
+      <section
+        id="video-feature"
+        className="scroll-mt-24 border-y border-slate-200/80 bg-gradient-to-br from-cyan-50/80 via-white to-blue-50/70 py-20 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="mb-4 inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-300">
+              Video Feature
+            </p>
+            <h2 className="text-3xl font-black leading-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
+              See Real-Time Video Updates From People on the Ground
+            </h2>
+            <p className="mt-5 text-lg text-slate-600 dark:text-slate-300">
+              Watch short updates as situations unfold, get creator context in
+              seconds, and share critical clips when speed and clarity matter
+              most.
+            </p>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-cyan-200/70 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-cyan-800/50 dark:bg-slate-900/70">
+              <div className="mb-3 inline-flex rounded-lg bg-cyan-500/15 p-2">
+                <Zap aria-hidden="true" className="h-5 w-5 text-cyan-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Short vertical updates
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                Fast, glanceable clips for immediate situational awareness.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-200/70 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-cyan-800/50 dark:bg-slate-900/70">
+              <div className="mb-3 inline-flex rounded-lg bg-cyan-500/15 p-2">
+                <Users aria-hidden="true" className="h-5 w-5 text-cyan-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Reactions &amp; shares
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                Amplify urgent footage with community reactions and reposts.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-200/70 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-cyan-800/50 dark:bg-slate-900/70">
+              <div className="mb-3 inline-flex rounded-lg bg-cyan-500/15 p-2">
+                <CheckCircle
+                  aria-hidden="true"
+                  className="h-5 w-5 text-cyan-600"
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Context from trusted creators
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                Follow reliable voices for credible details and follow-up.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/sign-up"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
+            >
+              Start Watching Videos
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+            >
+              Already have an account? Sign in
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section
         id="features"
-        className="bg-white py-20 dark:bg-slate-950 lg:py-20"
+        className="scroll-mt-24 bg-white py-20 dark:bg-slate-950 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 w-full text-center">
@@ -429,20 +515,12 @@ export async function HomePage() {
                   {/* Front side */}
                   <div className="absolute inset-0 [backface-visibility:hidden]">
                     <div className="relative h-full w-full">
-                      {influencer.image.startsWith("http") ? (
-                        <img
-                          src={influencer.image}
-                          alt={influencer.name}
-                          className="h-full w-full object-cover object-center"
-                        />
-                      ) : (
-                        <Image
-                          src={influencer.image}
-                          alt={influencer.name}
-                          fill
-                          className="h-full w-full object-cover object-center"
-                        />
-                      )}
+                      <Image
+                        src={influencer.image}
+                        alt={influencer.name}
+                        fill
+                        className="h-full w-full object-cover object-center"
+                      />
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1 text-center backdrop-blur-sm">
                         <h3 className="text-center text-lg font-bold text-white opacity-90">
                           {influencer.name}
@@ -455,7 +533,7 @@ export async function HomePage() {
                   <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-4 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]">
                     <Link
                       href="/sign-up"
-                      className="inline-flex flex-col items-center justify-center rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cyan-400"
+                      className="inline-flex min-h-[44px] flex-col items-center justify-center rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                     >
                       <span>Sign up and check</span>
                       <span className="mt-0.5 text-base">
@@ -467,6 +545,34 @@ export async function HomePage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="border-y border-slate-200/80 bg-slate-50/60 py-20 dark:border-slate-800 dark:bg-slate-900/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-2 inline-flex rounded-full border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-600 dark:text-cyan-300">
+                Featured Partners
+              </p>
+              <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 sm:text-4xl">
+                Powered by Trusted Alliances
+              </h2>
+              <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
+                Explore organizations that help Galileyo deliver stronger
+                communication, logistics, and emergency readiness.
+              </p>
+            </div>
+
+            <Link
+              href="/partners"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 dark:focus-visible:ring-offset-slate-900"
+            >
+              View all partners
+            </Link>
+          </div>
+
+          <PartnersGrid partners={featuredPartners} compact />
         </div>
       </section>
 
@@ -502,7 +608,7 @@ export async function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-gradient-to-r from-orange-500/20 to-red-500/20 px-4 py-2 text-orange-400">
-              <Zap className="h-4 w-4" />
+              <Zap aria-hidden="true" className="h-4 w-4" />
               <span className="font-medium">Coming Soon</span>
             </div>
             <h2 className="mb-6 text-4xl font-bold text-slate-900 dark:text-white lg:text-5xl">
@@ -520,7 +626,7 @@ export async function HomePage() {
               <div className="rounded-2xl border border-slate-200 bg-white/50 p-8 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/50">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="rounded-xl bg-gradient-to-r from-red-500 to-orange-500 p-3">
-                    <MapPin className="h-6 w-6 text-white" />
+                    <MapPin aria-hidden="true" className="h-6 w-6 text-white" />
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -536,7 +642,10 @@ export async function HomePage() {
 
                 <div className="mt-6 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
                   <div className="mb-2 flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-cyan-500" />
+                    <Globe
+                      aria-hidden="true"
+                      className="h-4 w-4 text-cyan-500"
+                    />
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       Smart Features
                     </span>
@@ -556,7 +665,10 @@ export async function HomePage() {
               <div className="rounded-2xl border border-slate-200 bg-white/50 p-8 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/50">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-3">
-                    <TrendingUp className="h-6 w-6 text-white" />
+                    <TrendingUp
+                      aria-hidden="true"
+                      className="h-6 w-6 text-white"
+                    />
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -614,7 +726,10 @@ export async function HomePage() {
                   <div className="cursor-pointer rounded-lg border border-red-500/20 bg-red-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
+                        <AlertTriangle
+                          aria-hidden="true"
+                          className="h-4 w-4 text-red-400"
+                        />
                       </div>
                       <span className="text-sm font-medium text-red-400">
                         Critical Alerts
@@ -628,7 +743,10 @@ export async function HomePage() {
                   <div className="cursor-pointer rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
-                        <Zap className="h-4 w-4 text-orange-400" />
+                        <Zap
+                          aria-hidden="true"
+                          className="h-4 w-4 text-orange-400"
+                        />
                       </div>
                       <span className="text-sm font-medium text-orange-400">
                         Infrastructure
@@ -642,7 +760,10 @@ export async function HomePage() {
                   <div className="cursor-pointer rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
-                        <Users className="h-4 w-4 text-blue-400" />
+                        <Users
+                          aria-hidden="true"
+                          className="h-4 w-4 text-blue-400"
+                        />
                       </div>
                       <span className="text-sm font-medium text-blue-400">
                         Community
@@ -657,7 +778,10 @@ export async function HomePage() {
                   <div className="cursor-pointer rounded-lg border border-green-500/20 bg-green-500/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <div>
-                        <CheckCircle className="h-4 w-4 text-green-400" />
+                        <CheckCircle
+                          aria-hidden="true"
+                          className="h-4 w-4 text-green-400"
+                        />
                       </div>
                       <span className="text-sm font-medium text-green-400">
                         Recovery
@@ -672,7 +796,10 @@ export async function HomePage() {
                 <div className="flex flex-col gap-2 rounded-xl border border-slate-300 bg-gradient-to-r from-slate-100/70 to-slate-200/70 p-4 dark:border-slate-600 dark:from-slate-900/70 dark:to-slate-800/70">
                   <div className="flex items-center gap-2">
                     <div>
-                      <Satellite className="h-4 w-4 text-cyan-500" />
+                      <Satellite
+                        aria-hidden="true"
+                        className="h-4 w-4 text-cyan-500"
+                      />
                     </div>
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       Advanced Capabilities
@@ -736,7 +863,10 @@ export async function HomePage() {
                       className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
                     >
                       <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                        <Star className="h-4 w-4 fill-current" />
+                        <Star
+                          aria-hidden="true"
+                          className="h-4 w-4 fill-current"
+                        />
                         Most Popular
                       </div>
                     </div>
@@ -771,6 +901,7 @@ export async function HomePage() {
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start gap-3">
                         <Check
+                          aria-hidden="true"
                           className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
                         />
                         <span className="text-slate-600 dark:text-slate-300">
@@ -802,10 +933,14 @@ export async function HomePage() {
           <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email address"
+              aria-label="Email address for newsletter"
               className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
             />
-            <button className="rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400">
+            <button
+              type="button"
+              className="min-h-[44px] rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950"
+            >
               Subscribe
             </button>
           </div>
