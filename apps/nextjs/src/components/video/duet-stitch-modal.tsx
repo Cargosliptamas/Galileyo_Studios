@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useInfiniteQuery,
@@ -33,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@galileyo/ui/dialog";
+import { useIsMobile } from "@galileyo/ui/hooks";
 import { Progress } from "@galileyo/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@galileyo/ui/tabs";
 import { toast } from "@galileyo/ui/toast";
@@ -69,6 +71,7 @@ export function DuetStitchModal({
   open,
   onOpenChange,
 }: DuetStitchModalProps) {
+  const isMobile = useIsMobile();
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -89,6 +92,8 @@ export function DuetStitchModal({
   const [browseFilter, setBrowseFilter] = useState<"all" | "duet" | "stitch">(
     "all",
   );
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraVideoInputRef = useRef<HTMLInputElement | null>(null);
 
   // ── Queries ──────────────────────────────────────────────────────────────
 
@@ -218,12 +223,7 @@ export function DuetStitchModal({
     [previewUrl],
   );
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    open: openFilePicker,
-  } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "video/*": [] },
     maxSize: 500 * 1024 * 1024,
     multiple: false,
@@ -237,6 +237,36 @@ export function DuetStitchModal({
       if (accepted[0]) handleFileSelected(accepted[0]);
     },
   });
+
+  const openNativeInputPicker = useCallback(
+    (input: HTMLInputElement | null) => {
+      if (!input) return;
+
+      if (typeof input.showPicker === "function") {
+        try {
+          input.showPicker();
+          return;
+        } catch {
+          // Fall back to click() when showPicker is unsupported or blocked.
+        }
+      }
+
+      input.click();
+    },
+    [],
+  );
+
+  const handleNativeVideoFileChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+
+      if (file) {
+        handleFileSelected(file);
+      }
+    },
+    [handleFileSelected],
+  );
 
   // ── Handlers ─────────────────────────────────────────────────────────────
 
@@ -365,6 +395,25 @@ export function DuetStitchModal({
             </div>
           </div>
         </DialogHeader>
+        <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/*"
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={handleNativeVideoFileChange}
+        />
+        <input
+          ref={cameraVideoInputRef}
+          type="file"
+          accept="video/*"
+          capture="environment"
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={handleNativeVideoFileChange}
+        />
 
         {/* ── Tabs (only on select step) ── */}
         {step === "select" ? (
@@ -561,16 +610,30 @@ export function DuetStitchModal({
                         MP4, WebM, MOV up to 500MB
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openFilePicker();
-                      }}
-                    >
-                      Select file
-                    </Button>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openNativeInputPicker(videoInputRef.current);
+                        }}
+                      >
+                        Select file
+                      </Button>
+                      {isMobile && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openNativeInputPicker(cameraVideoInputRef.current);
+                          }}
+                        >
+                          Use camera
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

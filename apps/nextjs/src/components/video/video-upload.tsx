@@ -19,6 +19,7 @@ import { useDropzone } from "react-dropzone";
 
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
+import { useIsMobile } from "@galileyo/ui/hooks";
 import { Label } from "@galileyo/ui/label";
 import { Progress } from "@galileyo/ui/progress";
 import {
@@ -304,6 +305,7 @@ export function VideoUpload({
   showEditOption = false,
   initialFile = null,
 }: VideoUploadProps) {
+  const isMobile = useIsMobile();
   const [selectedFile, setSelectedFile] = useState<File | null>(initialFile);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -315,6 +317,8 @@ export function VideoUpload({
   const [step, setStep] = useState<UploadStep>(
     initialFile ? "details" : "select",
   );
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraVideoInputRef = useRef<HTMLInputElement | null>(null);
   const thumbnailInputRef = useRef<HTMLInputElement | null>(null);
   const previewVideoRef = useRef<HTMLVideoElement | null>(null);
   const thumbnailGenerationRef = useRef(0);
@@ -447,7 +451,7 @@ export function VideoUpload({
     [generateAutoThumbnail, previewUrl],
   );
 
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "video/*": [] },
     maxSize: 500 * 1024 * 1024,
     multiple: false,
@@ -466,6 +470,36 @@ export function VideoUpload({
       }
     },
   });
+
+  const openNativeInputPicker = useCallback(
+    (input: HTMLInputElement | null) => {
+      if (!input) return;
+
+      if (typeof input.showPicker === "function") {
+        try {
+          input.showPicker();
+          return;
+        } catch {
+          // Fall back to click() when showPicker is unsupported or blocked.
+        }
+      }
+
+      input.click();
+    },
+    [],
+  );
+
+  const handleNativeVideoFileChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+
+      if (file) {
+        handleFileSelected(file);
+      }
+    },
+    [handleFileSelected],
+  );
 
   const handleThumbnailSelectClick = useCallback(() => {
     thumbnailInputRef.current?.click();
@@ -574,8 +608,12 @@ export function VideoUpload({
   }, [cancel, isProcessing, isUploading, previewUrl, reset, onCancel]);
 
   const handleSelectClick = useCallback(() => {
-    open();
-  }, [open]);
+    openNativeInputPicker(videoInputRef.current);
+  }, [openNativeInputPicker]);
+
+  const handleCameraSelectClick = useCallback(() => {
+    openNativeInputPicker(cameraVideoInputRef.current);
+  }, [openNativeInputPicker]);
 
   const handleEditBeforeUpload = useCallback(() => {
     if (selectedFile) {
@@ -619,6 +657,26 @@ export function VideoUpload({
 
   return (
     <div className={cn("min-w-0 space-y-4", className)}>
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={handleNativeVideoFileChange}
+      />
+      <input
+        ref={cameraVideoInputRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={handleNativeVideoFileChange}
+      />
+
       {/* Step 1: Select Video */}
       {step === "select" && (
         <div
@@ -639,9 +697,16 @@ export function VideoUpload({
               MP4, WebM, MOV up to 500MB
             </p>
           </div>
-          <Button variant="outline" onClick={handleSelectClick}>
-            Select file
-          </Button>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button variant="outline" onClick={handleSelectClick}>
+              Select file
+            </Button>
+            {isMobile && (
+              <Button variant="ghost" onClick={handleCameraSelectClick}>
+                Use camera
+              </Button>
+            )}
+          </div>
         </div>
       )}
 
