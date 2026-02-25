@@ -80,12 +80,12 @@ export function PartnersGrid({
               key={partner.id}
               className="group overflow-hidden rounded-2xl border border-slate-200 bg-white/70 shadow-sm transition-all hover:-translate-y-1 hover:border-cyan-500/40 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900/60"
             >
-              <div className="relative aspect-[16/10] overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden">
                 {partner.image ? (
                   <img
                     src={partner.image}
                     alt={partner.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-600 via-blue-600 to-slate-800">
