@@ -23,8 +23,8 @@ import { getSession } from "~/auth/server";
 import { isNativeUserAgent } from "~/lib/server/headers";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { getFeaturedPartners } from "~/lib/server/partners";
-import { PhoneMockup } from "../phone-mockup";
 import PromoBanner from "../ui/promo-banner";
+import { FeatureShowcaseExperience } from "./feature-showcase-experience";
 import { HomeBackground } from "./home-backround";
 import {
   Alerts,
@@ -275,87 +275,15 @@ export async function HomePage() {
               </div>
             </div>
 
-            {/* Right Column - Satellite Illustration */}
+            {/* Right Column - Feature Showcase */}
             <div className="relative flex justify-center self-baseline pt-0 md:pt-12 lg:order-2">
-              {/* Mobile Taglines */}
-
               <motion.div
-                className="relative"
+                className="relative w-full"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                <PhoneMockup>
-                  <video
-                    className="max-w-full rounded-xl shadow-lg"
-                    src="/galileyo-mobile-video.mp4"
-                    poster="/galileyo-mobile-poster.jpg"
-                    width={272}
-                    height={504}
-                    playsInline
-                    muted
-                    autoPlay
-                    loop
-                    controls={false}
-                    preload="metadata"
-                    aria-label="Galileyo mobile app preview with alerts and real-time video updates"
-                    title="Galileyo mobile app preview"
-                  />
-                </PhoneMockup>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                  className="absolute -left-32 top-16 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-cyan-500 motion-reduce:animate-none"></div>
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Emergency Alerts 24./7
-                    </span>
-                  </div>
-
-                  <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
-                    <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 1.6 }}
-                  className="absolute -right-40 top-64 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500 motion-reduce:animate-none"></div>
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Critical Influencer Info
-                    </span>
-                  </div>
-
-                  <div className="absolute -left-2 top-1/2 -translate-y-1/2 transform">
-                    <div className="h-0 w-0 border-b-4 border-r-8 border-t-4 border-b-transparent border-r-white/95 border-t-transparent dark:border-r-slate-800/95"></div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 2.0 }}
-                  className="absolute -left-36 bottom-32 max-w-xs rounded-xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-3 w-3 animate-pulse rounded-full bg-purple-500 motion-reduce:animate-none"></div>
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      Earn Rewards Speaking Truth
-                    </span>
-                  </div>
-
-                  <div className="absolute -right-2 top-1/2 -translate-y-1/2 transform">
-                    <div className="h-0 w-0 border-b-4 border-l-8 border-t-4 border-b-transparent border-l-white/95 border-t-transparent dark:border-l-slate-800/95"></div>
-                  </div>
-                </motion.div>
+                <FeatureShowcaseExperience variant="hero" />
               </motion.div>
             </div>
           </div>

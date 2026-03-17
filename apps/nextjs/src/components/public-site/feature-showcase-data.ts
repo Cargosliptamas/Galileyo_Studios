@@ -1,5 +1,9 @@
 import type { Alert } from "@galileyo/validators";
-import type { FeedItem, InfluencerItem, PrivateFeedType } from "@galileyo/validators/feed";
+import type {
+  FeedItem,
+  InfluencerItem,
+  PrivateFeedType,
+} from "@galileyo/validators/feed";
 
 import type { VideoListItem } from "~/types/video";
 
@@ -239,9 +243,7 @@ export const featureShowcaseBeats: FeatureShowcaseBeat[] = [
   },
 ];
 
-export function getFeatureShowcaseBeat(
-  elapsedMs: number,
-): FeatureShowcaseBeat {
+export function getFeatureShowcaseBeat(elapsedMs: number): FeatureShowcaseBeat {
   const loopedElapsed = elapsedMs % FEATURE_SHOWCASE_TOTAL_DURATION_MS;
   const activeBeat = featureShowcaseBeats.find(
     (beat) => loopedElapsed >= beat.startMs && loopedElapsed < beat.endMs,
@@ -285,8 +287,7 @@ function getFeatureShowcaseBeatPhase(
   return {
     phase: "outro",
     phaseProgress:
-      (beatElapsedMs - outroStart) /
-      Math.max(durationMs - outroStart, 1),
+      (beatElapsedMs - outroStart) / Math.max(durationMs - outroStart, 1),
   };
 }
 
@@ -297,7 +298,10 @@ export function getFeatureShowcaseBeatState(
   const loopedElapsed = elapsedMs % FEATURE_SHOWCASE_TOTAL_DURATION_MS;
   const beatElapsedMs = Math.max(0, loopedElapsed - beat.startMs);
   const beatProgress = beatElapsedMs / Math.max(beat.durationMs, 1);
-  const phaseState = getFeatureShowcaseBeatPhase(beatElapsedMs, beat.durationMs);
+  const phaseState = getFeatureShowcaseBeatPhase(
+    beatElapsedMs,
+    beat.durationMs,
+  );
 
   return {
     beat,
@@ -651,7 +655,8 @@ export const showcaseNotifications: ShowcaseNotificationItem[] = [
     id: "notif-5",
     type: "system",
     title: "Pinned emergency bulletin",
-    message: "Critical incident notices will stay locked to the top of your feed.",
+    message:
+      "Critical incident notices will stay locked to the top of your feed.",
     timestamp: "12m",
     unread: false,
     actor: {
@@ -674,7 +679,8 @@ export const showcasePrivateFeedRows: ShowcasePrivateFeedRow[] = [
   {
     id: 902,
     title: "Medical Support",
-    description: "Clinics, transport, and pharmacy coverage for affected areas.",
+    description:
+      "Clinics, transport, and pharmacy coverage for affected areas.",
     image: null,
     members: 7,
     updatedAt: "11 min ago",

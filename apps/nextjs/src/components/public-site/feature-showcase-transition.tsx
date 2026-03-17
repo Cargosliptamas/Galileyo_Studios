@@ -109,7 +109,7 @@ export function FeatureShowcaseTransition({
       {beat.transition.style === "radar-wipe" && (
         <>
           <motion.div
-            className="absolute left-1/2 top-1/2 h-[44vw] w-[44vw] max-h-[680px] max-w-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full border"
+            className="absolute left-1/2 top-1/2 h-[44vw] max-h-[680px] w-[44vw] max-w-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full border"
             style={{
               borderColor: tokens.line,
               boxShadow: `0 0 40px ${tokens.glow}`,
@@ -118,7 +118,7 @@ export function FeatureShowcaseTransition({
             }}
           />
           <motion.div
-            className="absolute left-1/2 top-1/2 h-[60vw] w-[60vw] max-h-[840px] max-w-[840px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed"
+            className="absolute left-1/2 top-1/2 h-[60vw] max-h-[840px] w-[60vw] max-w-[840px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed"
             style={{
               borderColor: tokens.line,
               opacity: opacity * 0.45,

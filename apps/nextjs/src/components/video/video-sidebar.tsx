@@ -379,7 +379,9 @@ export function VideoSidebar({
 
         {(allowDuet || allowStitch) && (
           <button
-            onClick={interactive ? () => setShowDuetStitchModal(true) : undefined}
+            onClick={
+              interactive ? () => setShowDuetStitchModal(true) : undefined
+            }
             disabled={!interactive}
             className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
           >

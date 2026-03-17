@@ -28,6 +28,10 @@ import {
   TableRow,
 } from "@galileyo/ui/table";
 
+import type {
+  FeatureShowcaseBeat,
+  FeatureShowcaseBeatPhase,
+} from "./feature-showcase-data";
 import { AlertCard } from "~/components/alert-map/alert-card";
 import { AlertMap } from "~/components/alert-map/alert-map";
 import FeedCard from "~/components/feed/feed-card";
@@ -36,10 +40,6 @@ import { PrivateFeedStatsCards } from "~/components/my-feed/private-feed-stats-c
 import { VideoInfo } from "~/components/video/video-info";
 import { VideoPlayer } from "~/components/video/video-player";
 import { VideoSidebar } from "~/components/video/video-sidebar";
-import type {
-  FeatureShowcaseBeat,
-  FeatureShowcaseBeatPhase,
-} from "./feature-showcase-data";
 import {
   showcaseAlertMapCenter,
   showcaseAlerts,
@@ -68,13 +68,8 @@ function getShowcaseVideo(index: number) {
   return video;
 }
 
-function ShowcaseFeedSurface({
-  beatProgress,
-}: {
-  beatProgress: number;
-}) {
-  const items =
-    showcaseFeedItemsByBeat["alerts-feed"];
+function ShowcaseFeedSurface({ beatProgress }: { beatProgress: number }) {
+  const items = showcaseFeedItemsByBeat["alerts-feed"];
   const livePulse = 1 + Math.sin(beatProgress * Math.PI * 4) * 0.06;
   const driftY = -18 * clamp01((beatProgress - 0.12) / 0.88);
 
@@ -155,11 +150,7 @@ function ShowcaseFeedSurface({
   );
 }
 
-function ShowcaseAlertsMapSurface({
-  beatProgress,
-}: {
-  beatProgress: number;
-}) {
+function ShowcaseAlertsMapSurface({ beatProgress }: { beatProgress: number }) {
   const mapFocusProgress = clamp01((beatProgress - 0.12) / 0.52);
   const mapMarkers = [
     { id: "pulse-1", left: "48%", top: "32%" },
@@ -171,7 +162,7 @@ function ShowcaseAlertsMapSurface({
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(30,41,59,0.75),transparent_36%),linear-gradient(180deg,#07101a_0%,#060b11_45%,#081421_100%)]">
       <div className="mx-auto grid h-full w-full max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-[1.35fr_0.65fr] lg:px-8 lg:py-8">
         <motion.div
-          className="relative overflow-hidden rounded-[30px] border border-cyan-300/12 bg-slate-950/80 shadow-[0_30px_90px_rgba(3,7,18,0.55)]"
+          className="border-cyan-300/12 relative overflow-hidden rounded-[30px] border bg-slate-950/80 shadow-[0_30px_90px_rgba(3,7,18,0.55)]"
           style={{
             transform: `translate3d(${-24 * mapFocusProgress}px, ${16 * mapFocusProgress}px, 0) scale(${1 + mapFocusProgress * 0.08})`,
           }}
@@ -203,7 +194,9 @@ function ShowcaseAlertsMapSurface({
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(3,7,18,0.18)_55%,rgba(3,7,18,0.52)_100%)]" />
 
             {mapMarkers.map((marker, index) => {
-              const markerProgress = clamp01((beatProgress - index * 0.08) / 0.45);
+              const markerProgress = clamp01(
+                (beatProgress - index * 0.08) / 0.45,
+              );
               const size = 42 + markerProgress * 28;
 
               return (
@@ -218,7 +211,7 @@ function ShowcaseAlertsMapSurface({
                   }}
                 >
                   <div
-                    className="rounded-full border border-cyan-300/45 bg-cyan-300/18"
+                    className="bg-cyan-300/18 rounded-full border border-cyan-300/45"
                     style={{
                       width: `${size}px`,
                       height: `${size}px`,
@@ -237,7 +230,8 @@ function ShowcaseAlertsMapSurface({
               initial={false}
               animate={{
                 opacity: clamp01((beatProgress - 0.18 - index * 0.08) / 0.2),
-                x: 36 - clamp01((beatProgress - 0.18 - index * 0.08) / 0.2) * 36,
+                x:
+                  36 - clamp01((beatProgress - 0.18 - index * 0.08) / 0.2) * 36,
               }}
               transition={{ duration: 0.18, ease: "easeOut" }}
             >
@@ -354,23 +348,29 @@ function ShowcaseVideoSurface({
     return (
       <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_34%),linear-gradient(180deg,#070d15_0%,#05080f_100%)]">
         <div className="mx-auto flex h-full w-full max-w-[1200px] items-center px-4 py-6 lg:px-8 lg:py-8">
-          <div className="relative h-full min-h-[360px] w-full overflow-hidden rounded-[34px] border border-white/12 bg-slate-950/80 p-3 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]">
+          <div className="border-white/12 relative h-full min-h-[360px] w-full overflow-hidden rounded-[34px] border bg-slate-950/80 p-3 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]">
             <motion.div
               className="h-full"
               style={{
                 transform: `translateY(-${stackTranslate}%)`,
               }}
             >
-              {[getShowcaseVideo(0), getShowcaseVideo(1)].map((video, index) => (
-                <div key={video.id} className="h-full pb-3 last:pb-0">
-                  <ShowcaseVideoCard
-                    video={video}
-                    isActive={index === 0 ? swipeProgress < 0.52 : swipeProgress >= 0.52}
-                    shadowBoost={18}
-                    compactSidebar={true}
-                  />
-                </div>
-              ))}
+              {[getShowcaseVideo(0), getShowcaseVideo(1)].map(
+                (video, index) => (
+                  <div key={video.id} className="h-full pb-3 last:pb-0">
+                    <ShowcaseVideoCard
+                      video={video}
+                      isActive={
+                        index === 0
+                          ? swipeProgress < 0.52
+                          : swipeProgress >= 0.52
+                      }
+                      shadowBoost={18}
+                      compactSidebar={true}
+                    />
+                  </div>
+                ),
+              )}
             </motion.div>
 
             <div className="pointer-events-none absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.24em] text-slate-300 shadow-lg backdrop-blur lg:block">
@@ -391,28 +391,20 @@ function ShowcaseVideoSurface({
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.08),transparent_28%),linear-gradient(180deg,#070d15_0%,#05080f_100%)]">
       <div className="mx-auto flex h-full w-full max-w-[1200px] items-center px-4 py-6 lg:px-8 lg:py-8">
         <motion.div
-          className="relative h-full min-h-[360px] w-full rounded-[34px] border border-white/12 bg-slate-950/70 p-3 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]"
+          className="border-white/12 relative h-full min-h-[360px] w-full rounded-[34px] border bg-slate-950/70 p-3 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]"
           style={{
             transform: `translateY(${translateY}px) scale(${scale})`,
             opacity: isTransitioning ? 0.96 : 1,
           }}
         >
-          <ShowcaseVideoCard
-            video={video}
-            isActive={true}
-            shadowBoost={24}
-          />
+          <ShowcaseVideoCard video={video} isActive={true} shadowBoost={24} />
         </motion.div>
       </div>
     </div>
   );
 }
 
-function ShowcaseChatSurface({
-  beatProgress,
-}: {
-  beatProgress: number;
-}) {
+function ShowcaseChatSurface({ beatProgress }: { beatProgress: number }) {
   const settleProgress = clamp01((beatProgress - 0.08) / 0.38);
   const pulseProgress = clamp01((beatProgress - 0.56) / 0.18);
 
@@ -420,12 +412,12 @@ function ShowcaseChatSurface({
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(37,99,235,0.14),transparent_36%),linear-gradient(180deg,#07101a_0%,#05080f_100%)]">
       <div className="mx-auto flex h-full w-full max-w-[1120px] items-center px-4 py-6 lg:px-8 lg:py-8">
         <motion.div
-          className="relative flex h-full min-h-[360px] w-full flex-col overflow-hidden rounded-[34px] border border-cyan-300/12 bg-slate-950/78 shadow-[0_40px_120px_rgba(3,7,18,0.6)] backdrop-blur-md lg:min-h-[620px]"
+          className="border-cyan-300/12 bg-slate-950/78 relative flex h-full min-h-[360px] w-full flex-col overflow-hidden rounded-[34px] border shadow-[0_40px_120px_rgba(3,7,18,0.6)] backdrop-blur-md lg:min-h-[620px]"
           style={{
             transform: `translateX(${20 - settleProgress * 20}px) scale(${0.97 + settleProgress * 0.03})`,
           }}
         >
-          <div className="flex items-center gap-3 border-b border-white/10 bg-slate-950/84 px-4 py-4 backdrop-blur-md sm:px-5">
+          <div className="bg-slate-950/84 flex items-center gap-3 border-b border-white/10 px-4 py-4 backdrop-blur-md sm:px-5">
             <UserAvatar
               name={showcaseChatConversation.participant.name}
               image={showcaseChatConversation.participant.image}
@@ -445,7 +437,7 @@ function ShowcaseChatSurface({
             </div>
             <Badge
               variant="outline"
-              className="border-cyan-300/15 bg-cyan-300/8 text-cyan-100"
+              className="bg-cyan-300/8 border-cyan-300/15 text-cyan-100"
             >
               Coordination
             </Badge>
@@ -455,10 +447,13 @@ function ShowcaseChatSurface({
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_35%)]" />
             <div className="relative flex h-full flex-col justify-center gap-3">
               {showcaseChatConversation.messages.map((message, index) => {
-                const reveal = clamp01((beatProgress - 0.14 - index * 0.07) / 0.18);
+                const reveal = clamp01(
+                  (beatProgress - 0.14 - index * 0.07) / 0.18,
+                );
                 const isMine = message.sender === "me";
                 const isLastIncoming =
-                  !isMine && index === showcaseChatConversation.messages.length - 2;
+                  !isMine &&
+                  index === showcaseChatConversation.messages.length - 2;
 
                 return (
                   <motion.div
@@ -471,9 +466,7 @@ function ShowcaseChatSurface({
                     animate={{
                       opacity: reveal,
                       x: isMine ? 12 - reveal * 12 : -12 + reveal * 12,
-                      scale: isLastIncoming
-                        ? 1 + pulseProgress * 0.02
-                        : 1,
+                      scale: isLastIncoming ? 1 + pulseProgress * 0.02 : 1,
                     }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
                   >
@@ -482,7 +475,7 @@ function ShowcaseChatSurface({
                         "max-w-[82%] rounded-[24px] px-4 py-3 shadow-lg sm:max-w-[72%]",
                         isMine
                           ? "bg-cyan-400 text-slate-950"
-                          : "border border-white/10 bg-white/6 text-slate-100 backdrop-blur",
+                          : "bg-white/6 border border-white/10 text-slate-100 backdrop-blur",
                       )}
                     >
                       <p className="text-sm leading-relaxed sm:text-[15px]">
@@ -503,7 +496,7 @@ function ShowcaseChatSurface({
             </div>
           </div>
 
-          <div className="border-t border-white/10 bg-slate-950/82 px-4 py-3 sm:px-5">
+          <div className="bg-slate-950/82 border-t border-white/10 px-4 py-3 sm:px-5">
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5">
               <Button
                 variant="ghost"
@@ -544,14 +537,14 @@ function ShowcaseNotificationSurface({
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(248,113,113,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(56,189,248,0.12),transparent_30%),linear-gradient(180deg,#070d15_0%,#05080f_100%)]">
       <div className="mx-auto flex h-full w-full max-w-[980px] items-center px-4 py-6 lg:px-8 lg:py-8">
         <motion.div
-          className="relative h-full min-h-[360px] w-full overflow-hidden rounded-[34px] border border-red-300/12 bg-slate-950/80 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]"
+          className="border-red-300/12 relative h-full min-h-[360px] w-full overflow-hidden rounded-[34px] border bg-slate-950/80 shadow-[0_40px_120px_rgba(3,7,18,0.65)] backdrop-blur-md lg:min-h-[620px]"
           style={{
             transform: `translateY(${cardLift}px)`,
           }}
         >
-          <div className="border-b border-white/10 bg-slate-950/82 px-4 py-4 backdrop-blur-md sm:px-5">
+          <div className="bg-slate-950/82 border-b border-white/10 px-4 py-4 backdrop-blur-md sm:px-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-500/12 text-red-200">
+              <div className="bg-red-500/12 flex h-10 w-10 items-center justify-center rounded-2xl text-red-200">
                 <Bell className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
@@ -570,9 +563,12 @@ function ShowcaseNotificationSurface({
 
           <div className="relative flex-1 space-y-3 px-4 py-5 sm:px-5">
             {showcaseNotifications.map((notification, index) => {
-              const reveal = clamp01((beatProgress - 0.12 - index * 0.07) / 0.18);
-              const unreadPulse =
-                notification.unread ? 1 + Math.sin(beatProgress * Math.PI * 5) * 0.08 : 1;
+              const reveal = clamp01(
+                (beatProgress - 0.12 - index * 0.07) / 0.18,
+              );
+              const unreadPulse = notification.unread
+                ? 1 + Math.sin(beatProgress * Math.PI * 5) * 0.08
+                : 1;
               const icon = (() => {
                 switch (notification.type) {
                   case "alert":
@@ -649,7 +645,13 @@ function ShowcasePrivateFeedsSurface({
 }: {
   beatProgress: number;
 }) {
-  const tableColumns = ["Private Feed", "Members", "Updated", "Access", "Actions"];
+  const tableColumns = [
+    "Private Feed",
+    "Members",
+    "Updated",
+    "Access",
+    "Actions",
+  ];
 
   return (
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(244,114,182,0.16),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.14),transparent_32%),linear-gradient(180deg,#070d15_0%,#05080f_100%)]">
@@ -676,7 +678,7 @@ function ShowcasePrivateFeedsSurface({
               <div className="ml-auto flex items-center gap-2">
                 <Badge
                   variant="outline"
-                  className="border-cyan-300/15 bg-cyan-300/8 text-cyan-100"
+                  className="bg-cyan-300/8 border-cyan-300/15 text-cyan-100"
                 >
                   Trusted coordination
                 </Badge>
@@ -708,7 +710,9 @@ function ShowcasePrivateFeedsSurface({
                       key={row.id}
                       initial={false}
                       animate={{
-                        opacity: clamp01((beatProgress - 0.2 - index * 0.07) / 0.16),
+                        opacity: clamp01(
+                          (beatProgress - 0.2 - index * 0.07) / 0.16,
+                        ),
                         transform: `translateY(${18 - clamp01((beatProgress - 0.2 - index * 0.07) / 0.16) * 18}px)`,
                       }}
                       transition={{ duration: 0.18, ease: "easeOut" }}
