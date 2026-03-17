@@ -573,6 +573,10 @@ export const paymentRouter = {
     }),
   hasUnfinishedPayment: protectedProcedure.query(
     async ({ ctx }): Promise<PlanType | null> => {
+      if (ctx.session.user.isInfluencer) {
+        return null;
+      }
+
       const register = await db
         .select()
         .from(registerSchema)

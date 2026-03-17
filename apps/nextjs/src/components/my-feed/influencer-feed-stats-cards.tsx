@@ -6,9 +6,11 @@ import { Card, CardContent } from "@galileyo/ui/card";
 import { Skeleton } from "@galileyo/ui/skeleton";
 
 import { CopyButton } from "../ui/copy-button";
+import { getBaseUrl } from "@galileyo/utils";
 
 interface InfluencerFeedListData {
   promocode: string;
+  has_promocode_service: boolean;
   affiliate_link: string;
   sended_this_month: number;
 }
@@ -20,6 +22,16 @@ export function InfluencerFeedStatsCards({
   data?: InfluencerFeedListData;
   isLoading: boolean;
 }) {
+  const promoCode = data?.has_promocode_service ? new URL(`${window.location.origin}/${data?.promocode}`).href : "";
+  const affiliateLink = data?.affiliate_link?.trim() ?? "";
+  const hasPromoCode =
+    promoCode.length > 0 && Boolean(data?.has_promocode_service);
+  const referralLabel = hasPromoCode ? "Promo Code" : "Affiliate Link";
+  const referralValue = hasPromoCode ? promoCode : affiliateLink;
+  const referralHint = hasPromoCode
+    ? "Copy and share your promo code with your audience"
+    : "Copy and share your referral link";
+
   if (isLoading) {
     return (
       <>
@@ -64,7 +76,7 @@ export function InfluencerFeedStatsCards({
 
   return (
     <>
-      {/* Affiliate Link Card */}
+      {/* Referral Card */}
       <Card className="group relative overflow-hidden border-slate-200 bg-gradient-to-br from-blue-50 to-cyan-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-slate-700 dark:from-blue-950/20 dark:to-cyan-950/20">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <CardContent className="relative p-6">
@@ -75,19 +87,17 @@ export function InfluencerFeedStatsCards({
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              Affiliate Link
+              {referralLabel}
             </p>
             <div className="flex min-w-0 items-center gap-2">
               <p className="flex-1 truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {data?.affiliate_link ?? "Not available"}
+                {referralValue || "Not available"}
               </p>
-              {data?.affiliate_link && (
-                <CopyButton text={data.affiliate_link} />
-              )}
+              {referralValue ? <CopyButton text={referralValue} /> : null}
             </div>
-            {data?.affiliate_link && (
+            {referralValue && (
               <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                Copy and share your referral link
+                {referralHint}
               </p>
             )}
           </div>

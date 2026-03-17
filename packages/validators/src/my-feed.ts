@@ -6,6 +6,7 @@ export const InfluencerFeedSchema = z.custom<InfluencerFeedType>();
 
 export const InfluencerFeedListSchema = z.object({
   promocode: z.string(),
+  has_promocode_service: z.boolean().default(false),
   affiliate_link: z.string(),
   sended_this_month: z.number(),
   sended_this_month_message: z.string(),

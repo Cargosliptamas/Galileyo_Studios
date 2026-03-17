@@ -111,23 +111,6 @@ export function MyInfluencerFeeds() {
           enableHiding: false,
         },
         {
-          accessorKey: "public_code",
-          label: "Public Code",
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title={"Public Code"} />
-          ),
-          cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                {row.original.public_code}
-              </span>
-              <CopyButton text={row.original.public_code ?? ""} />
-            </div>
-          ),
-          enableSorting: false,
-          enableHiding: false,
-        },
-        {
           accessorKey: "public_link",
           label: "Public Link",
           header: ({ column }) => (

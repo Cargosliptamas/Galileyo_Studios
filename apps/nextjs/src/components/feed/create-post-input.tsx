@@ -482,6 +482,20 @@ function CreatePostComponent({ user }: { user: User }) {
     return profiles.find((profile) => profile.id === selectedProfile);
   }, [profiles, selectedProfile]);
 
+  const canPost = ability.can("use", "can_post");
+  const canOnlyPostToUserFeeds = ability.can(
+    "use",
+    "can_post_user_feed_only",
+  );
+  const postingProfile = canOnlyPostToUserFeeds ? null : activeProfile;
+  const showProfileSwitcher = profiles.length >= 1 && !canOnlyPostToUserFeeds;
+
+  useEffect(() => {
+    if (canOnlyPostToUserFeeds && selectedProfile !== null) {
+      setSelectedProfile(null);
+    }
+  }, [canOnlyPostToUserFeeds, selectedProfile]);
+
   const trimmedContent = content.trim();
   const isContentEmpty = trimmedContent.length === 0;
   const contentCount = content.length;
@@ -533,8 +547,8 @@ function CreatePostComponent({ user }: { user: User }) {
         formData.append("satellite_text", satelliteContent);
       }
 
-      if (activeProfile?.id) {
-        formData.append("subscriptions[]", activeProfile.id);
+      if (postingProfile?.id) {
+        formData.append("subscriptions[]", postingProfile.id);
       } else {
         formData.append("subscriptions[]", "");
         formData.append("user_feed", whoCanSee);
@@ -571,8 +585,6 @@ function CreatePostComponent({ user }: { user: User }) {
     },
     [],
   );
-
-  const canPost = ability.can("use", "can_post");
 
   const isTestAccount = user.email.trim().toLowerCase() === "test@galileyo.com";
 
@@ -628,7 +640,7 @@ function CreatePostComponent({ user }: { user: User }) {
             maxLength={CONTENT_LIMIT}
           >
             <div className="flex w-full flex-wrap items-center gap-2">
-              {profiles.length >= 1 ? (
+              {showProfileSwitcher ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -638,7 +650,7 @@ function CreatePostComponent({ user }: { user: User }) {
                     >
                       <ProfilePreviewContent
                         user={user}
-                        activeProfile={activeProfile}
+                        activeProfile={postingProfile}
                       >
                         <ChevronDown className="h-4 w-4" />
                       </ProfilePreviewContent>
@@ -675,7 +687,7 @@ function CreatePostComponent({ user }: { user: User }) {
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Switch Profile</DropdownMenuLabel>
                     {profiles
-                      .filter((profile) => profile.id !== activeProfile?.id)
+                      .filter((profile) => profile.id !== postingProfile?.id)
                       .map((profile) => (
                         <DropdownMenuItem
                           key={`${profile.id}-${profile.role}`}
@@ -690,7 +702,7 @@ function CreatePostComponent({ user }: { user: User }) {
                           />
                         </DropdownMenuItem>
                       ))}
-                    {activeProfile && (
+                    {postingProfile && (
                       <DropdownMenuItem
                         key="main"
                         onClick={() => setSelectedProfile(null)}
@@ -710,13 +722,18 @@ function CreatePostComponent({ user }: { user: User }) {
                 <div className="flex items-center gap-2 p-2">
                   <ProfilePreviewContent
                     user={user}
-                    activeProfile={activeProfile}
+                    activeProfile={postingProfile}
                   />
                 </div>
               )}
-              {activeProfile === undefined && (
+              {!postingProfile && (
                 <div className="flex items-center gap-2">
-                  {/* <span className="text-xs text-muted-foreground">Who can see:</span> */}
+                  {canOnlyPostToUserFeeds && (
+                    <span className="text-xs text-muted-foreground">
+                      Trial posting is limited to your public and friends-only
+                      feeds.
+                    </span>
+                  )}
                   <Select
                     value={whoCanSee}
                     onValueChange={(value) =>

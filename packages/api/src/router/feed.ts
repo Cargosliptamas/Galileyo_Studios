@@ -183,10 +183,20 @@ export const feedRouter = {
       const responseJson = (await response.json()) as {
         status: "success" | "error";
         data: FeedItem | null;
+        error?: {
+          message?: string;
+          text?: string;
+        };
       };
 
       if (responseJson.status !== "success") {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            responseJson.error?.message ??
+            responseJson.error?.text ??
+            "Failed to create post",
+        });
       }
     }),
   share: protectedProcedure
