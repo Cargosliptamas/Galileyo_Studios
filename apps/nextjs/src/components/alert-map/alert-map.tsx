@@ -5,7 +5,7 @@ import { useCallback, useMemo } from "react";
 import type { Alert } from "@galileyo/validators";
 
 import type { Location } from "../map/location-search";
-import type { MapData, ViewState } from "../ui/map/map";
+import type { MapData, MapProps, ViewState } from "../ui/map/map";
 import { Map } from "../ui/map/map";
 
 interface AlertMapProps {
@@ -24,6 +24,7 @@ interface AlertMapProps {
   children?: React.ReactNode;
   cooperativeGestures?: boolean;
   canClickAlerts?: boolean;
+  config?: MapProps["config"];
 }
 
 export function AlertMap({
@@ -39,6 +40,7 @@ export function AlertMap({
   children,
   cooperativeGestures,
   canClickAlerts = true,
+  config,
 }: AlertMapProps) {
   const data: MapData[] = useMemo(() => {
     return alerts.map((alert) => ({
@@ -90,6 +92,7 @@ export function AlertMap({
         onMoveEnd={onMoveEnd}
         cooperativeGestures={cooperativeGestures}
         canClickMarkers={canClickAlerts}
+        config={config}
       >
         {children}
       </Map>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Settings, Sparkles, Users, Video } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -26,6 +26,15 @@ interface TabItem {
   icon: typeof Users;
   isAction?: boolean;
   gradient?: string;
+}
+
+interface FeedTypeSwitcherProps {
+  user?: User;
+  initialPostId?: number;
+  mockedContent?: Partial<Record<string, React.ReactNode>>;
+  initialActiveTab?: string;
+  showCreatePostInput?: boolean;
+  disableActionTabs?: boolean;
 }
 
 const tabs: TabItem[] = [
@@ -67,18 +76,29 @@ const tabs: TabItem[] = [
 export function FeedTypeSwitcher({
   user,
   initialPostId,
-}: {
-  user: User;
-  initialPostId?: number;
-}) {
+  mockedContent,
+  initialActiveTab,
+  showCreatePostInput = true,
+  disableActionTabs = false,
+}: FeedTypeSwitcherProps) {
   const router = useRouter();
 
   const [tabState, setTabState] = useQueryState("tab");
   const [showSettings, setShowSettings] = useState(false);
   const [showVideoUpload, setShowVideoUpload] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => tabState ?? "subscriptions");
+  const isMocked = Boolean(mockedContent);
+  const defaultTab = initialActiveTab ?? tabState ?? "subscriptions";
+  const [activeTab, setActiveTab] = useState(() => defaultTab);
+  const activeMockedContent = useMemo(
+    () => mockedContent?.[activeTab] ?? null,
+    [activeTab, mockedContent],
+  );
 
   const handleTabClick = (tab: TabItem) => {
+    if (disableActionTabs && tab.isAction) {
+      return;
+    }
+
     // if (tab.id === "upload") {
     //   setShowVideoUpload(true);
     // } else if (tab.id === "settings") {
@@ -96,14 +116,79 @@ export function FeedTypeSwitcher({
         setShowSettings(true);
         break;
       case "videos":
-        router.push("/videos");
+        if (!isMocked) {
+          router.push("/videos");
+        }
         break;
       default:
         setActiveTab(tab.id);
-        void setTabState(tab.id);
+        if (!isMocked) {
+          void setTabState(tab.id);
+        }
         break;
     }
   };
+
+  if (!isMocked && !user) {
+    throw new Error("FeedTypeSwitcher requires a user outside mocked mode.");
+  }
+
+  if (isMocked) {
+    return (
+      <div>
+        <nav className="mb-6">
+          <div className="flex items-center justify-center gap-1 rounded-2xl border border-slate-200/80 bg-white/80 p-1.5 shadow-sm backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-900/80">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = !tab.isAction && activeTab === tab.id;
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab)}
+                  disabled={disableActionTabs && tab.isAction}
+                  className={cn(
+                    "group relative flex flex-1 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-sm font-medium transition-all duration-200 sm:px-4",
+                    isActive
+                      ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
+                    tab.isAction && "text-slate-500 dark:text-slate-500",
+                    disableActionTabs &&
+                      tab.isAction &&
+                      "cursor-default opacity-60 hover:bg-transparent dark:hover:bg-transparent",
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-200 group-hover:scale-110",
+                      isActive && "text-white",
+                    )}
+                  />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  {isActive && (
+                    <span
+                      className={cn(
+                        "absolute -bottom-1 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full bg-gradient-to-r opacity-60",
+                        tab.gradient,
+                      )}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        <div className="space-y-4">{activeMockedContent}</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    throw new Error("FeedTypeSwitcher requires a user outside mocked mode.");
+  }
+
+  const liveUser = user;
 
   return (
     <div>
@@ -118,12 +203,16 @@ export function FeedTypeSwitcher({
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
+                disabled={disableActionTabs && tab.isAction}
                 className={cn(
                   "group relative flex flex-1 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-sm font-medium transition-all duration-200 sm:px-4",
                   isActive
                     ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                   tab.isAction && "text-slate-500 dark:text-slate-500",
+                  disableActionTabs &&
+                    tab.isAction &&
+                    "cursor-default opacity-60 hover:bg-transparent dark:hover:bg-transparent",
                 )}
               >
                 <Icon
@@ -149,7 +238,7 @@ export function FeedTypeSwitcher({
 
       {/* Content Area */}
       <div className="space-y-4">
-        <CreatePostInput user={user} />
+        {showCreatePostInput ? <CreatePostInput user={liveUser} /> : null}
 
         <Suspense
           fallback={
@@ -164,7 +253,7 @@ export function FeedTypeSwitcher({
         >
           <FeedList
             activeTab={activeTab}
-            user={user}
+            user={liveUser}
             initialPostId={initialPostId}
           />
         </Suspense>

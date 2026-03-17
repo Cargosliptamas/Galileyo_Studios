@@ -28,6 +28,7 @@ interface VideoInfoProps {
   isFollowing?: boolean;
   currentUserId?: number;
   className?: string;
+  interactive?: boolean;
 }
 
 export function VideoInfo({
@@ -37,6 +38,7 @@ export function VideoInfo({
   isFollowing: initialIsFollowing = false,
   currentUserId,
   className,
+  interactive = true,
 }: VideoInfoProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -58,7 +60,7 @@ export function VideoInfo({
   const handleFollowToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!creator.subscriptionId) return;
+    if (!interactive || !creator.subscriptionId) return;
 
     const newFollowState = !optimisticFollowing;
     setOptimisticFollowing(newFollowState);
@@ -97,35 +99,59 @@ export function VideoInfo({
 
   return (
     <div className={cn("space-y-3", className)}>
-      {/* Creator info with follow button */}
       <div className="flex items-center gap-3">
-        <Link href={profileHref} className="flex items-center gap-3">
-          <Avatar className="h-10 w-10 border-2 border-white">
-            {creatorImageUrl ? (
-              <AvatarImage src={creatorImageUrl} alt={creator.name} />
-            ) : null}
-            <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
-              {getInitials(creator.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-white">{creator.name}</span>
-              {(creator.isVerified ?? creator.isInfluencer) && (
-                <BadgeCheck className="h-4 w-4 fill-cyan-500 text-white" />
+        {interactive ? (
+          <Link href={profileHref} className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border-2 border-white">
+              {creatorImageUrl ? (
+                <AvatarImage src={creatorImageUrl} alt={creator.name} />
+              ) : null}
+              <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
+                {getInitials(creator.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-white">{creator.name}</span>
+                {(creator.isVerified ?? creator.isInfluencer) && (
+                  <BadgeCheck className="h-4 w-4 fill-cyan-500 text-white" />
+                )}
+              </div>
+              {viewCount > 0 && (
+                <div className="flex items-center gap-1 text-xs text-white/70">
+                  <Eye className="h-3 w-3" />
+                  <span>{formatViewCount(viewCount)} views</span>
+                </div>
               )}
             </div>
-            {/* View count */}
-            {viewCount > 0 && (
-              <div className="flex items-center gap-1 text-xs text-white/70">
-                <Eye className="h-3 w-3" />
-                <span>{formatViewCount(viewCount)} views</span>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border-2 border-white">
+              {creatorImageUrl ? (
+                <AvatarImage src={creatorImageUrl} alt={creator.name} />
+              ) : null}
+              <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
+                {getInitials(creator.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-white">{creator.name}</span>
+                {(creator.isVerified ?? creator.isInfluencer) && (
+                  <BadgeCheck className="h-4 w-4 fill-cyan-500 text-white" />
+                )}
               </div>
-            )}
+              {viewCount > 0 && (
+                <div className="flex items-center gap-1 text-xs text-white/70">
+                  <Eye className="h-3 w-3" />
+                  <span>{formatViewCount(viewCount)} views</span>
+                </div>
+              )}
+            </div>
           </div>
-        </Link>
+        )}
 
-        {/* Follow button - only show if not own video and has subscription ID */}
         {!isOwnVideo && creator.subscriptionId && (
           <Button
             variant={optimisticFollowing ? "outline" : "primary"}
@@ -135,9 +161,10 @@ export function VideoInfo({
               optimisticFollowing
                 ? "border-white/30 bg-transparent text-white hover:bg-white/10"
                 : "bg-white text-black hover:bg-white/90",
+              !interactive && "pointer-events-none disabled:opacity-100",
             )}
-            onClick={handleFollowToggle}
-            disabled={followMutation.isPending}
+            onClick={interactive ? handleFollowToggle : undefined}
+            disabled={!interactive || followMutation.isPending}
           >
             {optimisticFollowing ? (
               <>
@@ -154,7 +181,6 @@ export function VideoInfo({
         )}
       </div>
 
-      {/* Caption with clickable hashtags */}
       <VideoCaption caption={caption} maxLines={2} />
     </div>
   );

@@ -56,6 +56,7 @@ interface VideoSidebarProps {
   creatorImage?: string | null;
   onCommentClick?: () => void;
   className?: string;
+  interactive?: boolean;
 }
 
 export function VideoSidebar({
@@ -79,6 +80,7 @@ export function VideoSidebar({
   creatorImage,
   onCommentClick,
   className,
+  interactive = true,
 }: VideoSidebarProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -109,6 +111,10 @@ export function VideoSidebar({
 
   const handleReactionClick = useCallback(
     (reactionId: number) => {
+      if (!interactive) {
+        return;
+      }
+
       if (optimisticReactionId === reactionId) {
         // Toggle off
         setOptimisticReactionId(null);
@@ -122,7 +128,7 @@ export function VideoSidebar({
       }
       setReactionMutation.mutate({ videoId, reactionId });
     },
-    [optimisticReactionId, setReactionMutation, videoId],
+    [interactive, optimisticReactionId, setReactionMutation, videoId],
   );
 
   // Double-tap triggers default "like" reaction (id: 1)
@@ -158,14 +164,24 @@ export function VideoSidebar({
   });
 
   const handleSave = () => {
+    if (!interactive) {
+      return;
+    }
     toggleSaveMutation.mutate();
   };
 
   const handleShare = () => {
+    if (!interactive) {
+      return;
+    }
     setShowShareModal(true);
   };
 
   const handleDownload = async () => {
+    if (!interactive) {
+      return;
+    }
+
     if (!playbackUrl || !allowDownload) {
       toast.error("Download not available for this video");
       return;
@@ -203,6 +219,66 @@ export function VideoSidebar({
     ? reactionOptions.find((r) => r.id === optimisticReactionId)
     : null;
 
+  const handleNativeShare = async () => {
+    if (!interactive) {
+      return;
+    }
+
+    const url = `${window.location.origin}/videos/${videoId}`;
+    if ("share" in navigator) {
+      try {
+        await navigator.share({
+          title: "Check out this video!",
+          url,
+        });
+      } catch {
+        // User cancelled
+      }
+      return;
+    }
+
+    const clipboard = window.navigator.clipboard;
+    if (typeof clipboard.writeText === "function") {
+      await clipboard.writeText(url);
+      toast.success("Link copied to clipboard!");
+      return;
+    }
+
+    toast.info("Sharing is not supported on this browser");
+  };
+
+  const reactionButton = (
+    <button
+      onClick={() => {
+        if (currentReaction) {
+          handleReactionClick(currentReaction.id);
+        } else {
+          handleReactionClick(4);
+        }
+      }}
+      disabled={!interactive || setReactionMutation.isPending}
+      className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
+    >
+      <div
+        className={cn(
+          "transition-all",
+          setReactionMutation.isPending && "opacity-50",
+        )}
+      >
+        {currentReaction ? (
+          <span className="flex h-6 w-6 items-center justify-center text-xl sm:h-8 sm:w-8 sm:text-2xl">
+            {currentReaction.emoji}
+          </span>
+        ) : (
+          <Heart className="h-6 w-6 text-foreground drop-shadow-md sm:h-8 sm:w-8" />
+        )}
+      </div>
+      <span className="text-[10px] font-medium text-foreground drop-shadow-md sm:text-xs">
+        {formatCount(optimisticLikeCount)}
+      </span>
+    </button>
+  );
+
   return (
     <>
       <div
@@ -211,71 +287,43 @@ export function VideoSidebar({
           className,
         )}
       >
-        {/* Reaction button with hover card */}
-        <HoverCard openDelay={200} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <button
-              onClick={() => {
-                // Quick tap: toggle current reaction or set "like"
-                if (currentReaction) {
-                  handleReactionClick(currentReaction.id);
-                } else {
-                  handleReactionClick(4); // Default to love
-                }
-              }}
-              disabled={setReactionMutation.isPending}
-              className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+        {interactive ? (
+          <HoverCard openDelay={200} closeDelay={100}>
+            <HoverCardTrigger asChild>{reactionButton}</HoverCardTrigger>
+            <HoverCardContent
+              side="left"
+              align="center"
+              className="w-auto border-border bg-popover p-2 shadow-lg"
             >
-              <div
-                className={cn(
-                  "transition-all",
-                  setReactionMutation.isPending && "opacity-50",
-                )}
-              >
-                {currentReaction ? (
-                  <span className="flex h-6 w-6 items-center justify-center text-xl sm:h-8 sm:w-8 sm:text-2xl">
-                    {currentReaction.emoji}
-                  </span>
-                ) : (
-                  <Heart className="h-6 w-6 text-foreground drop-shadow-md sm:h-8 sm:w-8" />
-                )}
+              <div className="flex items-center gap-1">
+                {reactionOptions.map((reaction) => (
+                  <button
+                    key={reaction.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReactionClick(reaction.id);
+                    }}
+                    className={cn(
+                      "rounded-full p-2 text-xl transition-all hover:scale-125 hover:bg-accent",
+                      optimisticReactionId === reaction.id &&
+                        "scale-110 bg-accent",
+                    )}
+                    aria-label={reaction.label}
+                  >
+                    {reaction.emoji}
+                  </button>
+                ))}
               </div>
-              <span className="text-[10px] font-medium text-foreground drop-shadow-md sm:text-xs">
-                {formatCount(optimisticLikeCount)}
-              </span>
-            </button>
-          </HoverCardTrigger>
-          <HoverCardContent
-            side="left"
-            align="center"
-            className="w-auto border-border bg-popover p-2 shadow-lg"
-          >
-            <div className="flex items-center gap-1">
-              {reactionOptions.map((reaction) => (
-                <button
-                  key={reaction.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleReactionClick(reaction.id);
-                  }}
-                  className={cn(
-                    "rounded-full p-2 text-xl transition-all hover:scale-125 hover:bg-accent",
-                    optimisticReactionId === reaction.id &&
-                      "scale-110 bg-accent",
-                  )}
-                  aria-label={reaction.label}
-                >
-                  {reaction.emoji}
-                </button>
-              ))}
-            </div>
-          </HoverCardContent>
-        </HoverCard>
+            </HoverCardContent>
+          </HoverCard>
+        ) : (
+          reactionButton
+        )}
 
-        {/* Comment button */}
         <button
-          onClick={onCommentClick}
-          className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+          onClick={interactive ? onCommentClick : undefined}
+          disabled={!interactive}
+          className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
         >
           <MessageCircle className="h-6 w-6 text-foreground drop-shadow-md sm:h-8 sm:w-8" />
           <span className="text-[10px] font-medium text-foreground drop-shadow-md sm:text-xs">
@@ -283,10 +331,10 @@ export function VideoSidebar({
           </span>
         </button>
 
-        {/* Share/Repost button */}
         <button
           onClick={handleShare}
-          className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+          disabled={!interactive}
+          className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
         >
           <Repeat2
             className={cn(
@@ -299,30 +347,10 @@ export function VideoSidebar({
           </span>
         </button>
 
-        {/* Native Share button */}
         <button
-          onClick={async () => {
-            const url = `${window.location.origin}/videos/${videoId}`;
-            if ("share" in navigator) {
-              try {
-                await navigator.share({
-                  title: "Check out this video!",
-                  url,
-                });
-              } catch {
-                // User cancelled
-              }
-            } else {
-              const clipboard = window.navigator.clipboard;
-              if (typeof clipboard.writeText === "function") {
-                await clipboard.writeText(url);
-                toast.success("Link copied to clipboard!");
-              } else {
-                toast.info("Sharing is not supported on this browser");
-              }
-            }
-          }}
-          className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+          onClick={handleNativeShare}
+          disabled={!interactive}
+          className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
         >
           <Share2 className="h-6 w-6 text-foreground drop-shadow-md sm:h-8 sm:w-8" />
           <span className="text-[10px] font-medium text-foreground drop-shadow-md sm:text-xs">
@@ -330,11 +358,10 @@ export function VideoSidebar({
           </span>
         </button>
 
-        {/* Bookmark/Save button */}
         <button
           onClick={handleSave}
-          disabled={toggleSaveMutation.isPending}
-          className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+          disabled={!interactive || toggleSaveMutation.isPending}
+          className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
         >
           <Bookmark
             className={cn(
@@ -350,11 +377,11 @@ export function VideoSidebar({
           </span>
         </button>
 
-        {/* Duet/Stitch button */}
         {(allowDuet || allowStitch) && (
           <button
-            onClick={() => setShowDuetStitchModal(true)}
-            className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+            onClick={interactive ? () => setShowDuetStitchModal(true) : undefined}
+            disabled={!interactive}
+            className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
           >
             <GitBranch className="h-6 w-6 text-foreground drop-shadow-md sm:h-8 sm:w-8" />
             <span className="text-[10px] font-medium text-foreground drop-shadow-md sm:text-xs">
@@ -363,12 +390,11 @@ export function VideoSidebar({
           </button>
         )}
 
-        {/* Download button */}
         {allowDownload && (
           <button
             onClick={handleDownload}
-            disabled={isDownloading}
-            className="flex flex-col items-center gap-1 transition-transform hover:scale-110"
+            disabled={!interactive || isDownloading}
+            className="flex flex-col items-center gap-1 transition-transform hover:scale-110 disabled:pointer-events-none disabled:opacity-100"
           >
             <Download
               className={cn(
@@ -383,29 +409,31 @@ export function VideoSidebar({
         )}
       </div>
 
-      {/* Share Modal */}
-      <VideoShareModal
-        videoId={videoId}
-        videoCaption={videoCaption}
-        thumbnailUrl={thumbnailUrl}
-        creatorName={creatorName}
-        isShared={isShared}
-        allowSharing={allowSharing}
-        open={showShareModal}
-        onOpenChange={setShowShareModal}
-      />
+      {interactive && (
+        <VideoShareModal
+          videoId={videoId}
+          videoCaption={videoCaption}
+          thumbnailUrl={thumbnailUrl}
+          creatorName={creatorName}
+          isShared={isShared}
+          allowSharing={allowSharing}
+          open={showShareModal}
+          onOpenChange={setShowShareModal}
+        />
+      )}
 
-      {/* Duet/Stitch Modal */}
-      <DuetStitchModal
-        videoId={videoId}
-        videoThumbnailUrl={thumbnailUrl}
-        creatorName={creatorName}
-        creatorImage={creatorImage}
-        allowDuet={allowDuet}
-        allowStitch={allowStitch}
-        open={showDuetStitchModal}
-        onOpenChange={setShowDuetStitchModal}
-      />
+      {interactive && (
+        <DuetStitchModal
+          videoId={videoId}
+          videoThumbnailUrl={thumbnailUrl}
+          creatorName={creatorName}
+          creatorImage={creatorImage}
+          allowDuet={allowDuet}
+          allowStitch={allowStitch}
+          open={showDuetStitchModal}
+          onOpenChange={setShowDuetStitchModal}
+        />
+      )}
     </>
   );
 }

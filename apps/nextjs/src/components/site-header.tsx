@@ -3,6 +3,11 @@
 import type { User } from "~/auth/client";
 import AuthNavbar from "./layout/auth-navbar";
 import PublicNavbar from "./layout/public-navbar";
+import { usePathname } from "next/navigation";
+
+const DISABLED_PATHS = [
+  "/feature-showcase",
+];
 
 export function SiteHeader({
   user,
@@ -11,6 +16,13 @@ export function SiteHeader({
   user: User | undefined;
   showMap: boolean;
 }) {
+  const pathname = usePathname();
+  const isDisabled = DISABLED_PATHS.some((path) => pathname.includes(path));
+  
+  if (isDisabled) {
+    return null;
+  }
+  
   return (
     <>
       {user ? <AuthNavbar user={user} showMap={showMap} /> : <PublicNavbar />}
