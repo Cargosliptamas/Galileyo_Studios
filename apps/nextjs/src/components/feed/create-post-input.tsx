@@ -483,10 +483,7 @@ function CreatePostComponent({ user }: { user: User }) {
   }, [profiles, selectedProfile]);
 
   const canPost = ability.can("use", "can_post");
-  const canOnlyPostToUserFeeds = ability.can(
-    "use",
-    "can_post_user_feed_only",
-  );
+  const canOnlyPostToUserFeeds = ability.can("use", "can_post_user_feed_only");
   const postingProfile = canOnlyPostToUserFeeds ? null : activeProfile;
   const showProfileSwitcher = profiles.length >= 1 && !canOnlyPostToUserFeeds;
 

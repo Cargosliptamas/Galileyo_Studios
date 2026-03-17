@@ -6,7 +6,6 @@ import { Card, CardContent } from "@galileyo/ui/card";
 import { Skeleton } from "@galileyo/ui/skeleton";
 
 import { CopyButton } from "../ui/copy-button";
-import { getBaseUrl } from "@galileyo/utils";
 
 interface InfluencerFeedListData {
   promocode: string;
@@ -22,8 +21,10 @@ export function InfluencerFeedStatsCards({
   data?: InfluencerFeedListData;
   isLoading: boolean;
 }) {
-  const promoCode = data?.has_promocode_service ? new URL(`${window.location.origin}/${data?.promocode}`).href : "";
-  const affiliateLink = data?.affiliate_link?.trim() ?? "";
+  const promoCode = data?.has_promocode_service
+    ? new URL(`${window.location.origin}/${data.promocode.trim()}`).href
+    : "";
+  const affiliateLink = data?.affiliate_link.trim() ?? "";
   const hasPromoCode =
     promoCode.length > 0 && Boolean(data?.has_promocode_service);
   const referralLabel = hasPromoCode ? "Promo Code" : "Affiliate Link";
