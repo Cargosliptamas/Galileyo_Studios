@@ -33,6 +33,8 @@ export function initAuth(options: {
   productionUrl: string;
   secret: string | undefined;
   emailOptions: EmailOptions;
+  impersonationSharedSecret?: string;
+  impersonationTokenTtlSeconds?: number;
   trustedOrigins?: string[];
 
   // discordClientId: string;
@@ -106,6 +108,11 @@ export function initAuth(options: {
           required: false,
           defaultValue: 1,
         },
+        adminToken: {
+          type: "string",
+          required: false,
+          defaultValue: null,
+        },
       },
     },
     session: {
@@ -133,6 +140,8 @@ export function initAuth(options: {
       }),
       passwordPlugin({
         apiUrl: options.apiUrl ?? options.baseUrl,
+        impersonationSharedSecret: options.impersonationSharedSecret,
+        impersonationTokenTtlSeconds: options.impersonationTokenTtlSeconds,
       }),
       magicLink({
         disableSignUp: true,

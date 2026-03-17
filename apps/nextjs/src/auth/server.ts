@@ -58,6 +58,8 @@ export const auth = initAuth({
     sendMagicLink: async ({ email, token, url }) =>
       sendMagicLinkEmail({ to: email, token, url }),
   },
+  impersonationSharedSecret: env.IMPERSONATION_SHARED_SECRET,
+  impersonationTokenTtlSeconds: env.IMPERSONATION_TOKEN_TTL_SECONDS,
   // emailAndPassword: {
   //   enabled: true,
   //   password: {

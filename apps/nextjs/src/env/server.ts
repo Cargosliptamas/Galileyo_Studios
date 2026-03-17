@@ -35,6 +35,8 @@ export function serverEnv() {
       REDIS_URL: z.url().optional(),
       PREVIEW_SERVER_URL: z.url().default("http://localhost:3001"),
       OPENWEATHER_API_KEY: z.string().optional(),
+      IMPERSONATION_SHARED_SECRET: z.string().min(1).optional(),
+      IMPERSONATION_TOKEN_TTL_SECONDS: z.coerce.number().int().positive().default(60),
     },
     experimental__runtimeEnv: {
       NODE_ENV: process.env.NODE_ENV,
