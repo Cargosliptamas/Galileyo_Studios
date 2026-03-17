@@ -117,6 +117,7 @@ import { useFileUpload } from "~/hooks/use-file-upload";
 import { isVisibleError } from "~/lib/visible-error";
 import { useTRPC } from "~/trpc/react";
 import { usePushNotification } from "../layout/push-notification-provider";
+import { CopyButton } from "../ui/copy-button";
 import { PasswordInput } from "../ui/password-input";
 import Cover from "./cover";
 
@@ -1002,6 +1003,40 @@ export function Profile() {
                     </div>
                   </form>
                 </Form>
+
+                {!currentUser.is_influencer && (
+                  <>
+                    <Separator className="bg-slate-200 dark:bg-slate-700" />
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-5 dark:border-slate-700 dark:bg-slate-900/40">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Send className="h-4 w-4 text-cyan-500" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                              Affiliate Link
+                            </h3>
+                          </div>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            Share this link to invite new members.
+                          </p>
+                        </div>
+                        {currentUser.referrer_link ? (
+                          <CopyButton
+                            text={currentUser.referrer_link}
+                            size="sm"
+                            className="shrink-0"
+                          >
+                            Copy Link
+                          </CopyButton>
+                        ) : null}
+                      </div>
+                      <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200">
+                        {currentUser.referrer_link ||
+                          "Affiliate link not available"}
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
