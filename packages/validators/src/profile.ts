@@ -36,6 +36,7 @@ export const SignupSchema = z
       message: "You must be at least 18 years old",
     }),
     affiliate_token: z.string().optional(),
+    promo_code: z.string().optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",

@@ -1,13 +1,28 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Smartphone } from "lucide-react";
 
+import { Button } from "@galileyo/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@galileyo/ui/dialog";
 import { ThemeToggle } from "@galileyo/ui/theme";
 
 import { AppIcon } from "./app-icon";
 import { useNativeBridge } from "./layout/native-app-bridge";
+import {
+  NATIVE_APP_DOWNLOAD_DESCRIPTION,
+  NATIVE_APP_DOWNLOAD_TITLE,
+  NativeAppDownloadOptions,
+} from "./public-site/native-app-download-options";
 import { SiteStatus } from "./site-status";
 
 const DISABLED_PATHS = [
@@ -21,6 +36,7 @@ const DISABLED_PATHS = [
 export function SiteFooter() {
   const pathname = usePathname();
   const { isRunningInNativeApp } = useNativeBridge();
+  const [isNativeAppDialogOpen, setIsNativeAppDialogOpen] = useState(false);
 
   const isDisabled = DISABLED_PATHS.some((path) => pathname.includes(path));
 
@@ -145,33 +161,30 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-4">
-          <a
-            href="https://apps.apple.com/us/app/galileyo-account-app/id6475311208"
-            target="_blank"
-            className="max-w-52"
+        <div className="flex flex-col items-center justify-center gap-3">
+          <Dialog
+            open={isNativeAppDialogOpen}
+            onOpenChange={setIsNativeAppDialogOpen}
           >
-            <Image
-              src="/app_store_badge.svg"
-              alt="Galileyo"
-              width={300}
-              height={200}
-              className="object-cover"
-            />
-          </a>
-          <a
-            href="https://play.google.com/store/apps/details?id=com.galileyo.android"
-            target="_blank"
-            className="max-w-52"
-          >
-            <Image
-              src="/google_play_badge.png"
-              alt="Galileyo"
-              width={500}
-              height={500}
-              className="h-full w-full object-cover"
-            />
-          </a>
+            <DialogTrigger asChild>
+              <Button size="lg" className="min-w-52 rounded-xl px-6">
+                <Smartphone className="mr-2 h-4 w-4" />
+                Download Mobile App
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>{NATIVE_APP_DOWNLOAD_TITLE}</DialogTitle>
+                <DialogDescription>
+                  {NATIVE_APP_DOWNLOAD_DESCRIPTION}
+                </DialogDescription>
+              </DialogHeader>
+              <NativeAppDownloadOptions showDedicatedPageLink />
+            </DialogContent>
+          </Dialog>
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+            iOS, Google Play, and direct Android APK options available.
+          </p>
         </div>
 
         {/* Bottom Bar */}

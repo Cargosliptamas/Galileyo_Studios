@@ -1,7 +1,11 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { TRPCError } from "@trpc/server";
+import { format } from "date-fns";
 import { z } from "zod/v4";
 
+import { and, eq, gte, lte } from "@galileyo/db";
+import { db } from "@galileyo/db/client";
+import { promocode as promocodeTable } from "@galileyo/db/schema";
 import {
   ChangePasswordSchema,
   PrivacySchema,
@@ -12,6 +16,31 @@ import {
 import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const profileRouter = {
+  validatePromoCode: publicProcedure
+    .input(z.object({ code: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+
+      const promo = await db.query.promocode.findFirst({
+        where: and(
+          eq(promocodeTable.text, input.code),
+          eq(promocodeTable.isActive, 1),
+          lte(promocodeTable.activeFrom, now),
+          gte(promocodeTable.activeTo, now),
+        ),
+      });
+
+      if (!promo) {
+        return { valid: false as const };
+      }
+
+      return {
+        valid: true as const,
+        discount: promo.discount,
+        trialPeriod: promo.trialPeriod,
+        description: promo.description,
+      };
+    }),
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const profile = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/customer/get-profile`,
@@ -90,6 +119,7 @@ export const profileRouter = {
               ? +input.selected_plan
               : undefined,
             affiliate_token: affiliateToken,
+            promocode: input.promo_code,
             "from-new-site": true,
           }),
         },

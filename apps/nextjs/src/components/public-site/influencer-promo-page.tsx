@@ -70,8 +70,10 @@ export function InfluencerPromoPage({
       // Logged in users go directly to payment
       router.push(`/payment?plan=${plan.id}`);
     } else {
-      // Non-logged-in users: redirect to signup
-      router.push(`/sign-up?plan=${plan.id}`);
+      // Non-logged-in users: redirect to signup with promo code pre-filled
+      router.push(
+        `/sign-up?plan=${plan.id}&promo_code=${encodeURIComponent(promoCode.text)}`,
+      );
     }
   }, [router, plan.id, isLoggedIn, affiliateToken]);
 

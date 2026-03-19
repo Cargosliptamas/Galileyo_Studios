@@ -20,10 +20,12 @@ import * as motion from "motion/react-client";
 
 import type { PricingPlan } from "~/lib/server/types";
 import { getSession } from "~/auth/server";
+import { BACKPACK_GIVEAWAY_CAMPAIGN } from "~/lib/promo-campaigns";
 import { isNativeUserAgent } from "~/lib/server/headers";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { getFeaturedPartners } from "~/lib/server/partners";
-import PromoBanner from "../ui/promo-banner";
+// import PromoBanner from "../ui/promo-banner";
+import PromoTeaserDialog from "../ui/promo-teaser-dialog";
 import { FeatureShowcaseExperience } from "./feature-showcase-experience";
 import { HomeBackground } from "./home-backround";
 import {
@@ -176,8 +178,23 @@ export async function HomePage() {
 
   return (
     <>
-      {/* Holiday Promo Teaser Banner */}
-      {!session && <PromoBanner endDate="2025-12-31T23:59:00-07:00" />}
+      {/* Backpack Giveaway Teaser */}
+      {!session && (
+        <PromoTeaserDialog
+          endDate={BACKPACK_GIVEAWAY_CAMPAIGN.endDateIso}
+          promoHref={BACKPACK_GIVEAWAY_CAMPAIGN.signUpHref}
+          storageKey={BACKPACK_GIVEAWAY_CAMPAIGN.storageKey}
+          teaserTitle={BACKPACK_GIVEAWAY_CAMPAIGN.teaserTitle}
+          teaserSubtitle={BACKPACK_GIVEAWAY_CAMPAIGN.teaserSubtitle}
+          dialogTitle={BACKPACK_GIVEAWAY_CAMPAIGN.dialogTitle}
+          dialogDescription={BACKPACK_GIVEAWAY_CAMPAIGN.dialogDescription}
+          dialogImageSrc={BACKPACK_GIVEAWAY_CAMPAIGN.heroImagePath}
+          dialogImageAlt="Backpack giveaway promotion artwork"
+          dialogInfoItems={BACKPACK_GIVEAWAY_CAMPAIGN.dialogInfoItems}
+          deadlineLabel={BACKPACK_GIVEAWAY_CAMPAIGN.deadlineLabel}
+          primaryActionLabel={BACKPACK_GIVEAWAY_CAMPAIGN.primaryActionLabel}
+        />
+      )}
       <section className="relative overflow-hidden">
         <HomeBackground />
 
@@ -774,76 +791,89 @@ export async function HomePage() {
             </div>
 
             <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-              {pricingPlans.map((plan: PricingPlan, index: number) => (
-                <div
-                  key={index}
-                  className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
-                    plan.highlight
-                      ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
-                      : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
-                  }`}
-                >
-                  {plan.popular && (
-                    <div
-                      // initial={{ opacity: 0, y: -10 }}
-                      // animate={{ opacity: 1, y: 0 }}
-                      // transition={{ duration: 0.6, delay: 0.5 }}
-                      className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                    >
-                      <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
-                        <Star
-                          aria-hidden="true"
-                          className="h-4 w-4 fill-current"
-                        />
-                        Most Popular
+              {pricingPlans.map((plan: PricingPlan, index: number) => {
+                const isSilverPlan = plan.name.toLowerCase() === "silver";
+
+                return (
+                  <div
+                    key={index}
+                    className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-300 hover:scale-105 hover:transform ${
+                      plan.highlight
+                        ? "border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 shadow-xl shadow-cyan-500/10"
+                        : "border-slate-200 bg-white/50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600"
+                    }`}
+                  >
+                    {plan.popular && (
+                      <div
+                        // initial={{ opacity: 0, y: -10 }}
+                        // animate={{ opacity: 1, y: 0 }}
+                        // transition={{ duration: 0.6, delay: 0.5 }}
+                        className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
+                      >
+                        <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-1 text-sm font-medium text-white">
+                          <Star
+                            aria-hidden="true"
+                            className="h-4 w-4 fill-current"
+                          />
+                          Most Popular
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mb-8 text-center">
+                      <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
+                        {plan.name}
+                      </h3>
+                      {isSilverPlan && (
+                        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-500/20 dark:text-cyan-200">
+                          <Shield aria-hidden="true" className="h-3.5 w-3.5" />
+                          Get verified
+                        </div>
+                      )}
+                      <p className="mb-4 text-slate-600 dark:text-slate-300">
+                        {plan.description}
+                      </p>
+                      <div className="flex items-center justify-center">
+                        <span
+                          className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
+                        >
+                          ${plan.price}
+                        </span>
+                        {plan.period && (
+                          <span className="ml-1 text-slate-500 dark:text-slate-400">
+                            {plan.period}
+                          </span>
+                        )}
                       </div>
                     </div>
-                  )}
 
-                  <div className="mb-8 text-center">
-                    <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">
-                      {plan.name}
-                    </h3>
-                    <p className="mb-4 text-slate-600 dark:text-slate-300">
-                      {plan.description}
+                    <p className="mb-12 text-center text-slate-600 opacity-70 dark:text-slate-300">
+                      {plan.subtext}
                     </p>
-                    <div className="flex items-center justify-center">
-                      <span
-                        className={`text-4xl font-bold ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-slate-900 dark:text-white"}`}
-                      >
-                        ${plan.price}
-                      </span>
-                      {plan.period && (
-                        <span className="ml-1 text-slate-500 dark:text-slate-400">
-                          {plan.period}
-                        </span>
-                      )}
+
+                    <ul className="mb-8 flex-1 space-y-4">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li
+                          key={featureIndex}
+                          className="flex items-start gap-3"
+                        >
+                          <Check
+                            aria-hidden="true"
+                            className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
+                          />
+                          <span className="text-slate-600 dark:text-slate-300">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-auto">
+                      <PricingPlanButton plan={plan} />
                     </div>
                   </div>
-
-                  <p className="mb-12 text-center text-slate-600 opacity-70 dark:text-slate-300">
-                    {plan.subtext}
-                  </p>
-
-                  <ul className="mb-8 flex-1 space-y-4">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
-                        <Check
-                          aria-hidden="true"
-                          className={`mt-0.5 h-5 w-5 flex-shrink-0 ${plan.highlight ? "text-cyan-500 dark:text-cyan-400" : "text-greeen-400"}`}
-                        />
-                        <span className="text-slate-600 dark:text-slate-300">
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-auto">
-                    <PricingPlanButton plan={plan} />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
