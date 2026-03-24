@@ -28,7 +28,7 @@ export default function DownloadAppPage() {
             {NATIVE_APP_DOWNLOAD_DESCRIPTION}
           </p>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
             <div className="rounded-xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/75">
               <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 Secure Destinations
@@ -45,15 +45,6 @@ export default function DownloadAppPage() {
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                 Choose managed stores or direct APK delivery based on your
                 device policy.
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:col-span-2 lg:col-span-1">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                Open in New Tab
-              </p>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                Downloads open separately so you can return to Galileyo without
-                losing context.
               </p>
             </div>
           </div>

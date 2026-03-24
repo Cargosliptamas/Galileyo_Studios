@@ -18,7 +18,6 @@ interface NativeAppDownloadLink {
   platformHint: string;
   delivery: string;
   icon: LucideIcon;
-  accentClassName: string;
   iconClassName: string;
 }
 
@@ -32,7 +31,6 @@ export const NATIVE_APP_DOWNLOAD_LINKS: NativeAppDownloadLink[] = [
     platformHint: "Managed updates",
     delivery: "Best for most Android devices.",
     icon: Play,
-    accentClassName: "from-emerald-500 to-cyan-500",
     iconClassName: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
   },
   {
@@ -44,20 +42,17 @@ export const NATIVE_APP_DOWNLOAD_LINKS: NativeAppDownloadLink[] = [
     platformHint: "Official iOS",
     delivery: "For iPhone and iPad.",
     icon: Apple,
-    accentClassName:
-      "from-slate-700 to-slate-500 dark:from-slate-300 dark:to-slate-500",
     iconClassName: "bg-slate-900/10 text-slate-800 dark:text-slate-100",
   },
   {
     id: "de-googled-apk",
     label: "Android APK (De-googled)",
-    href: "https://galileyo.com/downloads/galileyo-android.apk",
+    href: "https://galileyo.com/api/uploads/app/galileyo-android.apk",
     description: "Download the APK directly from Galileyo.",
     ctaLabel: "Download APK",
     platformHint: "Direct binary",
     delivery: "For de-googled Android distributions.",
     icon: Download,
-    accentClassName: "from-cyan-500 to-blue-500",
     iconClassName: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-300",
   },
 ];
@@ -80,12 +75,6 @@ export function NativeAppDownloadOptions({
               key={link.id}
               className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/80"
             >
-              <div
-                className={cn(
-                  "h-1 w-full bg-gradient-to-r",
-                  link.accentClassName,
-                )}
-              />
               <div className="flex h-full flex-col p-6">
                 <div className="mb-5 flex items-start justify-between gap-2">
                   <div
@@ -108,18 +97,15 @@ export function NativeAppDownloadOptions({
                   {link.description}
                 </p>
 
-                <a
+                <Link
                   href={link.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={cn(
-                    buttonVariants({ variant: "primary" }),
-                    "mt-6 inline-flex w-full justify-between rounded-xl",
-                  )}
+                  className={buttonVariants({ variant: "primary" })}
                 >
                   <span>{link.ctaLabel}</span>
                   <ArrowUpRight className="h-4 w-4" />
-                </a>
+                </Link>
 
                 <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                   {link.delivery}
