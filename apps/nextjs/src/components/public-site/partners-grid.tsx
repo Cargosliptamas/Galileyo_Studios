@@ -133,7 +133,7 @@ export function PartnersGrid({
                     <img
                       src={selectedPartner.image}
                       alt={selectedPartner.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-600 via-blue-600 to-slate-800">
