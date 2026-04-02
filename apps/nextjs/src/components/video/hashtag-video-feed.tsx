@@ -2,7 +2,7 @@
 
 import type { QueryFunction } from "@tanstack/react-query";
 import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { ArrowLeft, Hash } from "lucide-react";
@@ -21,7 +21,9 @@ import {
   getVideoThumbnailProxyUrl,
 } from "~/lib/video-proxy";
 import { useTRPC } from "~/trpc/react";
+import { getAuthenticatedNavigationModel } from "../layout/authenticated-shell-config";
 import { VideoCommentsDrawer } from "./video-comments-drawer";
+import { VideoDesktopRail } from "./video-desktop-rail";
 import { VideoFeedBase } from "./video-feed-base";
 import { VideoInfo } from "./video-info";
 import { VideoPlayer } from "./video-player";
@@ -41,6 +43,13 @@ export function HashtagVideoFeed({ hashtag }: HashtagVideoFeedProps) {
   const { ref: loadMoreRef, inView } = useInView();
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user.id ? Number(session.user.id) : 0;
+  const navigation = useMemo(
+    () =>
+      session?.user
+        ? getAuthenticatedNavigationModel(session.user, true)
+        : undefined,
+    [session?.user],
+  );
 
   // Fetch videos for this hashtag
   const queryOptions = trpc.video.getVideosByHashtag.infiniteQueryOptions({
@@ -79,7 +88,7 @@ export function HashtagVideoFeed({ hashtag }: HashtagVideoFeedProps) {
   }, []);
 
   const header = (
-    <div className="absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-black/95 via-black/70 to-transparent px-4 pb-6 pt-4">
+    <div className="absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-black/95 via-black/70 to-transparent px-4 pb-6 pt-4 xl:hidden">
       <div className="flex items-center justify-between gap-3">
         <Link href="/videos">
           <Button
@@ -104,6 +113,27 @@ export function HashtagVideoFeed({ hashtag }: HashtagVideoFeedProps) {
       </div>
     </div>
   );
+
+  const desktopRail = navigation ? (
+    <VideoDesktopRail
+      title={`#${hashtag}`}
+      description="Follow a single tag while keeping the rest of your workspace nearby."
+      summary={
+        <div className="rounded-[1.35rem] border border-border/70 bg-background/75 px-4 py-3">
+          <p className="text-sm font-medium text-foreground">
+            {hashtagInfo
+              ? `${formatCount(hashtagInfo.videoCount)} videos in this tag`
+              : "Fresh hashtag stream"}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Jump through posts using one idea, event, or meme without leaving
+            the video stack.
+          </p>
+        </div>
+      }
+      quickLinks={navigation.shortcuts.slice(0, 4)}
+    />
+  ) : null;
 
   const renderVideo = useCallback(
     (video: HashtagVideoFeedResponse["items"][number], index: number) => (
@@ -173,6 +203,7 @@ export function HashtagVideoFeed({ hashtag }: HashtagVideoFeedProps) {
         header={header}
         videos={videos}
         renderVideo={renderVideo}
+        aside={desktopRail}
         containerRef={containerRef}
         loadMoreRef={loadMoreRef}
         isFetchingNextPage={isFetchingNextPage}

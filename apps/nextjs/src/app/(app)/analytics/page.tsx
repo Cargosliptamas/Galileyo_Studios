@@ -560,7 +560,7 @@ function PostStatsSection({ timeRange }: { timeRange: TimeRange }) {
           Create your first post to see analytics
         </p>
         <Button asChild className="mt-4">
-          <Link href="/dashboard">Go to Dashboard</Link>
+          <Link href="/dashboard">Go to Home</Link>
         </Button>
       </div>
     );

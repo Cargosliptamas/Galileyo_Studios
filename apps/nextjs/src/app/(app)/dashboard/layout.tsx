@@ -1,18 +1,23 @@
+import { getSession } from "~/auth/server";
+import { DashboardRail } from "~/components/layout/dashboard-rail";
 import { HydrateClient } from "~/trpc/server";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
+  const showMap = true;
+
   return (
     <HydrateClient>
-      <main className="container mx-auto max-w-3xl px-2 py-4">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Feed</h1>
-        </div>
-        {children}
-      </main>
+      <div className="mx-auto flex w-full max-w-[1660px] flex-1 gap-6">
+        <main className="min-w-0 flex-1">{children}</main>
+        {session?.user ? (
+          <DashboardRail user={session.user} showMap={showMap} />
+        ) : null}
+      </div>
     </HydrateClient>
   );
 }

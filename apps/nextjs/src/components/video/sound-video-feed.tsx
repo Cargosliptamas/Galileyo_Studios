@@ -2,7 +2,7 @@
 
 import type { QueryFunction } from "@tanstack/react-query";
 import type { TRPCQueryKey } from "@trpc/tanstack-react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   useMutation,
@@ -28,7 +28,9 @@ import {
   getVideoThumbnailProxyUrl,
 } from "~/lib/video-proxy";
 import { useTRPC } from "~/trpc/react";
+import { getAuthenticatedNavigationModel } from "../layout/authenticated-shell-config";
 import { VideoCommentsDrawer } from "./video-comments-drawer";
+import { VideoDesktopRail } from "./video-desktop-rail";
 import { VideoFeedBase } from "./video-feed-base";
 import { VideoInfo } from "./video-info";
 import { VideoPlayer } from "./video-player";
@@ -51,6 +53,13 @@ export function SoundVideoFeed({ soundId }: SoundVideoFeedProps) {
   const { ref: loadMoreRef, inView } = useInView();
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user.id ? Number(session.user.id) : 0;
+  const navigation = useMemo(
+    () =>
+      session?.user
+        ? getAuthenticatedNavigationModel(session.user, true)
+        : undefined,
+    [session?.user],
+  );
 
   // Fetch sound details
   const { data: soundData } = useQuery(
@@ -143,7 +152,7 @@ export function SoundVideoFeed({ soundId }: SoundVideoFeedProps) {
   }, [audio]);
 
   const header = (
-    <div className="absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-black/95 via-black/70 to-transparent px-4 pb-8 pt-4">
+    <div className="absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-black/95 via-black/70 to-transparent px-4 pb-8 pt-4 xl:hidden">
       <div className="flex items-start gap-4">
         <Link href="/videos">
           <Button
@@ -221,6 +230,55 @@ export function SoundVideoFeed({ soundId }: SoundVideoFeedProps) {
     </div>
   );
 
+  const desktopRail = navigation ? (
+    <VideoDesktopRail
+      title={soundData?.name ?? "Sound Collection"}
+      description="Track one sound, preview it, and branch out without losing the video flow."
+      summary={
+        <div className="rounded-[1.35rem] border border-border/70 bg-background/75 px-4 py-3">
+          <p className="text-sm font-medium text-foreground">
+            {soundData?.artistName ?? "Audio source"}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {soundData
+              ? `${formatCount(soundData.usageCount)} videos use this sound${soundData.isOriginal ? " and it is marked original." : "."}`
+              : "Preview the sound and watch how creators are using it."}
+          </p>
+        </div>
+      }
+      controls={
+        soundData ? (
+          <div className="grid gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              className="justify-between rounded-2xl"
+              onClick={handlePlayAudio}
+            >
+              <span>{isAudioPlaying ? "Pause Preview" : "Play Preview"}</span>
+              {isAudioPlaying ? (
+                <Pause className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Play className="h-4 w-4" aria-hidden="true" />
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="justify-between rounded-2xl"
+              onClick={() => favoriteMutation.mutate({ soundId })}
+              disabled={favoriteMutation.isPending}
+            >
+              <span>Save Sound</span>
+              <Heart className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        ) : null
+      }
+      quickLinks={navigation.shortcuts.slice(0, 4)}
+    />
+  ) : null;
+
   const renderVideo = useCallback(
     (video: SoundVideoFeedResponse["items"][number], index: number) => (
       <div
@@ -287,6 +345,7 @@ export function SoundVideoFeed({ soundId }: SoundVideoFeedProps) {
         header={header}
         videos={videos}
         renderVideo={renderVideo}
+        aside={desktopRail}
         containerRef={containerRef}
         loadMoreRef={loadMoreRef}
         isFetchingNextPage={isFetchingNextPage}

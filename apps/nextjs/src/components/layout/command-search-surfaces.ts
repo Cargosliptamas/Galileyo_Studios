@@ -5,7 +5,7 @@ import {
   Compass,
   CreditCard,
   Flame,
-  LayoutDashboard,
+  Home,
   MapIcon,
   MessageSquare,
   Newspaper,
@@ -34,15 +34,15 @@ export interface SurfaceItem {
   hideForTestAccount?: boolean;
 }
 
-type SurfaceFilterUser = Pick<User, "email" | "isInfluencer" | "role">;
+export type SurfaceFilterUser = Pick<User, "email" | "isInfluencer" | "role">;
 
 export const SURFACE_CATALOG: SurfaceItem[] = [
   {
     key: "page-dashboard",
-    label: "Dashboard",
+    label: "Home",
     description: "Jump to your main feed hub",
     href: "/dashboard",
-    icon: LayoutDashboard,
+    icon: Home,
     kind: "page",
     keywords: ["feed", "home", "timeline"],
   },
@@ -197,7 +197,7 @@ export const SURFACE_CATALOG: SurfaceItem[] = [
   },
 ];
 
-const isSurfaceVisibleToUser = (
+export const isSurfaceVisibleToUser = (
   surface: SurfaceItem,
   user: SurfaceFilterUser,
   showMap: boolean,
@@ -209,6 +209,15 @@ const isSurfaceVisibleToUser = (
   if (surface.hideForTestAccount && isTestAccount) return false;
   return true;
 };
+
+export function getVisibleSurfaceItems(
+  user: SurfaceFilterUser,
+  showMap: boolean,
+) {
+  return SURFACE_CATALOG.filter((surface) =>
+    isSurfaceVisibleToUser(surface, user, showMap),
+  );
+}
 
 const matchesSurfaceQuery = (surface: SurfaceItem, rawQuery: string) => {
   const query = rawQuery.trim().toLowerCase();
@@ -232,9 +241,7 @@ export function filterSurfaceItems(
   user: SurfaceFilterUser,
   showMap: boolean,
 ) {
-  const visible = SURFACE_CATALOG.filter((surface) =>
-    isSurfaceVisibleToUser(surface, user, showMap),
-  );
+  const visible = getVisibleSurfaceItems(user, showMap);
   const all = visible.filter((surface) => matchesSurfaceQuery(surface, query));
   const pages = getPageSurfaceItems(all);
   const features = getFeatureSurfaceItems(all);

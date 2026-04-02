@@ -282,7 +282,7 @@ export default function CommandMenu({
   return (
     <>
       <button
-        className="group hidden h-10 w-full items-center gap-3 rounded-2xl border border-input bg-[radial-gradient(circle_at_top,hsl(var(--muted))_0%,hsl(var(--background))_72%)] px-3 text-sm text-foreground shadow-sm transition-all duration-200 hover:border-ring/40 hover:bg-accent/40 md:inline-flex"
+        className="group inline-flex h-10 w-full items-center gap-3 rounded-2xl border border-input bg-[radial-gradient(circle_at_top,hsl(var(--muted))_0%,hsl(var(--background))_72%)] px-3 text-sm text-foreground shadow-sm transition-all duration-200 hover:border-ring/40 hover:bg-accent/40"
         onClick={() => setOpen(true)}
       >
         <SearchIcon
@@ -292,11 +292,11 @@ export default function CommandMenu({
         <span className="line-clamp-1 flex-1 text-left font-medium text-foreground/90">
           Search people, posts, videos, and shortcuts
         </span>
-        <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground md:inline-flex">
           ⌘K
         </kbd>
       </button>
-      <Button
+      {/* <Button
         className="md:hidden"
         onClick={() => setOpen(true)}
         variant="outline"
@@ -304,7 +304,7 @@ export default function CommandMenu({
       >
         <SearchIcon size={16} />
         <span className="sr-only">Search</span>
-      </Button>
+      </Button> */}
       <CommandDialog
         open={open}
         shouldFilter={false}

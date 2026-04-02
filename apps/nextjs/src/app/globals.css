@@ -30,14 +30,34 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar Core Variables */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+
+    /* Enhanced Sidebar Glow Effects */
+    --sidebar-glow: 221.2 83.2% 53.3%;
+    --sidebar-glow-alpha: 0.25;
+    --sidebar-active-glow: 0 0 20px
+      hsl(var(--sidebar-glow) / var(--sidebar-glow-alpha));
+
+    /* Aurora Gradient Colors */
+    --sidebar-aurora-start: 199 89% 48%;
+    --sidebar-aurora-mid: 239 84% 67%;
+    --sidebar-aurora-end: 262 83% 58%;
+
+    /* Glass Morphism */
+    --sidebar-glass-bg: 0 0% 100% / 0.72;
+    --sidebar-glass-border: 214.3 31.8% 91.4% / 0.5;
+
+    /* Animation Timing */
+    --sidebar-transition-timing: cubic-bezier(0.23, 1, 0.32, 1);
+    --sidebar-transition-duration: 300ms;
   }
 
   * {
@@ -74,14 +94,30 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    /* Sidebar Core Variables - Dark */
+    --sidebar-background: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Enhanced Sidebar Glow Effects - Dark */
+    --sidebar-glow: 217.2 91.2% 59.8%;
+    --sidebar-glow-alpha: 0.35;
+    --sidebar-active-glow: 0 0 24px
+      hsl(var(--sidebar-glow) / var(--sidebar-glow-alpha));
+
+    /* Aurora Gradient Colors - Dark */
+    --sidebar-aurora-start: 199 89% 48%;
+    --sidebar-aurora-mid: 239 84% 67%;
+    --sidebar-aurora-end: 262 83% 58%;
+
+    /* Glass Morphism - Dark */
+    --sidebar-glass-bg: 222.2 47.4% 11.2% / 0.65;
+    --sidebar-glass-border: 217.2 32.6% 17.5% / 0.5;
   }
 }
 
@@ -190,4 +226,94 @@
 
 .maplibregl-popup-content {
   padding: 0 !important;
+}
+
+/* Sidebar Animation Keyframes */
+@keyframes sidebar-item-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sidebar-glow-pulse {
+  0%,
+  100% {
+    box-shadow: var(--sidebar-active-glow);
+  }
+  50% {
+    box-shadow: 0 0 28px
+      hsl(var(--sidebar-glow) / calc(var(--sidebar-glow-alpha) + 0.1));
+  }
+}
+
+@keyframes aurora-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Sidebar Utility Classes */
+.sidebar-item-animate {
+  animation: sidebar-item-enter var(--sidebar-transition-duration)
+    var(--sidebar-transition-timing) forwards;
+}
+
+.sidebar-active-glow {
+  box-shadow: var(--sidebar-active-glow);
+}
+
+.sidebar-active-glow-pulse {
+  animation: sidebar-glow-pulse 3s ease-in-out infinite;
+}
+
+.aurora-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--sidebar-aurora-start)) 0%,
+    hsl(var(--sidebar-aurora-mid)) 50%,
+    hsl(var(--sidebar-aurora-end)) 100%
+  );
+  background-size: 200% 200%;
+}
+
+.aurora-gradient-animate {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--sidebar-aurora-start)) 0%,
+    hsl(var(--sidebar-aurora-mid)) 50%,
+    hsl(var(--sidebar-aurora-end)) 100%
+  );
+  background-size: 200% 200%;
+  animation: aurora-shift 8s ease infinite;
+}
+
+.sidebar-glass {
+  background: hsl(var(--sidebar-glass-bg));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsl(var(--sidebar-glass-border));
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-item-animate,
+  .aurora-gradient-animate,
+  .sidebar-active-glow-pulse {
+    animation: none;
+  }
+
+  .aurora-gradient-animate {
+    background-position: 50% 50%;
+  }
 }

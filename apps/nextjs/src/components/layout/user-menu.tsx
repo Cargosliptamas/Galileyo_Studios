@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Bookmark,
+  // Bookmark,
   ChartBar,
   ChevronDown,
   CreditCard,
-  Handshake,
+  // Handshake,
   LogOut,
-  Newspaper,
+  // Newspaper,
   Settings,
   Users,
 } from "lucide-react";
@@ -200,7 +200,7 @@ export function UserMenu({
 
           <DropdownMenuSeparator />
 
-          {user.isInfluencer && (
+          {Number(user.isInfluencer) === 1 && (
             <DropdownMenuItem asChild>
               <Link href="/analytics" className="cursor-pointer">
                 <ChartBar className="mr-2 h-4 w-4" />
@@ -209,12 +209,12 @@ export function UserMenu({
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href="/my-feeds" className="cursor-pointer">
               <Newspaper className="mr-2 h-4 w-4" />
               My Feeds
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {user.role === 1 && (
             <DropdownMenuItem asChild>
@@ -225,12 +225,12 @@ export function UserMenu({
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href="/friends" className="cursor-pointer">
               <Handshake className="mr-2 h-4 w-4" />
               Friends
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {/* Profile Settings */}
           <DropdownMenuItem asChild>
@@ -241,12 +241,12 @@ export function UserMenu({
           </DropdownMenuItem>
 
           {/* Bookmarks */}
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href="/bookmarks" className="cursor-pointer">
               <Bookmark className="mr-2 h-4 w-4" />
               Bookmarks
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {/* Profile Settings */}
           {!isTestAccount && (

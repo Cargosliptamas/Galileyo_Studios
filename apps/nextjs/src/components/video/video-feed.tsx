@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Plus, Users, Video } from "lucide-react";
+import { ArrowLeft, Plus, Video } from "lucide-react";
 
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
@@ -15,6 +15,7 @@ import {
 } from "@galileyo/ui/dialog";
 import { Skeleton } from "@galileyo/ui/skeleton";
 
+import type { VideoFeedType } from "./video-feed-controls";
 import type { VideoFeedResponse } from "~/types/video";
 import { authClient } from "~/auth/client";
 import { env } from "~/env/client";
@@ -26,9 +27,12 @@ import {
   getVideoThumbnailProxyUrl,
 } from "~/lib/video-proxy";
 import { useTRPC } from "~/trpc/react";
+import { getAuthenticatedNavigationModel } from "../layout/authenticated-shell-config";
 import { DuetStitchBadge } from "./duet-stitch-badge";
 import { VideoCommentsDrawer } from "./video-comments-drawer";
+import { VideoDesktopRail } from "./video-desktop-rail";
 import { VideoFeedBase } from "./video-feed-base";
+import { VideoFeedControls } from "./video-feed-controls";
 import { VideoInfo } from "./video-info";
 import { VideoPlayer } from "./video-player";
 import { VideoSidebar } from "./video-sidebar";
@@ -57,8 +61,6 @@ interface VideoFeedProps {
   initialVideoId?: number;
 }
 
-type FeedType = "forYou" | "following";
-
 const FEED_TYPE_STORAGE_KEY = "galileyo-video-feed-type";
 
 export function VideoFeed({ initialVideoId }: VideoFeedProps) {
@@ -70,7 +72,7 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [commentsVideoId, setCommentsVideoId] = useState<number | null>(null);
   const [commentsVideoOwnerId, setCommentsVideoOwnerId] = useState<number>(0);
-  const [feedType, setFeedType] = useState<FeedType>(() => {
+  const [feedType, setFeedType] = useState<VideoFeedType>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(FEED_TYPE_STORAGE_KEY);
       return saved === "forYou" || saved === "following" ? saved : "forYou";
@@ -79,6 +81,13 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
   });
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user.id ? Number(session.user.id) : 0;
+  const navigation = useMemo(
+    () =>
+      session?.user
+        ? getAuthenticatedNavigationModel(session.user, true)
+        : undefined,
+    [session?.user],
+  );
   const { isMuted, toggleMute } = useVideoMute();
   const { recordVideoView } = useRecordVideoView();
   const [playbackRate, setPlaybackRate] = useState<
@@ -247,7 +256,7 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
   }, [showEndOfFeedNotice]);
 
   const handleFeedTypeChange = useCallback(
-    (newFeedType: FeedType) => {
+    (newFeedType: VideoFeedType) => {
       setFeedType(newFeedType);
       setIsLoadingNextVideo(false);
       setShowEndOfFeedNotice(false);
@@ -387,58 +396,58 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
   }, []);
 
   const header = (
-    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-background/95 via-background/70 to-transparent px-4 pb-6 pt-4">
+    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 bg-gradient-to-b from-background/95 via-background/70 to-transparent px-4 pb-6 pt-4 xl:hidden">
       <div className="pointer-events-none flex items-center justify-between gap-3">
         <Link href="/dashboard" className="pointer-events-auto">
           <Button
             variant="ghost"
             size="icon"
             className="text-foreground hover:bg-accent"
-            aria-label="Back to dashboard"
+            aria-label="Back to home"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
         </Link>
 
-        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-muted p-1 text-sm">
-          <button
-            onClick={() => handleFeedTypeChange("forYou")}
-            className={cn(
-              "rounded-full px-4 py-1.5 font-medium transition-colors",
-              feedType === "forYou"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-accent",
-            )}
-          >
-            For You
-          </button>
-          <button
-            onClick={() => handleFeedTypeChange("following")}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full px-4 py-1.5 font-medium transition-colors",
-              feedType === "following"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-accent",
-            )}
-          >
-            <Users className="h-4 w-4" />
-            Following
-          </button>
-        </div>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="pointer-events-auto text-foreground hover:bg-accent"
-          aria-label="Upload video"
-          onClick={() => setShowUploadDialog(true)}
-        >
-          <Plus className="mr-1 h-4 w-4" />
-          <span className="hidden sm:inline">Upload</span>
-        </Button>
+        <VideoFeedControls
+          feedType={feedType}
+          onFeedTypeChange={handleFeedTypeChange}
+          onUpload={() => setShowUploadDialog(true)}
+          className="pointer-events-auto"
+        />
       </div>
     </div>
   );
+
+  const desktopRail = navigation ? (
+    <VideoDesktopRail
+      title="Video Stack"
+      description="Stay in the scroll while keeping your next move close at hand."
+      summary={
+        <div className="rounded-[1.35rem] border border-border/70 bg-background/75 px-4 py-3">
+          <p className="text-sm font-medium text-foreground">
+            {feedType === "forYou"
+              ? "For You is active"
+              : "Following is active"}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {feedType === "forYou"
+              ? "A wider blend of what is trending across Galileyo."
+              : "A tighter loop focused on creators and communities you follow."}
+          </p>
+        </div>
+      }
+      controls={
+        <VideoFeedControls
+          compact
+          feedType={feedType}
+          onFeedTypeChange={handleFeedTypeChange}
+          onUpload={() => setShowUploadDialog(true)}
+        />
+      }
+      quickLinks={navigation.shortcuts.slice(0, 4)}
+    />
+  ) : null;
 
   const renderVideo = useCallback(
     (video: VideoFeedResponse["items"][number], index: number) => {
@@ -563,7 +572,7 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
             {/* Sidebar - outside video card */}
             <div
               className={cn(
-                "hidden flex-col items-center pb-8 transition-opacity duration-300 sm:flex",
+                "hidden flex-col items-center pb-8 transition-opacity duration-300 sm:flex xl:hidden",
                 showSidebar
                   ? "pointer-events-auto opacity-100"
                   : "pointer-events-none opacity-0",
@@ -638,6 +647,7 @@ export function VideoFeed({ initialVideoId }: VideoFeedProps) {
         header={header}
         videos={videos}
         renderVideo={renderVideo}
+        aside={desktopRail}
         appendSlide={nextVideoSkeletonSlide}
         containerRef={containerRef}
         isFetchingNextPage={isFetchingNextPage}

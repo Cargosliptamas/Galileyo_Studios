@@ -1,8 +1,7 @@
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { getSession } from "~/auth/server";
-import { SiteFooter } from "~/components/site-footer";
-import { SiteHeader } from "~/components/site-header";
+import { AppLayoutShell } from "~/components/layout/authenticated-shell";
 import { UnfinishedPaymentBanner } from "~/components/ui/unfinished-payment-banner";
 import { PaymentProvider } from "~/hooks/use-payment";
 import { SignupProvider } from "~/hooks/use-signup";
@@ -15,8 +14,8 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  // const showMap = await flags["show-map"]();
   const showMap = true;
+  const user = session?.user;
 
   return (
     <div className="font-inter relative z-10 flex min-h-svh flex-col bg-background dark:bg-slate-900">
@@ -26,18 +25,20 @@ export default async function AppLayout({
       >
         Skip to content
       </a>
-      <SiteHeader user={session?.user} showMap={showMap} />
-      <main id="main-content" className="flex flex-1 flex-col">
-        {session ? (
-          <PaymentProvider>
-            <UnfinishedPaymentBanner />
+      {session ? (
+        <PaymentProvider>
+          <UnfinishedPaymentBanner />
+          <AppLayoutShell user={user} showMap={showMap}>
             {children}
-          </PaymentProvider>
-        ) : (
-          <SignupProvider>{children}</SignupProvider>
-        )}
-      </main>
-      <SiteFooter />
+          </AppLayoutShell>
+        </PaymentProvider>
+      ) : (
+        <SignupProvider>
+          <AppLayoutShell user={user} showMap={showMap}>
+            {children}
+          </AppLayoutShell>
+        </SignupProvider>
+      )}
       {/* <SpeedInsights /> */}
     </div>
   );
