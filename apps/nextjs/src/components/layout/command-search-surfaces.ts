@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Bookmark,
   ChartBar,
+  Clapperboard,
   Compass,
   CreditCard,
   Flame,
@@ -117,6 +118,15 @@ export const SURFACE_CATALOG: SurfaceItem[] = [
     icon: Newspaper,
     kind: "page",
     keywords: ["private feeds", "channels"],
+  },
+  {
+    key: "page-studios",
+    label: "Studios",
+    description: "Original short-form films from Galileyo Studios",
+    href: "/studios",
+    icon: Clapperboard,
+    kind: "page",
+    keywords: ["studios", "films", "episodes", "watch", "cinema"],
   },
   {
     key: "page-payment",

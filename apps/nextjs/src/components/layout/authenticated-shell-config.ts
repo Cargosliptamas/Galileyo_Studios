@@ -65,6 +65,7 @@ const SECONDARY_KEYS = [
   "page-bookmarks",
   "page-friends",
   "page-my-feeds",
+  "page-studios",
 ] as const;
 
 const ACCOUNT_KEYS = [
