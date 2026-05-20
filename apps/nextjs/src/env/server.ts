@@ -41,6 +41,10 @@ export function serverEnv() {
         .int()
         .positive()
         .default(60),
+      STUDIOS_UNLOCK_SECRET: z
+        .string()
+        .min(8)
+        .default("phase1-dev-secret-replace-me"),
     },
     experimental__runtimeEnv: {
       NODE_ENV: process.env.NODE_ENV,

@@ -76,6 +76,7 @@ export function clientEnv() {
       NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET: z.coerce
         .number()
         .default(1000000),
+      NEXT_PUBLIC_EPISODE_1_HLS_URL: z.string().default(""),
     },
     /**
      * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -117,6 +118,7 @@ export function clientEnv() {
         process.env.NEXT_PUBLIC_STUDIOS_FUNDING_GAME_CURRENT,
       NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET:
         process.env.NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET,
+      NEXT_PUBLIC_EPISODE_1_HLS_URL: process.env.NEXT_PUBLIC_EPISODE_1_HLS_URL,
     },
     skipValidation:
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
