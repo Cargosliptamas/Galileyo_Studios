@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 
+import { env } from "~/env";
 import { signUnlockToken, STUDIOS_UNLOCK_COOKIE } from "~/lib/studios/access";
 
 export const runtime = "nodejs";
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
   const cookieStore = await cookies();
   cookieStore.set(STUDIOS_UNLOCK_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365,

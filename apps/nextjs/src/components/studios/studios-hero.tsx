@@ -35,7 +35,7 @@ export function StudiosHero() {
           className="studios-fade-up font-display text-[11px] uppercase tracking-[0.5em] text-[rgb(var(--studios-accent))] md:text-sm"
           style={{ animationDelay: "0ms" }}
         >
-          Episode 01 — Available Now
+          Episode 01 · Available Now
         </p>
 
         <h1

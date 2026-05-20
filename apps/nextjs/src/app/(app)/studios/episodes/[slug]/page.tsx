@@ -11,7 +11,9 @@ import { hasEpisode1Access } from "~/lib/studios/access";
 import { getEpisodeBySlug } from "~/lib/studios/episodes";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 
-type Params = { slug: string };
+interface Params {
+  slug: string;
+}
 
 export async function generateMetadata({
   params,

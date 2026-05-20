@@ -10,7 +10,7 @@ export async function StudiosNav() {
       user={
         user
           ? {
-              name: user.name ?? user.email,
+              name: user.name,
               email: user.email,
               image: user.image ?? null,
             }
