@@ -1,3 +1,5 @@
+import { StudiosAboutStrip } from "~/components/studios/studios-about-strip";
+import { StudiosAffiliateTeaser } from "~/components/studios/studios-affiliate-teaser";
 import { StudiosBronzeUpsell } from "~/components/studios/studios-bronze-upsell";
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
 import { StudiosEpisodeRoadmap } from "~/components/studios/studios-episode-roadmap";
@@ -18,6 +20,13 @@ export default function StudiosLandingPage() {
       <StudiosGameProducerCard />
       <StudiosBronzeUpsell />
       <StudiosSponsorStrip />
+      <StudiosAffiliateTeaser />
+      <StudiosAboutStrip />
+      <StudiosEmailGate
+        variant="band"
+        headline="Last chance. Episode 1, on us."
+        description="Drop your email and we'll send the link before you close the tab."
+      />
     </>
   );
 }
