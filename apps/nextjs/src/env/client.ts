@@ -68,6 +68,14 @@ export function clientEnv() {
         .transform((val) => val === "true"),
       NEXT_PUBLIC_EPISODE_1_TRAILER_URL: z.string().default(""),
       NEXT_PUBLIC_NEXT_EPISODE_DATE: z.string().default(""),
+      NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT: z.coerce.number().default(0),
+      NEXT_PUBLIC_STUDIOS_FUNDING_FILM_TARGET: z.coerce
+        .number()
+        .default(3500000),
+      NEXT_PUBLIC_STUDIOS_FUNDING_GAME_CURRENT: z.coerce.number().default(0),
+      NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET: z.coerce
+        .number()
+        .default(1000000),
     },
     /**
      * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -101,6 +109,14 @@ export function clientEnv() {
       NEXT_PUBLIC_EPISODE_1_TRAILER_URL:
         process.env.NEXT_PUBLIC_EPISODE_1_TRAILER_URL,
       NEXT_PUBLIC_NEXT_EPISODE_DATE: process.env.NEXT_PUBLIC_NEXT_EPISODE_DATE,
+      NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT:
+        process.env.NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT,
+      NEXT_PUBLIC_STUDIOS_FUNDING_FILM_TARGET:
+        process.env.NEXT_PUBLIC_STUDIOS_FUNDING_FILM_TARGET,
+      NEXT_PUBLIC_STUDIOS_FUNDING_GAME_CURRENT:
+        process.env.NEXT_PUBLIC_STUDIOS_FUNDING_GAME_CURRENT,
+      NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET:
+        process.env.NEXT_PUBLIC_STUDIOS_FUNDING_GAME_TARGET,
     },
     skipValidation:
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
