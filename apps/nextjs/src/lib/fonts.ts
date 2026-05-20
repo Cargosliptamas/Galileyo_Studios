@@ -1,4 +1,6 @@
 import {
+  Bebas_Neue as FontDisplay,
+  Fraunces as FontEditorial,
   Geist_Mono as FontMono,
   Geist as FontSans,
   Inter,
@@ -22,8 +24,23 @@ const fontInter = Inter({
   variable: "--font-inter",
 });
 
+const fontDisplay = FontDisplay({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const fontEditorial = FontEditorial({
+  subsets: ["latin"],
+  variable: "--font-editorial",
+  display: "swap",
+});
+
 export const fontVariables = cn(
   fontSans.variable,
   fontMono.variable,
   fontInter.variable,
+  fontDisplay.variable,
+  fontEditorial.variable,
 );

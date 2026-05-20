@@ -14,6 +14,8 @@ export default {
         sans: ["var(--font-sans)", ...fontFamily.sans],
         mono: ["var(--font-mono)", ...fontFamily.mono],
         inter: ["var(--font-inter)", ...fontFamily.sans],
+        display: ["var(--font-display)", "ui-sans-serif", "system-ui"],
+        editorial: ["var(--font-editorial)", "ui-serif", "Georgia"],
       },
     },
   },

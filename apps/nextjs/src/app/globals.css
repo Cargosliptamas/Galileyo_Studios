@@ -121,6 +121,55 @@
   }
 }
 
+/* Galileyo Studios cinematic theme */
+.studios-theme {
+  --studios-bg: 11 11 13;
+  --studios-surface: 20 20 23;
+  --studios-surface-hi: 28 28 31;
+  --studios-border: 42 42 46;
+  --studios-text: 245 245 244;
+  --studios-text-muted: 161 161 166;
+  --studios-accent: 200 160 74;
+  --studios-accent-hi: 224 189 102;
+  --studios-danger: 201 70 44;
+  --studios-success: 79 157 106;
+
+  background: rgb(var(--studios-bg));
+  color: rgb(var(--studios-text));
+  color-scheme: dark;
+  position: relative;
+}
+
+.studios-theme .studios-text-muted {
+  color: rgb(var(--studios-text-muted));
+}
+
+.studios-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+  z-index: 1;
+}
+
+@keyframes studios-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.studios-fade-up {
+  animation: studios-fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0%);
