@@ -26,8 +26,8 @@ export function StudiosSeriesIntro() {
           </p>
           <p className="font-editorial text-base leading-relaxed md:text-lg">
             Episode 1 is free with an email. The rest you watch by buying a
-            ticket, joining Bronze, or becoming a producer. Either way you
-            help us shoot the next one.
+            ticket, joining Bronze, or becoming a producer. Either way you help
+            us shoot the next one.
           </p>
         </div>
       </div>

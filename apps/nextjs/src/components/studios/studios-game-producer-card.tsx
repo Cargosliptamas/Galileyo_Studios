@@ -32,8 +32,8 @@ export function StudiosGameProducerCard() {
               <span className="text-[rgb(var(--studios-accent))]">$100+</span>
             </h2>
             <p className="font-editorial text-base text-[rgb(var(--studios-text-muted))] md:text-lg">
-              Companion game to the series. Same world, same fight,
-              interactive. Back it now and your name ships in the credits.
+              Companion game to the series. Same world, same fight, interactive.
+              Back it now and your name ships in the credits.
             </p>
             <ul className="space-y-3">
               {INCLUSIONS.map((line) => (

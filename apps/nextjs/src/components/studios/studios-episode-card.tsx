@@ -46,7 +46,9 @@ export function StudiosEpisodeCard({
       <div
         className={cn(
           "relative overflow-hidden bg-zinc-950",
-          isHero || isWide ? "aspect-[16/9] md:aspect-auto md:h-full" : "aspect-video",
+          isHero || isWide
+            ? "aspect-[16/9] md:aspect-auto md:h-full"
+            : "aspect-video",
         )}
       >
         <div

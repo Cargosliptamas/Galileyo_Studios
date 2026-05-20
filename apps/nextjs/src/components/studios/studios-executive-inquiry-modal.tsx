@@ -60,7 +60,8 @@ export function StudiosExecutiveInquiryModal({
         };
         setStatus({
           kind: "error",
-          message: data.error ?? "Something went wrong. Please email us instead.",
+          message:
+            data.error ?? "Something went wrong. Please email us instead.",
         });
         return;
       }
@@ -68,8 +69,7 @@ export function StudiosExecutiveInquiryModal({
     } catch {
       setStatus({
         kind: "error",
-        message:
-          "Network error. You can also reach us at brett@galileyo.com.",
+        message: "Network error. You can also reach us at brett@galileyo.com.",
       });
     }
   }

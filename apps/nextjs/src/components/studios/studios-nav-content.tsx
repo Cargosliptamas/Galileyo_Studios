@@ -41,7 +41,11 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-bg))]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:h-20 md:px-8">
-        <Link href="/studios" className="shrink-0" aria-label="Galileyo Studios">
+        <Link
+          href="/studios"
+          className="shrink-0"
+          aria-label="Galileyo Studios"
+        >
           <StudiosBrand size="md" />
         </Link>
 

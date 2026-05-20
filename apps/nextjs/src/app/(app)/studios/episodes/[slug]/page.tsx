@@ -101,7 +101,9 @@ export default async function EpisodeDetailPage({
               {episode.releaseLabel}
             </span>
             <span className="font-display rounded-full bg-[rgb(var(--studios-bg))]/80 px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] backdrop-blur-sm">
-              {formatRuntime("runtime" in episode ? episode.runtime : undefined)}
+              {formatRuntime(
+                "runtime" in episode ? episode.runtime : undefined,
+              )}
             </span>
           </div>
           <h1 className="font-display mt-6 text-5xl text-[rgb(var(--studios-text))] md:text-7xl">

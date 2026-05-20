@@ -47,10 +47,7 @@ export function StudiosAboutStrip() {
                   TONES[index % TONES.length],
                 )}
               >
-                <Camera
-                  className="size-7 text-white/30"
-                  aria-hidden
-                />
+                <Camera className="size-7 text-white/30" aria-hidden />
                 {member.status === "pending" ? (
                   <span className="font-display absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-[rgb(var(--studios-bg))]/80 px-2 py-0.5 text-[9px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] backdrop-blur-sm">
                     TBC
