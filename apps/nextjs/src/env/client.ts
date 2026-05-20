@@ -66,6 +66,8 @@ export function clientEnv() {
         .enum(["true", "false"])
         .default("true")
         .transform((val) => val === "true"),
+      NEXT_PUBLIC_EPISODE_1_TRAILER_URL: z.string().default(""),
+      NEXT_PUBLIC_NEXT_EPISODE_DATE: z.string().default(""),
     },
     /**
      * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -96,6 +98,9 @@ export function clientEnv() {
         process.env.NEXT_PUBLIC_DELETE_UNFINISHED_PAYMENT,
       NEXT_PUBLIC_VIDEO_PROXY_ENABLED:
         process.env.NEXT_PUBLIC_VIDEO_PROXY_ENABLED,
+      NEXT_PUBLIC_EPISODE_1_TRAILER_URL:
+        process.env.NEXT_PUBLIC_EPISODE_1_TRAILER_URL,
+      NEXT_PUBLIC_NEXT_EPISODE_DATE: process.env.NEXT_PUBLIC_NEXT_EPISODE_DATE,
     },
     skipValidation:
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
