@@ -11,6 +11,7 @@ export interface AffiliateOffer {
   discountLine: string;
   description: string;
   href: string;
+  featured?: boolean;
 }
 
 export const SPONSORS: Sponsor[] = [
@@ -22,6 +23,8 @@ export const SPONSORS: Sponsor[] = [
   { id: "open-3", name: "Your Brand", status: "placeholder" },
 ];
 
+// TODO(brett-miller): replace placeholder `.example` URLs with the live
+// affiliate links once each partner ships their tracking code.
 export const AFFILIATE_OFFERS: AffiliateOffer[] = [
   {
     id: "escape-zone",
@@ -31,6 +34,7 @@ export const AFFILIATE_OFFERS: AffiliateOffer[] = [
     description:
       "Bug-out and every-day-carry packs built for people who actually move.",
     href: "https://escapezone.example/galileyo",
+    featured: true,
   },
   {
     id: "ghost-phone",
@@ -40,6 +44,7 @@ export const AFFILIATE_OFFERS: AffiliateOffer[] = [
     description:
       "Hardened mobile device with private comms. Two grand list, ours for less.",
     href: "https://ghostphone.example/galileyo",
+    featured: true,
   },
   {
     id: "bivystick",
@@ -49,5 +54,32 @@ export const AFFILIATE_OFFERS: AffiliateOffer[] = [
     description:
       "Satellite SOS and two-way messaging when the towers are down.",
     href: "https://bivystick.example/galileyo",
+  },
+  {
+    id: "seekins",
+    name: "Seekins",
+    category: "Precision rifles",
+    discountLine: "10% off",
+    description:
+      "American-built precision rifles. The kind you hand down with the truck.",
+    href: "https://seekins.example/galileyo",
+  },
+  {
+    id: "moonshine",
+    name: "Moonshine",
+    category: "Spirits",
+    discountLine: "Free shipping",
+    description:
+      "Small-batch spirits. Drink with people you would call at 3am.",
+    href: "https://moonshine.example/galileyo",
+  },
+  {
+    id: "freedom-coffee",
+    name: "Freedom Coffee",
+    category: "Coffee",
+    discountLine: "15% off subscription",
+    description:
+      "Fresh roast every two weeks. Cancel any time, but you will not.",
+    href: "https://freedomcoffee.example/galileyo",
   },
 ];
