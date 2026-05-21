@@ -59,6 +59,10 @@ interface VideoPlayerProps {
   originalPoster?: string;
   /** Type of duet/stitch relationship */
   duetStitchType?: "duet" | "stitch" | null;
+  /** Loop the response video when it reaches the end. Defaults to true for the feed. */
+  loop?: boolean;
+  /** Fired when the response video reaches the end (only when loop is false). */
+  onEnded?: () => void;
 }
 
 export function VideoPlayer({
@@ -76,6 +80,8 @@ export function VideoPlayer({
   originalSrc,
   originalPoster,
   duetStitchType,
+  loop = true,
+  onEnded,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const originalVideoRef = useRef<HTMLVideoElement>(null);
@@ -688,7 +694,7 @@ export function VideoPlayer({
         src={shouldUseHlsJs ? undefined : src}
         poster={poster}
         className="h-full w-full rounded-lg object-contain"
-        loop
+        loop={loop}
         muted={isMuted}
         playsInline
         preload="metadata"
@@ -696,6 +702,12 @@ export function VideoPlayer({
         onWaiting={() => setIsBuffering(true)}
         onCanPlay={() => setIsBuffering(false)}
         onPlaying={() => setIsBuffering(false)}
+        onEnded={() => {
+          if (!loop) {
+            setIsPlaying(false);
+            onEnded?.();
+          }
+        }}
         crossOrigin="anonymous"
       />
     );
