@@ -47,7 +47,7 @@ export default async function WatchPage({
   const hlsUrl = env.NEXT_PUBLIC_EPISODE_1_HLS_URL;
   if (!hlsUrl) {
     return (
-      <div className="-mt-16 flex min-h-svh items-center justify-center bg-black px-6 text-center text-white md:-mt-20">
+      <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-black px-6 text-center text-white md:min-h-[calc(100svh-5rem)]">
         <div className="max-w-lg">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Stream not configured

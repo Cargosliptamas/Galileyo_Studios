@@ -16,6 +16,7 @@ const NAV_LINKS = [
   { href: "/studios/producers", label: "Producers" },
   { href: "/studios/membership", label: "Bronze" },
   { href: "/studios/sponsors", label: "Sponsors" },
+  { href: "/studios/affiliates", label: "Affiliates" },
   { href: "/studios/about", label: "About" },
 ] as const;
 
@@ -49,7 +50,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
           <StudiosBrand size="md" />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-4 lg:flex lg:gap-7">
           {NAV_LINKS.map((link) => {
             const active = isLinkActive(pathname, link.href);
             return (
@@ -57,7 +58,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "font-display text-sm tracking-[0.22em] transition-colors",
+                  "font-display text-[13px] tracking-[0.2em] transition-colors lg:text-sm",
                   active
                     ? "text-[rgb(var(--studios-accent-hi))]"
                     : "text-[rgb(var(--studios-text-muted))] hover:text-[rgb(var(--studios-text))]",
@@ -73,7 +74,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
           {user ? (
             <Link
               href="/profile"
-              className="hidden items-center gap-2 rounded-full border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))]/60 px-3 py-1.5 text-xs text-[rgb(var(--studios-text-muted))] transition-colors hover:border-[rgb(var(--studios-accent))]/60 hover:text-[rgb(var(--studios-text))] md:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))]/60 px-3 py-1.5 text-xs text-[rgb(var(--studios-text-muted))] transition-colors hover:border-[rgb(var(--studios-accent))]/60 hover:text-[rgb(var(--studios-text))] lg:inline-flex"
             >
               <Avatar className="size-6">
                 {user.image ? (
@@ -90,7 +91,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
               asChild
               size="sm"
               variant="outline"
-              className="hidden border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.2em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 hover:text-[rgb(var(--studios-accent-hi))] md:inline-flex"
+              className="hidden border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.2em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 hover:text-[rgb(var(--studios-accent-hi))] lg:inline-flex"
             >
               <Link href="/login">Sign in</Link>
             </Button>
@@ -99,7 +100,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
           <button
             type="button"
             onClick={() => setMobileOpen((open) => !open)}
-            className="inline-flex size-10 items-center justify-center rounded-full border border-[rgb(var(--studios-border))]/70 text-[rgb(var(--studios-text))] md:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-full border border-[rgb(var(--studios-border))]/70 text-[rgb(var(--studios-text))] lg:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -113,7 +114,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
       </div>
 
       {mobileOpen ? (
-        <div className="border-t border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-bg))] md:hidden">
+        <div className="border-t border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-bg))] lg:hidden">
           <nav className="mx-auto flex w-full max-w-7xl flex-col gap-1 px-5 py-4">
             {NAV_LINKS.map((link) => {
               const active = isLinkActive(pathname, link.href);

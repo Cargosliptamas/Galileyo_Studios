@@ -23,7 +23,7 @@ export function StudiosWatchClient({
   const [showUpsell, setShowUpsell] = useState(false);
 
   return (
-    <div className="relative -mt-16 flex min-h-svh flex-col bg-black md:-mt-20">
+    <div className="relative flex min-h-[calc(100svh-4rem)] flex-col bg-black md:min-h-[calc(100svh-5rem)]">
       <div className="absolute left-4 top-4 z-30 flex items-center gap-3 sm:left-6 sm:top-6">
         <Link
           href={`/studios/episodes/${episode.slug}`}
@@ -34,16 +34,16 @@ export function StudiosWatchClient({
         </Link>
       </div>
 
-      <div className="pointer-events-none absolute left-4 top-20 z-20 max-w-md sm:left-6">
-        <p className="font-display text-[11px] uppercase tracking-[0.32em] text-[rgb(var(--studios-accent))]">
+      <div className="pointer-events-none absolute left-4 top-16 z-20 max-w-[18rem] sm:left-6 sm:top-20 sm:max-w-md">
+        <p className="font-display text-[10px] uppercase tracking-[0.32em] text-[rgb(var(--studios-accent))] sm:text-[11px]">
           Episode {episode.number.toString().padStart(2, "0")}
         </p>
-        <h1 className="font-display mt-2 text-2xl text-white drop-shadow-md sm:text-3xl">
+        <h1 className="font-display mt-2 text-xl text-white drop-shadow-md sm:text-3xl">
           {episode.title}
         </h1>
       </div>
 
-      <div className="flex min-h-svh w-full items-center justify-center">
+      <div className="flex w-full flex-1 items-center justify-center">
         <div className="aspect-video w-full max-w-7xl">
           <VideoPlayer
             src={src}
