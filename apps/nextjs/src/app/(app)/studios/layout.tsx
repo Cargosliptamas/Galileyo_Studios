@@ -27,9 +27,7 @@ export default async function StudiosLayout({
   // viewport and create horizontal scroll. Apply the bleed only when there
   // is parent padding to cancel.
   const session = await getSession();
-  const bleed = session?.user
-    ? "-mx-3 -my-3 sm:-mx-4 lg:-mx-5 xl:-mx-6"
-    : "";
+  const bleed = session?.user ? "-mx-3 -my-3 sm:-mx-4 lg:-mx-5 xl:-mx-6" : "";
 
   return (
     <div

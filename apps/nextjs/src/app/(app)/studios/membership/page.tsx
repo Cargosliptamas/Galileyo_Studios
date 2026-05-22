@@ -52,7 +52,11 @@ const COLUMNS: PlanColumn[] = [
       { label: "Community access", included: false },
     ],
     // TODO(brett-miller): swap for live Stripe checkout once accounts are connected.
-    cta: { label: "Buy per episode", href: "#checkout-coming-soon", variant: "ghost" },
+    cta: {
+      label: "Buy per episode",
+      href: "#checkout-coming-soon",
+      variant: "ghost",
+    },
   },
   {
     id: "bronze",
@@ -69,7 +73,11 @@ const COLUMNS: PlanColumn[] = [
       { label: "Community access", included: true },
     ],
     // TODO(brett-miller): swap for live Stripe subscription once accounts are connected.
-    cta: { label: "Get Bronze All-Access", href: "#checkout-coming-soon", variant: "primary" },
+    cta: {
+      label: "Get Bronze All-Access",
+      href: "#checkout-coming-soon",
+      variant: "primary",
+    },
     featured: true,
   },
   {
@@ -109,9 +117,9 @@ export default function MembershipPage() {
             All seven episodes.
           </h1>
           <p className="font-editorial mt-6 max-w-2xl text-lg text-[rgb(var(--studios-text-muted))] md:text-xl">
-            One ticket gets you Episode 1. Bronze gets you the whole series,
-            the work-in-progress cut, the community, and the discounts. No ads,
-            no episodes locked away, no monthly squeeze.
+            One ticket gets you Episode 1. Bronze gets you the whole series, the
+            work-in-progress cut, the community, and the discounts. No ads, no
+            episodes locked away, no monthly squeeze.
           </p>
         </div>
       </section>
@@ -280,8 +288,8 @@ export default function MembershipPage() {
             </h3>
             <p className="font-editorial mt-3 text-base text-[rgb(var(--studios-text-muted))]">
               {/* TODO(brett-miller): replace with confirmed Episode 2 date once locked. */}
-              Drop your email and we will send the link the day Bronze goes
-              live and the day Episode 2 drops. Same email, both notifications.
+              Drop your email and we will send the link the day Bronze goes live
+              and the day Episode 2 drops. Same email, both notifications.
             </p>
           </div>
 

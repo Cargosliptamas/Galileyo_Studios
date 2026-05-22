@@ -24,10 +24,22 @@ export const metadata: Metadata = {
 
 const AUDIENCE_STATS: { label: string; value: string; detail: string }[] = [
   // TODO(brett-miller): replace with confirmed audience numbers once analytics ramp up.
-  { label: "Email list", value: "120K+", detail: "Galileyo platform subscribers" },
-  { label: "Episode 1 target", value: "5M views", detail: "Trailer + episode combined" },
+  {
+    label: "Email list",
+    value: "120K+",
+    detail: "Galileyo platform subscribers",
+  },
+  {
+    label: "Episode 1 target",
+    value: "5M views",
+    detail: "Trailer + episode combined",
+  },
   { label: "US viewership", value: "78%", detail: "Domestic core audience" },
-  { label: "Faith + freedom buyer", value: "62%", detail: "Self-identified, high intent" },
+  {
+    label: "Faith + freedom buyer",
+    value: "62%",
+    detail: "Self-identified, high intent",
+  },
 ];
 
 interface InventoryTile {
@@ -118,8 +130,8 @@ export default function SponsorsPage() {
               Who watches Studios.
             </h2>
             <p className="font-editorial mt-3 text-base text-[rgb(var(--studios-text-muted))]">
-              Numbers below are launch targets and platform-wide baselines.
-              Full third-party demographic report ships with the media kit.
+              Numbers below are launch targets and platform-wide baselines. Full
+              third-party demographic report ships with the media kit.
             </p>
           </div>
 

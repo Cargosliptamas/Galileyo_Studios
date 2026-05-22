@@ -62,9 +62,7 @@ export function StudiosSponsorInquiryForm({
 
   function toggleInterest(id: Interest) {
     setInterests((current) =>
-      current.includes(id)
-        ? current.filter((i) => i !== id)
-        : [...current, id],
+      current.includes(id) ? current.filter((i) => i !== id) : [...current, id],
     );
   }
 

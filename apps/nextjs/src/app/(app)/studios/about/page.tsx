@@ -40,9 +40,9 @@ export default function AboutPage() {
             the Resistance.
           </h1>
           <p className="font-editorial mt-6 max-w-2xl text-lg text-[rgb(var(--studios-text-muted))] md:text-xl">
-            Galileyo Studios is two friends, a small crew, and a refusal to
-            wait for permission. The series is fiction. The fight underneath
-            it is not.
+            Galileyo Studios is two friends, a small crew, and a refusal to wait
+            for permission. The series is fiction. The fight underneath it is
+            not.
           </p>
         </div>
       </section>
@@ -63,25 +63,24 @@ export default function AboutPage() {
               nothing like the people we actually know. So we wrote our own.
             </p>
             <p>
-              Seven episodes. One soldier, one girl, one country buckling
-              under the weight of a tech rollout that was never meant for
-              humans. The world breaks slowly, and then all at once, and the
-              question becomes who you would fight for and what you would
-              give up to do it.
+              Seven episodes. One soldier, one girl, one country buckling under
+              the weight of a tech rollout that was never meant for humans. The
+              world breaks slowly, and then all at once, and the question
+              becomes who you would fight for and what you would give up to do
+              it.
             </p>
             <p>
               We are not making this for industry awards. We are making it for
               the people who already know the cost. The script is locked, the
-              first episode is shot, and the rest are funded one producer at
-              a time. Every dollar from the producer page goes back into the
-              next episode. That is the entire model.
+              first episode is shot, and the rest are funded one producer at a
+              time. Every dollar from the producer page goes back into the next
+              episode. That is the entire model.
             </p>
             <p>
-              The companion game extends the same world into interactive
-              space. Different medium, same fight. Same audience, same
-              promise: your money on the screen, your name on the credits,
-              the rest of the audience gets the result for free or for a few
-              bucks.
+              The companion game extends the same world into interactive space.
+              Different medium, same fight. Same audience, same promise: your
+              money on the screen, your name on the credits, the rest of the
+              audience gets the result for free or for a few bucks.
             </p>
           </div>
         </div>
@@ -104,8 +103,8 @@ export default function AboutPage() {
                 aria-hidden
               />
               <p className="font-editorial text-xs text-[rgb(var(--studios-text-muted))]">
-                Cast list pending confirmation. Update before launch. Only
-                names with signed contracts ship to the public page.
+                Cast list pending confirmation. Update before launch. Only names
+                with signed contracts ship to the public page.
               </p>
             </div>
           </div>
@@ -241,10 +240,7 @@ export default function AboutPage() {
 
           <div className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[rgb(var(--studios-border))]/70 bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950">
             <div className="text-center">
-              <Camera
-                className="mx-auto size-10 text-white/40"
-                aria-hidden
-              />
+              <Camera className="mx-auto size-10 text-white/40" aria-hidden />
               <p className="font-display mt-3 text-xs uppercase tracking-[0.32em] text-[rgb(var(--studios-text-muted))]">
                 BTS reel coming with Episode 1
               </p>

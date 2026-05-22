@@ -35,8 +35,8 @@ export default function AffiliatesPage() {
           </h1>
           <p className="font-editorial mt-6 max-w-2xl text-lg text-[rgb(var(--studios-text-muted))] md:text-xl">
             Gear, comms, coffee, and a couple things we wish existed before we
-            had them. Each link is a real discount, tracked back to Studios,
-            and every dollar funds the next episode.
+            had them. Each link is a real discount, tracked back to Studios, and
+            every dollar funds the next episode.
           </p>
         </div>
       </section>

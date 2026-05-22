@@ -43,7 +43,11 @@ const FILM_TIERS: FilmTier[] = [
       "Early access to behind-the-scenes drops",
     ],
     // TODO(brett-miller): swap for live Stripe checkout once accounts are connected.
-    cta: { kind: "link", href: "#checkout-coming-soon", label: "Back this tier" },
+    cta: {
+      kind: "link",
+      href: "#checkout-coming-soon",
+      label: "Back this tier",
+    },
   },
   {
     id: "contributing",
@@ -59,7 +63,11 @@ const FILM_TIERS: FilmTier[] = [
       "Full-length behind-the-scenes cut",
     ],
     // TODO(brett-miller): swap for live Stripe checkout once accounts are connected.
-    cta: { kind: "link", href: "#checkout-coming-soon", label: "Back this tier" },
+    cta: {
+      kind: "link",
+      href: "#checkout-coming-soon",
+      label: "Back this tier",
+    },
     featured: true,
   },
   {
@@ -113,8 +121,8 @@ export default function ProducersPage() {
             We are funding seven films and a companion game by selling the
             credits, not the rights. Every dollar from this page goes into the
             next episode. Your name goes on the screen, your money goes on the
-            screen, and the rest of the audience gets the result for free or
-            for a few bucks. That is the trade.
+            screen, and the rest of the audience gets the result for free or for
+            a few bucks. That is the trade.
           </p>
         </div>
       </section>
@@ -245,8 +253,8 @@ export default function ProducersPage() {
               </h2>
               <p className="font-editorial mt-3 text-base text-[rgb(var(--studios-text-muted))]">
                 The companion game lives in the same world as the series.
-                Producers get on the credits, ship with the alpha, and the
-                first copy lands free.
+                Producers get on the credits, ship with the alpha, and the first
+                copy lands free.
               </p>
             </div>
 
@@ -327,9 +335,9 @@ export default function ProducersPage() {
               Stripe checkout opens in Phase 3.
             </h3>
             <p className="font-editorial mt-3 text-sm text-[rgb(var(--studios-text-muted))]">
-              We are finalizing the producer agreement and the payment
-              account. Drop your email on the landing page to get the link
-              the moment it goes live.
+              We are finalizing the producer agreement and the payment account.
+              Drop your email on the landing page to get the link the moment it
+              goes live.
             </p>
             <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Button

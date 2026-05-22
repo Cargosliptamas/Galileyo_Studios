@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import type { Episode } from "~/lib/studios/episodes";
 import { StudiosPostCreditsUpsell } from "~/components/studios/studios-post-credits-upsell";
 import { VideoPlayer } from "~/components/video/video-player";
-import type { Episode } from "~/lib/studios/episodes";
 
 interface StudiosWatchClientProps {
   episode: Episode;
