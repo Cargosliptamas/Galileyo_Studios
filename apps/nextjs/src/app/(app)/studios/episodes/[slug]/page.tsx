@@ -106,7 +106,7 @@ export default async function EpisodeDetailPage({
               )}
             </span>
           </div>
-          <h1 className="font-display mt-6 text-5xl text-[rgb(var(--studios-text))] md:text-7xl">
+          <h1 className="font-display mt-6 break-words text-[clamp(2.25rem,9vw,3.5rem)] leading-[1.05] text-[rgb(var(--studios-text))] md:text-7xl">
             {episode.title}
           </h1>
           <p className="font-editorial mt-6 max-w-2xl text-lg text-[rgb(var(--studios-text-muted))] md:text-xl">

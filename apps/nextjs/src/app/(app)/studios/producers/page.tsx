@@ -104,7 +104,7 @@ export default function ProducersPage() {
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Become a Producer
           </p>
-          <h1 className="font-display mt-4 max-w-3xl text-5xl text-[rgb(var(--studios-text))] md:text-7xl">
+          <h1 className="font-display mt-4 max-w-3xl text-[clamp(2.25rem,9vw,3.5rem)] leading-[1.05] text-[rgb(var(--studios-text))] md:text-7xl">
             Fund the Films.
             <br />
             Get the Credit.

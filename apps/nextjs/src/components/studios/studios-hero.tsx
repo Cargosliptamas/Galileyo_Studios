@@ -39,7 +39,7 @@ export function StudiosHero() {
         </p>
 
         <h1
-          className="studios-fade-up font-display mt-6 text-6xl leading-none text-[rgb(var(--studios-text))] md:text-8xl lg:text-[9rem]"
+          className="studios-fade-up font-display mt-6 text-[clamp(3rem,16vw,4.5rem)] leading-none text-[rgb(var(--studios-text))] md:text-8xl lg:text-[9rem]"
           style={{ animationDelay: "100ms" }}
         >
           <span className="block">GALILEYO</span>
@@ -69,7 +69,7 @@ export function StudiosHero() {
           <Button
             asChild
             size="lg"
-            className="font-display h-12 min-w-[16rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(11,11,13)] shadow-[0_15px_40px_-15px_rgba(200,160,74,0.7)] hover:bg-[rgb(var(--studios-accent-hi))]"
+            className="font-display h-12 w-full max-w-[20rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(11,11,13)] shadow-[0_15px_40px_-15px_rgba(200,160,74,0.7)] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[16rem]"
           >
             <Link href="/studios/watch/episode-1">
               <Play className="size-4" aria-hidden />
@@ -80,7 +80,7 @@ export function StudiosHero() {
             asChild
             size="lg"
             variant="outline"
-            className="font-display h-12 min-w-[16rem] rounded-full border-[rgb(var(--studios-accent))]/70 bg-transparent text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:border-[rgb(var(--studios-accent))] hover:bg-[rgb(var(--studios-accent))]/10 hover:text-[rgb(var(--studios-accent-hi))]"
+            className="font-display h-12 w-full max-w-[20rem] rounded-full border-[rgb(var(--studios-accent))]/70 bg-transparent text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:border-[rgb(var(--studios-accent))] hover:bg-[rgb(var(--studios-accent))]/10 hover:text-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[16rem]"
           >
             <Link href="/studios/producers">
               Become a Producer

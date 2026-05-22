@@ -67,8 +67,19 @@ export function StudiosFooter() {
       </div>
 
       <div className="border-t border-[rgb(var(--studios-border))]/60">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-5 py-6 text-xs text-[rgb(var(--studios-text-muted))] md:flex-row md:items-center md:justify-between md:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-5 py-6 text-xs text-[rgb(var(--studios-text-muted))] md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-4 md:px-8">
           <p>© {year} Galileyo Studios. All rights reserved.</p>
+          <p>
+            Designed and Developed by{" "}
+            <a
+              href="https://boldstudios.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[rgb(var(--studios-text))] no-underline transition-colors hover:text-[rgb(var(--studios-accent-hi))] hover:underline"
+            >
+              BOLD Studios
+            </a>
+          </p>
           <p className="font-display tracking-[0.22em]">
             A GALILEYO PRODUCTION
           </p>

@@ -95,7 +95,7 @@ export default function SponsorsPage() {
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Sponsors
           </p>
-          <h1 className="font-display mt-4 text-5xl text-[rgb(var(--studios-text))] md:text-7xl">
+          <h1 className="font-display mt-4 text-[clamp(2.25rem,9vw,3.5rem)] leading-[1.05] text-[rgb(var(--studios-text))] md:text-7xl">
             Reach the people
             <br />
             the rest of media can&apos;t.
