@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { href: "/studios/membership", label: "Bronze" },
   { href: "/studios/sponsors", label: "Sponsors" },
   { href: "/studios/affiliates", label: "Affiliates" },
+  { href: "/studios/donate", label: "Donate" },
   { href: "/studios/about", label: "About" },
 ] as const;
 

@@ -9,6 +9,7 @@ import { Button } from "@galileyo/ui/button";
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
 import { hasEpisode1Access } from "~/lib/studios/access";
 import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
+import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 
 interface Params {
@@ -23,10 +24,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const episode = await getEpisodeBySlugDb(slug);
   if (!episode) return { title: "Episode not found" };
-  return {
+  const isEpisode1 = episode.number === 1;
+  return buildStudiosMetadata({
     title: `Episode ${episode.number}: ${episode.title}`,
-    description: episode.synopsis,
-  };
+    description: isEpisode1
+      ? `Watch Episode 1 free. ${episode.synopsis} An AI-made series from Galileyo Studios.`
+      : episode.synopsis,
+    path: `/studios/episodes/${episode.slug}`,
+    heroImageId: episode.heroImageId,
+  });
 }
 
 const HERO_GRADIENTS: Record<number, string> = {

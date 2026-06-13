@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import posthog from "posthog-js";
 
 import type { Episode } from "~/lib/studios/episodes";
 import { StudiosPostCreditsUpsell } from "~/components/studios/studios-post-credits-upsell";
@@ -21,6 +22,10 @@ export function StudiosWatchClient({
 }: StudiosWatchClientProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false);
+
+  useEffect(() => {
+    posthog.capture("studios_play_started", { episode: episode.slug });
+  }, [episode.slug]);
 
   return (
     <div className="relative flex min-h-[calc(100svh-4rem)] flex-col bg-black md:min-h-[calc(100svh-5rem)]">
@@ -52,7 +57,12 @@ export function StudiosWatchClient({
             isMuted={isMuted}
             onMuteToggle={() => setIsMuted((prev) => !prev)}
             loop={false}
-            onEnded={() => setShowUpsell(true)}
+            onEnded={() => {
+              posthog.capture("studios_play_completed", {
+                episode: episode.slug,
+              });
+              setShowUpsell(true);
+            }}
           />
         </div>
       </div>

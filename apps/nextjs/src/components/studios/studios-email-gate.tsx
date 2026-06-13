@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, Loader2, Mail } from "lucide-react";
+import posthog from "posthog-js";
 
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
@@ -57,6 +58,7 @@ export function StudiosEmailGate({
         return;
       }
 
+      posthog.capture("studios_email_captured", { variant });
       setState({ kind: "success" });
     } catch {
       setState({

@@ -7,6 +7,7 @@ import { StudiosWatchClient } from "~/components/studios/studios-watch-client";
 import { env } from "~/env/client";
 import { hasEpisode1Access } from "~/lib/studios/access";
 import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
+import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { getPublicHlsUrl, getSignedHlsUrl } from "~/lib/studios/stream";
 
 interface Params {
@@ -21,10 +22,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const episode = await getEpisodeBySlugDb(slug);
   if (!episode) return { title: "Watch" };
-  return {
+  return buildStudiosMetadata({
     title: `Watch Episode ${episode.number}: ${episode.title}`,
     description: episode.synopsis,
-  };
+    path: `/studios/watch/${episode.slug}`,
+    heroImageId: episode.heroImageId,
+  });
 }
 
 /**
