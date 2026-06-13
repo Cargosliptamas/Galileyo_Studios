@@ -2698,4 +2698,59 @@ export const studiosEpisode = mysqlTable(
   ],
 );
 
+export const studiosSetting = mysqlTable(
+  "studios_setting",
+  {
+    key: varchar({ length: 80 }).notNull(),
+    value: text(),
+    updatedAt: datetime("updated_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.key], name: "studios_setting_key" }),
+  ],
+);
+
+export const studiosEntitlement = mysqlTable(
+  "studios_entitlement",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    email: varchar({ length: 320 }).notNull(),
+    userId: varchar("user_id", { length: 64 }),
+    kind: varchar({ length: 30 }).notNull(),
+    episodeSlug: varchar("episode_slug", { length: 80 }),
+    stripeSessionId: varchar("stripe_session_id", { length: 120 }).notNull(),
+    amountCents: int("amount_cents"),
+    promoCode: varchar("promo_code", { length: 40 }),
+    createdAt: datetime("created_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    expiresAt: datetime("expires_at", { mode: "string" }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "studios_entitlement_id" }),
+    unique("UK_studios_entitlement_session").on(table.stripeSessionId),
+    index("IDX_studios_entitlement_email").on(table.email),
+  ],
+);
+
+export const studiosProducerCredit = mysqlTable(
+  "studios_producer_credit",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    email: varchar({ length: 320 }).notNull(),
+    displayName: varchar("display_name", { length: 200 }),
+    tier: varchar({ length: 30 }).notNull(),
+    amountCents: int("amount_cents"),
+    createdAt: datetime("created_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "studios_producer_credit_id" }),
+    index("IDX_studios_producer_credit_email").on(table.email),
+  ],
+);
+
 export * from "./auth-schema";

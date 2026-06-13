@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Episode } from "~/lib/studios/episodes";
 import { StudiosWatchClient } from "~/components/studios/studios-watch-client";
 import { env } from "~/env/client";
-import { hasEpisode1Access } from "~/lib/studios/access";
+import { getViewerEmail, hasEpisodeAccess } from "~/lib/studios/access";
 import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { getPublicHlsUrl, getSignedHlsUrl } from "~/lib/studios/stream";
@@ -54,13 +54,12 @@ export default async function WatchPage({
   const episode = await getEpisodeBySlugDb(slug);
   if (!episode) notFound();
 
-  if (slug === "episode-1") {
-    const hasAccess = await hasEpisode1Access();
-    if (!hasAccess) redirect(`/studios/episodes/${slug}`);
-  } else {
-    // TODO(phase3): check Bronze subscription / producer status / single-episode purchase
-    redirect(`/studios/episodes/${slug}`);
-  }
+  // Episode 1 is gated by the free unlock cookie; paid episodes are gated by a
+  // Stripe entitlement (episode unlock, bronze, or producer) resolved from the
+  // viewer's email.
+  const viewerEmail = await getViewerEmail();
+  const hasAccess = await hasEpisodeAccess(slug, viewerEmail);
+  if (!hasAccess) redirect(`/studios/episodes/${slug}`);
 
   // Plays from Cloudflare Stream when a streamUid is set on the episode,
   // otherwise falls back to NEXT_PUBLIC_EPISODE_1_HLS_URL for the current

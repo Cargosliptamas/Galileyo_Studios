@@ -7,6 +7,8 @@ import posthog from "posthog-js";
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 
+import { env } from "~/env/client";
+
 const PRESET_AMOUNTS = [10, 25, 50, 100] as const;
 const MIN_AMOUNT = 1;
 const MAX_AMOUNT = 50000;
@@ -57,16 +59,48 @@ export function StudiosDonateForm() {
 
     try {
       const search = new URLSearchParams(window.location.search);
+      const utm = {
+        utmSource: search.get("utm_source") ?? undefined,
+        utmMedium: search.get("utm_medium") ?? undefined,
+        utmCampaign: search.get("utm_campaign") ?? undefined,
+      };
+
+      // When Stripe is live, send donors straight to hosted Checkout. Until
+      // then, fall back to capturing the email and intended amount as a lead.
+      if (env.NEXT_PUBLIC_STRIPE_ENABLED) {
+        const res = await fetch("/studios/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: "donation",
+            amountCents: amount * 100,
+            email,
+            ...utm,
+          }),
+        });
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as {
+            error?: string;
+          };
+          setState({
+            kind: "error",
+            message: data.error ?? "Something went wrong. Please try again.",
+          });
+          return;
+        }
+        const data = (await res.json()) as { url: string | null };
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        setState({ kind: "error", message: "Could not start checkout." });
+        return;
+      }
+
       const res = await fetch("/studios/api/donate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          amount,
-          utmSource: search.get("utm_source") ?? undefined,
-          utmMedium: search.get("utm_medium") ?? undefined,
-          utmCampaign: search.get("utm_campaign") ?? undefined,
-        }),
+        body: JSON.stringify({ email, amount, ...utm }),
       });
 
       if (!res.ok) {
@@ -75,12 +109,6 @@ export function StudiosDonateForm() {
           kind: "error",
           message: data.error ?? "Something went wrong. Please try again.",
         });
-        return;
-      }
-
-      const data = (await res.json()) as { checkoutUrl: string | null };
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
         return;
       }
 

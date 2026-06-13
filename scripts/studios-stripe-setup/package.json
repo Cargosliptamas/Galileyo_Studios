@@ -1,0 +1,29 @@
+{
+  "name": "@galileyo/studios-stripe-setup",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "start": "pnpm with-env tsx src/index.ts",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@galileyo/db": "workspace:*",
+    "stripe": "^22.2.1"
+  },
+  "devDependencies": {
+    "@galileyo/eslint-config": "workspace:*",
+    "@galileyo/prettier-config": "workspace:*",
+    "@galileyo/tsconfig": "workspace:*",
+    "dotenv-cli": "^9.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "catalog:"
+  },
+  "prettier": "@galileyo/prettier-config"
+}

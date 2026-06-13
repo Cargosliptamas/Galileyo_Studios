@@ -75,6 +75,7 @@
     "recharts": "^3.7.0",
     "serwist": "preview",
     "simple-peer": "catalog:",
+    "stripe": "^22.2.1",
     "styled-components": "^6.1.19",
     "superjson": "2.2.2",
     "uuid": "^13.0.0",

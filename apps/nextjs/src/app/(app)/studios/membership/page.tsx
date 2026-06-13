@@ -5,6 +5,7 @@ import { ArrowRight, Check, X } from "lucide-react";
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 
+import { StudiosCheckoutButton } from "~/components/studios/studios-checkout-button";
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
 
 export const metadata: Metadata = {
@@ -51,10 +52,9 @@ const COLUMNS: PlanColumn[] = [
       { label: "Affiliate discounts", included: false },
       { label: "Community access", included: false },
     ],
-    // TODO(brett-miller): swap for live Stripe checkout once accounts are connected.
     cta: {
       label: "Buy per episode",
-      href: "#checkout-coming-soon",
+      href: "/studios/episodes",
       variant: "ghost",
     },
   },
@@ -218,22 +218,29 @@ export default function MembershipPage() {
 
                 {col.cta ? (
                   <div className="mt-8 pt-2">
-                    <Button
-                      asChild
-                      className={cn(
-                        "font-display h-12 w-full rounded-full text-xs uppercase tracking-[0.25em]",
-                        col.cta.variant === "primary"
-                          ? "bg-[rgb(var(--studios-accent))] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
-                          : "border border-[rgb(var(--studios-accent))]/70 bg-transparent text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10",
-                      )}
-                    >
-                      <Link href={col.cta.href}>
-                        {col.cta.label}
-                        {col.cta.variant === "primary" ? (
-                          <ArrowRight className="size-4" aria-hidden />
-                        ) : null}
-                      </Link>
-                    </Button>
+                    {col.id === "bronze" ? (
+                      <StudiosCheckoutButton
+                        kind="bronze"
+                        label={col.cta.label}
+                      />
+                    ) : (
+                      <Button
+                        asChild
+                        className={cn(
+                          "font-display h-12 w-full rounded-full text-xs uppercase tracking-[0.25em]",
+                          col.cta.variant === "primary"
+                            ? "bg-[rgb(var(--studios-accent))] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                            : "border border-[rgb(var(--studios-accent))]/70 bg-transparent text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10",
+                        )}
+                      >
+                        <Link href={col.cta.href}>
+                          {col.cta.label}
+                          {col.cta.variant === "primary" ? (
+                            <ArrowRight className="size-4" aria-hidden />
+                          ) : null}
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 ) : null}
               </article>

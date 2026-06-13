@@ -78,6 +78,10 @@ export function clientEnv() {
         .default(1000000),
       NEXT_PUBLIC_EPISODE_1_HLS_URL: z.string().default(""),
       NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH: z.string().default(""),
+      NEXT_PUBLIC_STRIPE_ENABLED: z
+        .enum(["true", "false"])
+        .default("false")
+        .transform((val) => val === "true"),
     },
     /**
      * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -122,6 +126,7 @@ export function clientEnv() {
       NEXT_PUBLIC_EPISODE_1_HLS_URL: process.env.NEXT_PUBLIC_EPISODE_1_HLS_URL,
       NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH:
         process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+      NEXT_PUBLIC_STRIPE_ENABLED: process.env.NEXT_PUBLIC_STRIPE_ENABLED,
     },
     skipValidation:
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",

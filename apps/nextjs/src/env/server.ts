@@ -51,6 +51,8 @@ export function serverEnv() {
       CLOUDFLARE_STREAM_SIGNING_KEY_ID: z.string().default(""),
       CLOUDFLARE_STREAM_SIGNING_KEY_PEM: z.string().default(""),
       CLOUDFLARE_IMAGES_API_TOKEN: z.string().default(""),
+      STRIPE_SECRET_KEY: z.string().default(""),
+      STRIPE_WEBHOOK_SECRET: z.string().default(""),
     },
     experimental__runtimeEnv: {
       NODE_ENV: process.env.NODE_ENV,

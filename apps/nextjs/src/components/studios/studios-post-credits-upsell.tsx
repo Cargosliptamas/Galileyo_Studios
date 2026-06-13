@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Copy, Facebook, Heart } from "lucide-react";
+import { Check, Copy, Facebook, Heart } from "lucide-react";
 import posthog from "posthog-js";
 
 import { Button } from "@galileyo/ui/button";
@@ -15,6 +15,7 @@ import {
 } from "@galileyo/ui/dialog";
 
 import type { Episode } from "~/lib/studios/episodes";
+import { StudiosCheckoutButton } from "./studios-checkout-button";
 import { StudiosPartnershipCta } from "./studios-partnership-cta";
 
 const SHARE_TEXT =
@@ -103,25 +104,17 @@ export function StudiosPostCreditsUpsell({
               Donate to fund the next episode
             </Link>
           </Button>
-          <Button
-            asChild
+          <StudiosCheckoutButton
+            kind="episode"
+            episodeSlug={nextEpisodeSlug}
             variant="outline"
-            className="font-display h-12 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10"
-          >
-            <Link href={`/studios/episodes/${nextEpisodeSlug}`}>
-              Unlock Episode {episode.number + 1} for $7
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
-          </Button>
-          <Button
-            asChild
+            label={`Unlock Episode ${episode.number + 1} for $7`}
+          />
+          <StudiosCheckoutButton
+            kind="bronze"
             variant="outline"
-            className="font-display h-12 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10"
-          >
-            <Link href="/studios/membership">
-              Bronze All-Access, $24 per year
-            </Link>
-          </Button>
+            label="Bronze All-Access, $24 per year"
+          />
         </div>
 
         <div className="mt-6 border-t border-[rgb(var(--studios-border))]/50 pt-5">
