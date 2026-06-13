@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import type { Episode } from "~/lib/studios/episodes";
 import { StudiosWatchClient } from "~/components/studios/studios-watch-client";
 import { env } from "~/env/client";
 import { hasEpisode1Access } from "~/lib/studios/access";
-import { getEpisodeBySlug } from "~/lib/studios/episodes";
+import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
+import { getPublicHlsUrl, getSignedHlsUrl } from "~/lib/studios/stream";
 
 interface Params {
   slug: string;
@@ -17,12 +19,27 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const episode = getEpisodeBySlug(slug);
+  const episode = await getEpisodeBySlugDb(slug);
   if (!episode) return { title: "Watch" };
   return {
     title: `Watch Episode ${episode.number}: ${episode.title}`,
     description: episode.synopsis,
   };
+}
+
+/**
+ * Resolves the HLS source for an episode. When a Cloudflare Stream uid is set,
+ * free episodes play the public manifest and paid episodes get a short-lived
+ * signed manifest. The NEXT_PUBLIC_EPISODE_1_HLS_URL env var stays as the
+ * final fallback so the current staging setup keeps working.
+ */
+function resolveStreamSrc(episode: Episode): string {
+  if (episode.streamUid) {
+    return episode.isFree
+      ? getPublicHlsUrl(episode.streamUid)
+      : getSignedHlsUrl(episode.streamUid);
+  }
+  return env.NEXT_PUBLIC_EPISODE_1_HLS_URL;
 }
 
 export default async function WatchPage({
@@ -31,7 +48,7 @@ export default async function WatchPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const episode = getEpisodeBySlug(slug);
+  const episode = await getEpisodeBySlugDb(slug);
   if (!episode) notFound();
 
   if (slug === "episode-1") {
@@ -42,9 +59,10 @@ export default async function WatchPage({
     redirect(`/studios/episodes/${slug}`);
   }
 
-  // TODO(brett-miller): waiting on the live Cloudflare Stream HLS URL.
-  // Set NEXT_PUBLIC_EPISODE_1_HLS_URL in env (Vercel + .env.local) once provided.
-  const hlsUrl = env.NEXT_PUBLIC_EPISODE_1_HLS_URL;
+  // Plays from Cloudflare Stream when a streamUid is set on the episode,
+  // otherwise falls back to NEXT_PUBLIC_EPISODE_1_HLS_URL for the current
+  // staging setup.
+  const hlsUrl = resolveStreamSrc(episode);
   if (!hlsUrl) {
     return (
       <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-black px-6 text-center text-white md:min-h-[calc(100svh-5rem)]">

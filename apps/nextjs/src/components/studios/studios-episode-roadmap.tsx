@@ -1,12 +1,34 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import type { Episode } from "~/lib/studios/episodes";
 import { EPISODES } from "~/lib/studios/episodes";
 import { StudiosEpisodeCard } from "./studios-episode-card";
 
-export function StudiosEpisodeRoadmap() {
+interface StudiosEpisodeRoadmapProps {
+  episodes?: Episode[];
+}
+
+export function StudiosEpisodeRoadmap({
+  episodes = EPISODES,
+}: StudiosEpisodeRoadmapProps) {
+  // The grid layout is designed for the seven-episode slate. Fall back to the
+  // static array if a caller passes fewer so the layout never renders holes.
+  const slate = episodes.length >= 7 ? episodes : EPISODES;
   const [episode1, episode2, episode3, episode4, episode5, episode6, episode7] =
-    EPISODES;
+    slate;
+
+  if (
+    !episode1 ||
+    !episode2 ||
+    !episode3 ||
+    !episode4 ||
+    !episode5 ||
+    !episode6 ||
+    !episode7
+  ) {
+    return null;
+  }
 
   return (
     <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-24 md:py-32">

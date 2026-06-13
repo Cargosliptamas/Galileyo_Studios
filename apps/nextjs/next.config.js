@@ -8,6 +8,12 @@ await jiti.import("./src/env");
 /** @type {import("next").NextConfig} */
 const config = {
   serverExternalPackages: ["esbuild", "@esbuild/linux-x64"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "imagedelivery.net" },
+      { protocol: "https", hostname: "*.cloudflarestream.com" },
+    ],
+  },
   async headers() {
     return [
       {

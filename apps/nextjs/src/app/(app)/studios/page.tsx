@@ -8,14 +8,17 @@ import { StudiosHero } from "~/components/studios/studios-hero";
 import { StudiosProducerTiersPreview } from "~/components/studios/studios-producer-tiers-preview";
 import { StudiosSeriesIntro } from "~/components/studios/studios-series-intro";
 import { StudiosSponsorStrip } from "~/components/studios/studios-sponsor-strip";
+import { getPublishedEpisodes } from "~/lib/studios/episodes-db";
 
-export default function StudiosLandingPage() {
+export default async function StudiosLandingPage() {
+  const episodes = await getPublishedEpisodes();
+
   return (
     <>
       <StudiosHero />
       <StudiosEmailGate />
       <StudiosSeriesIntro />
-      <StudiosEpisodeRoadmap />
+      <StudiosEpisodeRoadmap episodes={episodes} />
       <StudiosProducerTiersPreview />
       <StudiosGameProducerCard />
       <StudiosBronzeUpsell />

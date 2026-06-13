@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 
+import { sql } from "@galileyo/db";
+import { db } from "@galileyo/db/client";
+import { studiosLead, studiosSponsorInquiry } from "@galileyo/db/schema";
+
 export const runtime = "nodejs";
 
 const InterestSchema = z.enum([
@@ -39,9 +43,36 @@ export async function POST(req: Request) {
     );
   }
 
-  // TODO(phase3): persist via tRPC studiosRouter.submitSponsorInquiry into the
-  // Bolt Database (studios_inquiry table) and forward to email transport.
-  console.log("[studios] Sponsor inquiry:", parsed.data);
+  const { interest, company, contactName, email, phone, budgetRange, notes } =
+    parsed.data;
+
+  // Normalize the single-or-array interest field to a comma-joined string.
+  const interestValue = (Array.isArray(interest) ? interest : [interest]).join(
+    ",",
+  );
+
+  try {
+    await db.insert(studiosSponsorInquiry).values({
+      interest: interestValue,
+      company,
+      contactName,
+      email,
+      phone,
+      budgetRange,
+      notes,
+    });
+
+    await db
+      .insert(studiosLead)
+      .values({ email, source: "sponsor_inquiry" })
+      .onDuplicateKeyUpdate({ set: { email: sql`${studiosLead.email}` } });
+  } catch (error) {
+    console.error("[studios] Failed to persist sponsor inquiry:", error);
+    return NextResponse.json(
+      { error: "Something went wrong on our end. Please try again." },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({ success: true });
 }

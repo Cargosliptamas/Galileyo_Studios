@@ -1,4 +1,28 @@
-export const EPISODES = [
+export type EpisodeStatus = "available" | "coming_soon";
+
+export interface Episode {
+  slug: string;
+  number: number;
+  title: string;
+  status: EpisodeStatus;
+  releaseLabel: string;
+  releaseDate: string;
+  synopsis: string;
+  heroStill: string;
+  runtime?: number;
+  // Phase 1 media + pricing fields. Present when an episode is sourced from
+  // the studios_episode table; undefined for the static fallback array.
+  streamUid?: string | null;
+  posterImageId?: string | null;
+  heroImageId?: string | null;
+  priceCents?: number;
+  isFree?: boolean;
+  published?: boolean;
+  adsOnPaid?: boolean;
+  adCuePoints?: number[] | null;
+}
+
+export const EPISODES: Episode[] = [
   {
     slug: "episode-1",
     number: 1,
@@ -71,9 +95,7 @@ export const EPISODES = [
     synopsis: "Title and synopsis to be released.",
     heroStill: "/studios/stills/episode-7-hero.jpg",
   },
-] as const;
-
-export type Episode = (typeof EPISODES)[number];
+];
 
 export function getEpisodeBySlug(slug: string): Episode | undefined {
   return EPISODES.find((episode) => episode.slug === slug);

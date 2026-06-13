@@ -8,7 +8,7 @@ import { Button } from "@galileyo/ui/button";
 
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
 import { hasEpisode1Access } from "~/lib/studios/access";
-import { getEpisodeBySlug } from "~/lib/studios/episodes";
+import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 
 interface Params {
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const episode = getEpisodeBySlug(slug);
+  const episode = await getEpisodeBySlugDb(slug);
   if (!episode) return { title: "Episode not found" };
   return {
     title: `Episode ${episode.number}: ${episode.title}`,
@@ -54,7 +54,7 @@ export default async function EpisodeDetailPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const episode = getEpisodeBySlug(slug);
+  const episode = await getEpisodeBySlugDb(slug);
   if (!episode) {
     notFound();
   }
@@ -101,9 +101,7 @@ export default async function EpisodeDetailPage({
               {episode.releaseLabel}
             </span>
             <span className="font-display rounded-full bg-[rgb(var(--studios-bg))]/80 px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] backdrop-blur-sm">
-              {formatRuntime(
-                "runtime" in episode ? episode.runtime : undefined,
-              )}
+              {formatRuntime(episode.runtime)}
             </span>
           </div>
           <h1 className="font-display mt-6 break-words text-[clamp(2.25rem,9vw,3.5rem)] leading-[1.05] text-[rgb(var(--studios-text))] md:text-7xl">

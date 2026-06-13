@@ -45,6 +45,12 @@ export function serverEnv() {
         .string()
         .min(8)
         .default("phase1-dev-secret-replace-me"),
+      CLOUDFLARE_ACCOUNT_ID: z.string().default(""),
+      CLOUDFLARE_STREAM_API_TOKEN: z.string().default(""),
+      CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN: z.string().default(""),
+      CLOUDFLARE_STREAM_SIGNING_KEY_ID: z.string().default(""),
+      CLOUDFLARE_STREAM_SIGNING_KEY_PEM: z.string().default(""),
+      CLOUDFLARE_IMAGES_API_TOKEN: z.string().default(""),
     },
     experimental__runtimeEnv: {
       NODE_ENV: process.env.NODE_ENV,

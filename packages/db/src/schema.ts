@@ -2621,4 +2621,81 @@ export const zipUs = mysqlTable(
   ],
 );
 
+export const studiosLead = mysqlTable(
+  "studios_lead",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    email: varchar({ length: 320 }).notNull(),
+    source: varchar({ length: 40 }).notNull(),
+    episodeSlug: varchar("episode_slug", { length: 80 }),
+    promoCode: varchar("promo_code", { length: 40 }),
+    utmSource: varchar("utm_source", { length: 120 }),
+    utmMedium: varchar("utm_medium", { length: 120 }),
+    utmCampaign: varchar("utm_campaign", { length: 120 }),
+    createdAt: datetime("created_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "studios_lead_id" }),
+    unique("UK_studios_lead_email").on(table.email),
+    index("IDX_studios_lead_created_at").on(table.createdAt),
+  ],
+);
+
+export const studiosSponsorInquiry = mysqlTable(
+  "studios_sponsor_inquiry",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    interest: varchar({ length: 200 }).notNull(),
+    company: varchar({ length: 200 }),
+    contactName: varchar("contact_name", { length: 200 }).notNull(),
+    email: varchar({ length: 320 }).notNull(),
+    phone: varchar({ length: 50 }),
+    budgetRange: varchar("budget_range", { length: 50 }),
+    notes: text(),
+    status: varchar({ length: 20 }).default("new").notNull(),
+    createdAt: datetime("created_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "studios_sponsor_inquiry_id" }),
+    index("IDX_studios_sponsor_inquiry_created_at").on(table.createdAt),
+  ],
+);
+
+export const studiosEpisode = mysqlTable(
+  "studios_episode",
+  {
+    id: bigint({ mode: "number" }).autoincrement().notNull(),
+    slug: varchar({ length: 80 }).notNull(),
+    number: int().notNull(),
+    title: varchar({ length: 200 }).notNull(),
+    status: varchar({ length: 20 }).notNull(),
+    releaseLabel: varchar("release_label", { length: 80 }),
+    releaseDate: varchar("release_date", { length: 20 }),
+    runtime: int(),
+    synopsis: text(),
+    heroStill: varchar("hero_still", { length: 255 }),
+    streamUid: varchar("stream_uid", { length: 64 }),
+    posterImageId: varchar("poster_image_id", { length: 64 }),
+    heroImageId: varchar("hero_image_id", { length: 64 }),
+    priceCents: int("price_cents").default(700).notNull(),
+    isFree: tinyint("is_free").default(0).notNull(),
+    published: tinyint().default(0).notNull(),
+    adsOnPaid: tinyint("ads_on_paid").default(0).notNull(),
+    adCuePoints: json("ad_cue_points"),
+    sortOrder: int("sort_order").default(0).notNull(),
+    createdAt: datetime("created_at", { mode: "string" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id], name: "studios_episode_id" }),
+    unique("UK_studios_episode_slug").on(table.slug),
+    index("IDX_studios_episode_sort_order").on(table.sortOrder),
+  ],
+);
+
 export * from "./auth-schema";

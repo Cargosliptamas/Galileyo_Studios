@@ -34,10 +34,16 @@ export function StudiosEmailGate({
 
     setState({ kind: "submitting" });
     try {
+      const search = new URLSearchParams(window.location.search);
       const res = await fetch("/studios/api/email-gate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          utmSource: search.get("utm_source") ?? undefined,
+          utmMedium: search.get("utm_medium") ?? undefined,
+          utmCampaign: search.get("utm_campaign") ?? undefined,
+        }),
       });
 
       if (!res.ok) {
