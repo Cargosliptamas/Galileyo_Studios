@@ -4,6 +4,12 @@ export interface CastMember {
   role: string;
   status: "confirmed" | "pending";
   bio?: string;
+  // Path to a properly licensed headshot, e.g. "/studios/cast/cameron-bright.jpg".
+  // Leave undefined until the actor's rep provides the photo plus written
+  // permission to use it on the platform. The UI renders an initial-monogram
+  // placeholder when this is absent.
+  photo?: string;
+  imdbUrl?: string;
   galileyoVerified?: boolean;
   galileyoHandle?: string;
 }
@@ -15,80 +21,55 @@ export interface CrewMember {
   status: "confirmed" | "pending";
 }
 
-// Landing page strip uses this short list. Names locked in writing only.
+// Episode 1 voiceover cast. Confirmed performers only. Character names are
+// withheld until they are locked, so each is credited as "Voiceover Cast".
+// Headshots are intentionally omitted until each actor's rep supplies a
+// licensed image with written permission to display it.
 export const CAST_PREVIEW: CastMember[] = [
   {
-    id: "brett-camrites",
-    name: "Brett Camrites",
-    role: "The Soldier",
+    id: "cameron-bright",
+    name: "Cameron Bright",
+    role: "Voiceover Cast",
     status: "confirmed",
-  },
-  { id: "lead-2", name: "Cast Name 2", role: "The Girl", status: "pending" },
-  { id: "lead-3", name: "Cast Name 3", role: "The Brother", status: "pending" },
-  {
-    id: "lead-4",
-    name: "Cast Name 4",
-    role: "The Captain",
-    status: "pending",
+    imdbUrl: "https://www.imdb.com/name/nm1080974/",
   },
   {
-    id: "creator-1",
-    name: "Brett Miller",
-    role: "Co-Creator",
+    id: "jennifer-marshall",
+    name: "Jennifer Marshall",
+    role: "Voiceover Cast",
     status: "confirmed",
-  },
-  {
-    id: "creator-2",
-    name: "Brett Raio",
-    role: "Co-Creator",
-    status: "confirmed",
+    imdbUrl: "https://www.imdb.com/name/nm1351148/",
   },
 ];
 
-// TODO(brett-miller): confirm full cast with each actor's agent and update
-// status to "confirmed" with bios once signed.
+// Full cast detail surface. Mirrors CAST_PREVIEW for now; expand with character
+// names and bios once each is locked in writing.
 export const CAST_FULL: CastMember[] = [
   {
-    id: "brett-camrites",
-    name: "Brett Camrites",
-    role: "Lead. The Soldier.",
+    id: "cameron-bright",
+    name: "Cameron Bright",
+    role: "Voiceover Cast",
     status: "confirmed",
-    bio: "Marine veteran and actor. Full bio lands once headshots are approved.",
-    galileyoVerified: false,
+    imdbUrl: "https://www.imdb.com/name/nm1080974/",
   },
   {
-    id: "lead-2",
-    name: "Cast Name 2",
-    role: "Co-Lead. The Girl.",
-    status: "pending",
-  },
-  {
-    id: "lead-3",
-    name: "Cast Name 3",
-    role: "Supporting. The Brother.",
-    status: "pending",
-  },
-  {
-    id: "lead-4",
-    name: "Cast Name 4",
-    role: "Supporting. The Captain.",
-    status: "pending",
+    id: "jennifer-marshall",
+    name: "Jennifer Marshall",
+    role: "Voiceover Cast",
+    status: "confirmed",
+    imdbUrl: "https://www.imdb.com/name/nm1351148/",
   },
 ];
 
-// TODO(brett-miller): confirm crew before publishing. Add music supervisor,
-// VFX lead, and the Kling AI credit attribution per the licensing agreement.
+// Film crew. Brett Miller is the producer and director of the film. Brett Raio
+// is the developer of the Galileyo platform (BOLD Studios) and is intentionally
+// not listed in the film credits. Remaining roles are confirmed in writing
+// before publishing.
 export const CREW: CrewMember[] = [
   {
     id: "brett-miller",
     name: "Brett Miller",
-    role: "Co-Creator, Director",
-    status: "confirmed",
-  },
-  {
-    id: "brett-raio",
-    name: "Brett Raio",
-    role: "Co-Creator, Executive Producer",
+    role: "Producer, Director",
     status: "confirmed",
   },
   {
