@@ -75,10 +75,11 @@ export function StudiosFooter() {
               href="https://boldstudios.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[rgb(var(--studios-text))] no-underline transition-colors hover:text-[rgb(var(--studios-accent-hi))] hover:underline"
+              className="text-[rgb(var(--studios-text))] no-underline transition-colors duration-200 hover:text-[rgb(var(--studios-accent-hi))] hover:underline"
             >
               BOLD Studios
             </a>
+            .
           </p>
           <p className="font-display tracking-[0.22em]">
             A GALILEYO PRODUCTION

@@ -26,7 +26,7 @@ export function StudiosPartnershipCta({
         href={PARTNERSHIP_MAILTO}
         onClick={handleClick}
         className={cn(
-          "font-display block text-center text-[11px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] transition-colors hover:text-[rgb(var(--studios-accent))]",
+          "font-display block text-center text-[11px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] transition-colors duration-200 hover:text-[rgb(var(--studios-accent))]",
           className,
         )}
       >
@@ -49,7 +49,7 @@ export function StudiosPartnershipCta({
         <a
           href={PARTNERSHIP_MAILTO}
           onClick={handleClick}
-          className="font-display text-sm uppercase tracking-[0.28em] text-[rgb(var(--studios-accent))] transition-colors hover:text-[rgb(var(--studios-accent-hi))]"
+          className="font-display text-sm uppercase tracking-[0.28em] text-[rgb(var(--studios-accent))] transition-colors duration-200 hover:text-[rgb(var(--studios-accent-hi))]"
         >
           Brett@Galileyo.com
         </a>
