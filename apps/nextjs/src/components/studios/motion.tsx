@@ -1,7 +1,7 @@
 "use client";
 
 import type { Transition, Variants } from "motion/react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 /**
@@ -74,16 +74,18 @@ export function FadeUp({
 interface StaggerProps {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }
 
 /**
  * Parent for a staggered list or grid. Propagates the "visible" label to its
  * StaggerItem children when it scrolls into view, once.
  */
-export function Stagger({ children, className }: StaggerProps) {
+export function Stagger({ children, className, style }: StaggerProps) {
   return (
     <motion.div
       className={className}
+      style={style}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-10% 0px" }}
@@ -96,6 +98,7 @@ export function Stagger({ children, className }: StaggerProps) {
 interface StaggerItemProps {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   index?: number;
 }
 
@@ -106,6 +109,7 @@ interface StaggerItemProps {
 export function StaggerItem({
   children,
   className,
+  style,
   index = 0,
 }: StaggerItemProps) {
   const reduce = useReducedMotion();
@@ -121,7 +125,7 @@ export function StaggerItem({
   };
 
   return (
-    <motion.div className={className} variants={variants}>
+    <motion.div className={className} style={style} variants={variants}>
       {children}
     </motion.div>
   );

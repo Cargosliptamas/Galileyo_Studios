@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 import type { Episode } from "~/lib/studios/episodes";
 import { EPISODES } from "~/lib/studios/episodes";
+import { Stagger, StaggerItem } from "./motion";
 import { StudiosEpisodeCard } from "./studios-episode-card";
 
 interface StudiosEpisodeRoadmapProps {
@@ -50,7 +51,7 @@ export function StudiosEpisodeRoadmap({
           </p>
         </div>
 
-        <div
+        <Stagger
           className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-5"
           style={{
             gridTemplateAreas: `
@@ -60,28 +61,32 @@ export function StudiosEpisodeRoadmap({
             `,
           }}
         >
-          <div style={{ gridArea: "ep1" }} className="min-h-[24rem] md:min-h-0">
+          <StaggerItem
+            index={0}
+            style={{ gridArea: "ep1" }}
+            className="min-h-[24rem] md:min-h-0"
+          >
             <StudiosEpisodeCard episode={episode1} variant="hero" />
-          </div>
-          <div style={{ gridArea: "ep2" }}>
+          </StaggerItem>
+          <StaggerItem index={1} style={{ gridArea: "ep2" }}>
             <StudiosEpisodeCard episode={episode2} />
-          </div>
-          <div style={{ gridArea: "ep3" }}>
+          </StaggerItem>
+          <StaggerItem index={2} style={{ gridArea: "ep3" }}>
             <StudiosEpisodeCard episode={episode3} />
-          </div>
-          <div style={{ gridArea: "ep4" }}>
+          </StaggerItem>
+          <StaggerItem index={3} style={{ gridArea: "ep4" }}>
             <StudiosEpisodeCard episode={episode4} />
-          </div>
-          <div style={{ gridArea: "ep5" }}>
+          </StaggerItem>
+          <StaggerItem index={4} style={{ gridArea: "ep5" }}>
             <StudiosEpisodeCard episode={episode5} />
-          </div>
-          <div style={{ gridArea: "ep6" }}>
+          </StaggerItem>
+          <StaggerItem index={5} style={{ gridArea: "ep6" }}>
             <StudiosEpisodeCard episode={episode6} variant="wide" />
-          </div>
-          <div style={{ gridArea: "ep7" }}>
+          </StaggerItem>
+          <StaggerItem index={6} style={{ gridArea: "ep7" }}>
             <StudiosEpisodeCard episode={episode7} variant="wide" />
-          </div>
-        </div>
+          </StaggerItem>
+        </Stagger>
 
         <div className="mt-12 flex flex-col items-center gap-4 text-center md:mt-16">
           <p className="font-editorial text-base text-[rgb(var(--studios-text-muted))] md:text-lg">

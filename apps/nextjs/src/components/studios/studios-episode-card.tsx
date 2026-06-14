@@ -1,15 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, Lock, Play } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
 import { cn } from "@galileyo/ui";
 
 import type { Episode } from "~/lib/studios/episodes";
+import { STUDIOS_SPRING } from "./motion";
 
 interface StudiosEpisodeCardProps {
   episode: Episode;
   variant?: "hero" | "standard" | "wide";
   className?: string;
 }
+
+const MotionLink = motion.create(Link);
 
 const HERO_GRADIENTS: Record<number, string> = {
   1: "from-amber-500/30 via-zinc-900 to-zinc-950",
@@ -26,9 +32,11 @@ export function StudiosEpisodeCard({
   variant = "standard",
   className,
 }: StudiosEpisodeCardProps) {
+  const reduce = useReducedMotion();
   const isHero = variant === "hero";
   const isWide = variant === "wide";
   const isAvailable = episode.status === "available";
+  const isFree = episode.isFree === true;
   const gradient = HERO_GRADIENTS[episode.number] ?? HERO_GRADIENTS[1];
 
   const detailHref = `/studios/episodes/${episode.slug}`;
@@ -36,10 +44,15 @@ export function StudiosEpisodeCard({
   const ctaHref = isAvailable ? watchHref : detailHref;
 
   return (
-    <Link
+    <MotionLink
       href={ctaHref}
+      whileHover={reduce ? undefined : { y: -4, rotateZ: 0.5 }}
+      whileTap={reduce ? undefined : { scale: 0.99 }}
+      transition={STUDIOS_SPRING}
       className={cn(
-        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))] transition-all duration-300 hover:-translate-y-1 hover:border-[rgb(var(--studios-accent))]/60 hover:shadow-[0_25px_60px_-30px_rgba(200,160,74,0.55)]",
+        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))] transition-[border-color,box-shadow] duration-300 hover:border-[rgb(var(--studios-accent))]/60 hover:shadow-[0_30px_70px_-30px_rgba(200,160,74,0.6)]",
+        // Coming-soon cards sit back so the free episode reads as the hero.
+        !isAvailable && "opacity-90",
         className,
       )}
     >
@@ -53,7 +66,8 @@ export function StudiosEpisodeCard({
       >
         <div
           className={cn(
-            "absolute inset-0 bg-gradient-to-br opacity-90 transition-transform duration-700 group-hover:scale-105",
+            "absolute inset-0 bg-gradient-to-br transition-transform duration-700 group-hover:scale-105",
+            isAvailable ? "opacity-90" : "opacity-60",
             gradient,
           )}
         />
@@ -70,6 +84,11 @@ export function StudiosEpisodeCard({
           <span className="font-display rounded-full bg-[rgb(var(--studios-bg))]/80 px-3 py-1 text-[10px] uppercase tracking-[0.32em] text-[rgb(var(--studios-accent))] backdrop-blur-sm">
             EP {episode.number.toString().padStart(2, "0")}
           </span>
+          {isFree ? (
+            <span className="font-display rounded-full bg-[rgb(var(--studios-accent))] px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-[rgb(11,11,13)]">
+              Free
+            </span>
+          ) : null}
         </div>
 
         <div className="absolute right-5 top-5">
@@ -124,7 +143,7 @@ export function StudiosEpisodeCard({
         <div className="mt-auto flex items-center justify-between pt-3">
           {isAvailable ? (
             <span className="font-display text-xs uppercase tracking-[0.28em] text-[rgb(var(--studios-accent))]">
-              Watch Now
+              {isFree ? "Watch Free" : "Watch Now"}
             </span>
           ) : (
             <span className="font-display text-xs uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))]">
@@ -137,6 +156,6 @@ export function StudiosEpisodeCard({
           />
         </div>
       </div>
-    </Link>
+    </MotionLink>
   );
 }
