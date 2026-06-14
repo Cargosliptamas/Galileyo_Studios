@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import posthog from "posthog-js";
 
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 
 import { env } from "~/env/client";
+import { STUDIOS_EASE, STUDIOS_SPRING } from "./motion";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100] as const;
 const MIN_AMOUNT = 1;
@@ -20,6 +22,7 @@ type State =
   | { kind: "error"; message: string };
 
 export function StudiosDonateForm() {
+  const reduce = useReducedMotion();
   const [amount, setAmount] = useState<number>(25);
   const [customAmount, setCustomAmount] = useState("");
   const [email, setEmail] = useState("");
@@ -120,11 +123,24 @@ export function StudiosDonateForm() {
 
   if (state.kind === "success") {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-2xl border border-[rgb(var(--studios-success))]/40 bg-[rgb(var(--studios-success))]/10 p-8 text-center md:p-10">
-        <CheckCircle2
-          className="size-8 text-[rgb(var(--studios-success))]"
-          aria-hidden
-        />
+      <motion.div
+        className="flex flex-col items-center gap-4 rounded-2xl border border-[rgb(var(--studios-success))]/40 bg-[rgb(var(--studios-success))]/10 p-8 text-center md:p-10"
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+        animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: STUDIOS_EASE }}
+      >
+        <motion.span
+          initial={reduce ? { opacity: 0 } : { scale: 0.8, opacity: 0 }}
+          animate={
+            reduce ? { opacity: 1 } : { scale: [0.8, 1.06, 1], opacity: 1 }
+          }
+          transition={{ duration: 0.5, ease: STUDIOS_EASE, times: [0, 0.6, 1] }}
+        >
+          <CheckCircle2
+            className="size-8 text-[rgb(var(--studios-success))]"
+            aria-hidden
+          />
+        </motion.span>
         <h2 className="font-display text-2xl text-[rgb(var(--studios-text))] md:text-3xl">
           Thank you. You&apos;re on the list.
         </h2>
@@ -132,7 +148,7 @@ export function StudiosDonateForm() {
           Donations open this week. Leave your email and we will notify you the
           moment they go live.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -149,10 +165,13 @@ export function StudiosDonateForm() {
           {PRESET_AMOUNTS.map((value) => {
             const active = !customAmount && amount === value;
             return (
-              <button
+              <motion.button
                 key={value}
                 type="button"
                 onClick={() => selectPreset(value)}
+                whileTap={reduce ? undefined : { scale: 0.97 }}
+                animate={{ scale: active && !reduce ? 1.03 : 1 }}
+                transition={STUDIOS_SPRING}
                 className={cn(
                   "font-display rounded-xl border px-4 py-4 text-lg transition-colors",
                   active
@@ -161,7 +180,7 @@ export function StudiosDonateForm() {
                 )}
               >
                 ${value}
-              </button>
+              </motion.button>
             );
           })}
         </div>
