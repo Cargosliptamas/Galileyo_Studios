@@ -1,8 +1,10 @@
 "use client";
 
+import type { Variants } from "motion/react";
 import { useState } from "react";
 import Link from "next/link";
 import { Check, Copy, Facebook, Heart } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import posthog from "posthog-js";
 
 import { Button } from "@galileyo/ui/button";
@@ -15,6 +17,7 @@ import {
 } from "@galileyo/ui/dialog";
 
 import type { Episode } from "~/lib/studios/episodes";
+import { STUDIOS_EASE } from "./motion";
 import { StudiosCheckoutButton } from "./studios-checkout-button";
 import { StudiosPartnershipCta } from "./studios-partnership-cta";
 
@@ -37,8 +40,21 @@ export function StudiosPostCreditsUpsell({
   episode,
   onClose,
 }: StudiosPostCreditsUpsellProps) {
+  const reduce = useReducedMotion();
   const [copied, setCopied] = useState(false);
   const nextEpisodeSlug = `episode-${episode.number + 1}`;
+
+  const actionsContainer: Variants = {
+    visible: { transition: { staggerChildren: reduce ? 0 : 0.04 } },
+  };
+  const actionItem: Variants = {
+    hidden: reduce ? { opacity: 0 } : { opacity: 0, y: 8 },
+    visible: {
+      opacity: 1,
+      ...(reduce ? {} : { y: 0 }),
+      transition: { duration: 0.2, ease: STUDIOS_EASE },
+    },
+  };
 
   function shareToX() {
     posthog.capture("studios_share_clicked", { platform: "x" });
@@ -94,69 +110,99 @@ export function StudiosPostCreditsUpsell({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-6 flex flex-col gap-3">
-          <Button
-            asChild
-            className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
-          >
-            <Link href="/studios/donate">
-              <Heart className="size-4" aria-hidden />
-              Donate to fund the next episode
-            </Link>
-          </Button>
-          <StudiosCheckoutButton
-            kind="episode"
-            episodeSlug={nextEpisodeSlug}
-            variant="outline"
-            label={`Unlock Episode ${episode.number + 1} for $7`}
-          />
-          <StudiosCheckoutButton
-            kind="bronze"
-            variant="outline"
-            label="Bronze All-Access, $24 per year"
-          />
-        </div>
+        <motion.div
+          className="mt-6 flex flex-col gap-3"
+          variants={actionsContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={actionItem}>
+            <Button
+              asChild
+              className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+            >
+              <Link href="/studios/donate">
+                <Heart className="size-4" aria-hidden />
+                Donate to fund the next episode
+              </Link>
+            </Button>
+          </motion.div>
+          <motion.div variants={actionItem}>
+            <StudiosCheckoutButton
+              kind="episode"
+              episodeSlug={nextEpisodeSlug}
+              variant="outline"
+              label={`Unlock Episode ${episode.number + 1} for $7`}
+            />
+          </motion.div>
+          <motion.div variants={actionItem}>
+            <StudiosCheckoutButton
+              kind="bronze"
+              variant="outline"
+              label="Bronze All-Access, $24 per year"
+            />
+          </motion.div>
+        </motion.div>
 
         <div className="mt-6 border-t border-[rgb(var(--studios-border))]/50 pt-5">
           <p className="font-display text-center text-[11px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))]">
             Share Episode 1, free
           </p>
           <div className="mt-3 flex items-center justify-center gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={shareToX}
               aria-label="Share on X"
+              whileTap={reduce ? undefined : { scale: 0.96 }}
               className="font-display inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-[rgb(var(--studios-border))]/70 text-xs uppercase tracking-[0.2em] text-[rgb(var(--studios-text))] transition-colors hover:border-[rgb(var(--studios-accent))]/60 hover:text-[rgb(var(--studios-accent))]"
             >
               X
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={shareToFacebook}
               aria-label="Share on Facebook"
+              whileTap={reduce ? undefined : { scale: 0.96 }}
               className="font-display inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-[rgb(var(--studios-border))]/70 text-xs uppercase tracking-[0.2em] text-[rgb(var(--studios-text))] transition-colors hover:border-[rgb(var(--studios-accent))]/60 hover:text-[rgb(var(--studios-accent))]"
             >
               <Facebook className="size-4" aria-hidden />
               Facebook
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={copyLink}
               aria-label="Copy share link"
+              whileTap={reduce ? undefined : { scale: 0.96 }}
               className="font-display inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-[rgb(var(--studios-border))]/70 text-xs uppercase tracking-[0.2em] text-[rgb(var(--studios-text))] transition-colors hover:border-[rgb(var(--studios-accent))]/60 hover:text-[rgb(var(--studios-accent))]"
             >
-              {copied ? (
-                <>
-                  <Check className="size-4" aria-hidden />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="size-4" aria-hidden />
-                  Copy
-                </>
-              )}
-            </button>
+              <AnimatePresence mode="wait" initial={false}>
+                {copied ? (
+                  <motion.span
+                    key="copied"
+                    className="inline-flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <Check className="size-4" aria-hidden />
+                    Copied
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="copy"
+                    className="inline-flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <Copy className="size-4" aria-hidden />
+                    Copy
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
         </div>
 
