@@ -170,6 +170,27 @@
   animation: studios-fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Single ambient signature: a microscopic gold-gradient drift on the hero
+   only. Transform-only, GPU-cheap, and disabled under reduced motion. */
+@keyframes studios-hero-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.03);
+  }
+  50% {
+    transform: translate3d(-1.5%, 1%, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .studios-hero-drift {
+    animation: studios-hero-drift 18s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0%);
