@@ -6,8 +6,10 @@ import { ArrowRight, Camera, Lock, Play } from "lucide-react";
 import { cn } from "@galileyo/ui";
 import { Button } from "@galileyo/ui/button";
 
+import { StudiosCastGrid } from "~/components/studios/studios-cast-grid";
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
 import { hasEpisode1Access } from "~/lib/studios/access";
+import { CAST_PREVIEW } from "~/lib/studios/cast";
 import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
@@ -191,33 +193,41 @@ export default async function EpisodeDetailPage({
       <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-20 md:py-24">
         <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
-            Featured Cast
+            {isEpisode1 ? "Voiceover Cast" : "Featured Cast"}
           </p>
           <h2 className="font-display mt-3 text-3xl text-[rgb(var(--studios-text))] md:text-4xl">
             Who&apos;s in this one.
           </h2>
           <p className="font-editorial mt-3 max-w-xl text-sm text-[rgb(var(--studios-text-muted))]">
-            Cast list pending confirmation. Headshots and bios publish as
-            contracts close.
+            {isEpisode1
+              ? "Confirmed performers lending their voices to Episode 1. Headshots and character names land as each is locked in writing."
+              : "Cast list pending confirmation. Headshots and bios publish as contracts close."}
           </p>
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-5">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <article
-                key={index}
-                className="flex flex-col rounded-2xl border border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-surface))]/60 p-3 text-center"
-              >
-                <div className="mb-3 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950">
-                  <Camera className="size-7 text-white/30" aria-hidden />
-                </div>
-                <p className="font-display text-sm text-[rgb(var(--studios-text))]">
-                  Cast TBC
-                </p>
-                <p className="font-display text-[10px] uppercase tracking-[0.3em] text-[rgb(var(--studios-text-muted))]">
-                  Role pending
-                </p>
-              </article>
-            ))}
-          </div>
+          {isEpisode1 ? (
+            <StudiosCastGrid
+              members={CAST_PREVIEW}
+              className="mt-8 max-w-3xl"
+            />
+          ) : (
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-5">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <article
+                  key={index}
+                  className="flex flex-col rounded-2xl border border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-surface))]/60 p-3 text-center"
+                >
+                  <div className="mb-3 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950">
+                    <Camera className="size-7 text-white/30" aria-hidden />
+                  </div>
+                  <p className="font-display text-sm text-[rgb(var(--studios-text))]">
+                    Cast TBC
+                  </p>
+                  <p className="font-display text-[10px] uppercase tracking-[0.3em] text-[rgb(var(--studios-text-muted))]">
+                    Role pending
+                  </p>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
