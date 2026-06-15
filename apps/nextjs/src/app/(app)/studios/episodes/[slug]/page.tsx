@@ -8,9 +8,13 @@ import { Button } from "@galileyo/ui/button";
 
 import { StudiosCastGrid } from "~/components/studios/studios-cast-grid";
 import { StudiosEmailGate } from "~/components/studios/studios-email-gate";
+import { StudiosEpisodeCard } from "~/components/studios/studios-episode-card";
 import { hasEpisode1Access } from "~/lib/studios/access";
 import { CAST_PREVIEW } from "~/lib/studios/cast";
-import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
+import {
+  getEpisodeBySlugDb,
+  getPublishedEpisodes,
+} from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 
@@ -72,6 +76,12 @@ export default async function EpisodeDetailPage({
   const featuredProducts = AFFILIATE_OFFERS.filter((offer) =>
     FEATURED_PRODUCTS.includes(offer.id),
   );
+
+  // Related rail: the rest of the slate, drawn from the same source as the
+  // current episode so it stays consistent with the roadmap.
+  const moreEpisodes = (await getPublishedEpisodes())
+    .filter((other) => other.slug !== episode.slug)
+    .slice(0, 6);
 
   return (
     <>
@@ -309,6 +319,28 @@ export default async function EpisodeDetailPage({
           </div>
         </div>
       </section>
+
+      {moreEpisodes.length > 0 ? (
+        <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-20 md:py-24">
+          <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
+            <p className="font-display inline-flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+              <span
+                aria-hidden
+                className="h-px w-10 bg-[rgb(var(--studios-accent)/0.55)]"
+              />
+              More from the series
+            </p>
+            <h2 className="font-display mt-3 text-3xl text-[rgb(var(--studios-text))] md:text-4xl">
+              Keep watching.
+            </h2>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-5">
+              {moreEpisodes.map((other) => (
+                <StudiosEpisodeCard key={other.slug} episode={other} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }

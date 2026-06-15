@@ -37,6 +37,11 @@ export function StudiosWatchClient({
 
   return (
     <div className="relative flex min-h-[calc(100svh-4rem)] flex-col bg-black md:min-h-[calc(100svh-5rem)]">
+      {/* Top scrim so the back button and title stay legible over bright frames. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-40 bg-[linear-gradient(to_bottom,rgb(0_0_0/0.7)_0%,transparent_100%)]"
+      />
       <motion.div
         className="absolute left-4 top-4 z-30 flex items-center gap-3 sm:left-6 sm:top-6"
         initial={chromeHidden}
