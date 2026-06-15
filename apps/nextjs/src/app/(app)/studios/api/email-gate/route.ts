@@ -38,10 +38,13 @@ export async function POST(req: Request) {
   const { email, name, utmSource, utmMedium, utmCampaign } = parsed.data;
   const leadName = name && name.length > 0 ? name : undefined;
 
-  // Persist the lead. This is the highest-priority asset, but it must never
-  // block a viewer: if the write fails we log and still unlock the episode.
-  // On a repeat email we backfill the name only when it is still missing, so a
-  // later submission without a name never erases one we already captured.
+  // Persist the lead. This is the highest-priority asset, so it must never be
+  // lost and must never block a viewer. The first attempt captures the name;
+  // on a repeat email we backfill the name only when it is still missing, so a
+  // later submission without a name never erases one we already captured. If
+  // that write fails (for example a database where the `name` column has not
+  // been added yet) we retry an email-only insert so the email is still saved,
+  // then unlock either way.
   try {
     await db
       .insert(studiosLead)
@@ -58,7 +61,28 @@ export async function POST(req: Request) {
         set: { name: sql`COALESCE(${studiosLead.name}, ${leadName ?? null})` },
       });
   } catch (error) {
-    console.error("[studios] Failed to persist email-gate lead:", error);
+    console.error(
+      "[studios] Lead insert with name failed, retrying email-only:",
+      error,
+    );
+    try {
+      await db
+        .insert(studiosLead)
+        .values({
+          email,
+          source: "email_gate",
+          episodeSlug: "episode-1",
+          utmSource,
+          utmMedium,
+          utmCampaign,
+        })
+        .onDuplicateKeyUpdate({ set: { email: sql`${studiosLead.email}` } });
+    } catch (fallbackError) {
+      console.error(
+        "[studios] Email-only lead insert also failed:",
+        fallbackError,
+      );
+    }
   }
 
   const token = signUnlockToken({
