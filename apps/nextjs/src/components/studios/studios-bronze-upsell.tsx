@@ -9,7 +9,7 @@ const INCLUSIONS = [
   "Behind-the-scenes feature-length cut",
   "Weekly exclusive drops",
   "Affiliate discounts (Escape Zone, Ghost Phone, more)",
-  "Build the next episode with the Bretts",
+  "Build the next episode with Brett Miller",
 ];
 
 export function StudiosBronzeUpsell() {

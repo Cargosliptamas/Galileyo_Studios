@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, Mail } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Loader2, Mail, Play } from "lucide-react";
 import posthog from "posthog-js";
 
 import { cn } from "@galileyo/ui";
@@ -90,9 +91,36 @@ export function StudiosEmailGate({
         </p>
 
         {state.kind === "success" ? (
-          <div className="flex items-center gap-3 rounded-full border border-[rgb(var(--studios-success))]/40 bg-[rgb(var(--studios-success))]/10 px-5 py-3 text-sm text-[rgb(var(--studios-success))]">
-            <CheckCircle2 className="size-5" aria-hidden />
-            You&apos;re in. Episode 1 unlocked. Check your inbox shortly.
+          <div className="flex w-full max-w-xl flex-col items-center gap-6">
+            <div className="flex items-center gap-3 rounded-full border border-[rgb(var(--studios-success))]/40 bg-[rgb(var(--studios-success))]/10 px-5 py-3 text-sm text-[rgb(var(--studios-success))]">
+              <CheckCircle2 className="size-5" aria-hidden />
+              You&apos;re in. Episode 1 unlocked. Check your inbox shortly.
+            </div>
+            <p className="font-editorial max-w-md text-sm text-[rgb(var(--studios-text-muted))]">
+              Create a free Galileyo account to keep every episode, your watch
+              history, and producer perks in one place.
+            </p>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Button
+                asChild
+                className="font-display h-11 min-w-[15rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
+              >
+                <Link href="/sign-up">
+                  Create your free account
+                  <ArrowRight className="size-4" aria-hidden />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="font-display h-11 min-w-[12rem] rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10"
+              >
+                <Link href="/studios/watch/episode-1">
+                  <Play className="size-4 fill-current" aria-hidden />
+                  Watch now
+                </Link>
+              </Button>
+            </div>
           </div>
         ) : (
           <form
@@ -121,7 +149,7 @@ export function StudiosEmailGate({
             <Button
               type="submit"
               disabled={state.kind === "submitting"}
-              className="font-display h-12 min-w-[10rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70"
+              className="font-display h-12 min-w-[10rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70"
             >
               {state.kind === "submitting" ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />

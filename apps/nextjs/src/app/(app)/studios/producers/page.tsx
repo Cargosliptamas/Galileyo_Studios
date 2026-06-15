@@ -81,7 +81,7 @@ const FILM_TIERS: FilmTier[] = [
       "Everything above, plus:",
       "Screen credit as Executive Producer",
       "On-set visit during production",
-      "Dinner with the Bretts",
+      "Dinner with Brett Miller",
       "Equity-style upside per producer agreement",
     ],
     cta: { kind: "modal", label: "Schedule a Call" },
@@ -348,7 +348,7 @@ export default function ProducersPage() {
                 <Link href="/studios">Back to the landing page</Link>
               </Button>
               <StudiosExecutiveInquiryModal
-                triggerLabel="Talk to the Bretts"
+                triggerLabel="Talk to Brett Miller"
                 triggerClassName="font-display h-11 rounded-full bg-[rgb(var(--studios-accent))] px-6 text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
               />
             </div>

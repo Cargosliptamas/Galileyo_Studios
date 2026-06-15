@@ -20,7 +20,7 @@ const INCLUSIONS = [
   "Behind-the-scenes feature-length cut",
   "Weekly exclusive drops between episodes",
   "Affiliate discounts (Escape Zone, Ghost Phone, more)",
-  "Vote on production calls with the Bretts",
+  "Vote on production calls with Brett Miller",
   "Bronze-only community channel",
   "First-look at producer announcements",
 ];
