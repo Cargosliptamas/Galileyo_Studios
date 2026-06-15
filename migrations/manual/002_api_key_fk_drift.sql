@@ -1,0 +1,52 @@
+-- api_key -> user FOREIGN KEY drift cleanup.
+-- OPTIONAL: NOT needed for launch. This only matters so a full
+-- `drizzle-kit db:push` can reconcile the whole schema again. The launch path
+-- (Script 001 + the resilient-insert fix, commit bd8129b) does not depend on it.
+--
+-- !!! WARNING: MySQL DDL (ALTER/DROP) AUTO-COMMITS and CANNOT be rolled back in
+-- !!! a transaction. The mysqldump backup in STEP 0 is the ONLY undo. Take it
+-- !!! first, off-peak, and confirm the dump file is non-empty before STEP 2.
+--
+-- Diagnosis so far (from dev + inference, NOT confirmed on prod): the drift is a
+-- type mismatch on api_key.user_id vs user.id (user.id is BIGINT). `api_key` is
+-- not modeled in packages/db/src/schema.ts at all (better-auth / legacy table).
+-- Do NOT guess the prod types. Run STEP 1, paste the output back, then fill
+-- STEP 2.
+
+-- ---------------------------------------------------------------------------
+-- STEP 0 -- BACKUP FIRST (run in a shell, NOT in the SQL client):
+--
+--   mysqldump -u <user> -p Galileyo_Prod api_key \
+--     > api_key_backup_$(date +%Y%m%d_%H%M%S).sql
+--
+--   # or back up the whole database:
+--   mysqldump -u <user> -p Galileyo_Prod \
+--     > Galileyo_Prod_backup_$(date +%Y%m%d_%H%M%S).sql
+-- ---------------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------------
+-- STEP 1 -- INSPECTION ONLY. Run these two and paste the full output back
+-- before anything in STEP 2 is written or run.
+-- ---------------------------------------------------------------------------
+SHOW CREATE TABLE api_key;
+SHOW CREATE TABLE `user`;
+
+-- ---------------------------------------------------------------------------
+-- STEP 2 -- TODO: fill in ONLY after reviewing STEP 1 output. Placeholders
+-- below are the expected shape, NOT runnable as-is. Confirm every name/type.
+--
+--   -- TODO: use the real FK constraint name from STEP 1 (SHOW CREATE TABLE api_key).
+--   ALTER TABLE api_key DROP FOREIGN KEY <actual_fk_name>;
+--
+--   -- TODO: set the type + nullability to match user.id exactly (BIGINT per dev).
+--   ALTER TABLE api_key MODIFY user_id BIGINT <NULL | NOT NULL>;
+--
+--   -- TODO: confirm referenced column + ON DELETE/ON UPDATE actions from STEP 1.
+--   ALTER TABLE api_key
+--     ADD CONSTRAINT api_key_user_id_user_id_fk
+--     FOREIGN KEY (user_id) REFERENCES `user`(id);
+--
+-- ALTERNATIVE: if the better-auth apiKey plugin is unused in this deployment,
+-- dropping the table outright may be cleaner than repairing the FK. Decide
+-- before running anything in STEP 2.
+-- ---------------------------------------------------------------------------
