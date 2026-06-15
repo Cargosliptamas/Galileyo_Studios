@@ -12,11 +12,21 @@ import { getSession } from "~/auth/server";
 import { env } from "~/env";
 import { VisibleError } from "~/lib/visible-error";
 
-webpush.setVapidDetails(
-  "mailto:info@galileyo.com",
-  env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-  env.VAPID_PRIVATE_KEY,
+// Only configure web-push when both VAPID keys are present. Calling
+// setVapidDetails with a missing/empty key throws at module load, which would
+// take down every route that imports this "use server" file. When the keys are
+// absent we leave push notifications unconfigured and fail soft below.
+const vapidConfigured = Boolean(
+  env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY,
 );
+
+if (vapidConfigured) {
+  webpush.setVapidDetails(
+    "mailto:info@galileyo.com",
+    env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    env.VAPID_PRIVATE_KEY,
+  );
+}
 
 let subscription: PushSubscription | null = null;
 
@@ -37,6 +47,9 @@ export async function unsubscribeUser() {
 }
 
 export async function sendNotification(message: string) {
+  if (!vapidConfigured) {
+    return { success: false, error: "Push notifications are not configured" };
+  }
   if (!subscription) {
     throw new Error("No subscription available");
   }
