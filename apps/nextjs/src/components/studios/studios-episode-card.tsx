@@ -17,15 +17,13 @@ interface StudiosEpisodeCardProps {
 
 const MotionLink = motion.create(Link);
 
-const HERO_GRADIENTS: Record<number, string> = {
-  1: "from-amber-500/30 via-zinc-900 to-zinc-950",
-  2: "from-rose-500/20 via-zinc-900 to-zinc-950",
-  3: "from-emerald-500/15 via-zinc-900 to-zinc-950",
-  4: "from-sky-500/20 via-zinc-900 to-zinc-950",
-  5: "from-violet-500/20 via-zinc-900 to-zinc-950",
-  6: "from-orange-500/20 via-zinc-900 to-zinc-950",
-  7: "from-teal-500/20 via-zinc-900 to-zinc-950",
-};
+// Single, token-pure scene gradient. The free hero glows gold; coming-soon
+// cards sit back behind a near-neutral dark wash so Episode 1 reads as the
+// clear lead.
+const ART_AVAILABLE =
+  "bg-[linear-gradient(135deg,rgb(var(--studios-accent)/0.32)_0%,rgb(var(--studios-surface-hi))_55%,rgb(var(--studios-bg))_100%)]";
+const ART_SOON =
+  "bg-[linear-gradient(135deg,rgb(var(--studios-accent)/0.10)_0%,rgb(var(--studios-surface-hi))_45%,rgb(var(--studios-bg))_100%)]";
 
 export function StudiosEpisodeCard({
   episode,
@@ -37,7 +35,7 @@ export function StudiosEpisodeCard({
   const isWide = variant === "wide";
   const isAvailable = episode.status === "available";
   const isFree = episode.isFree === true;
-  const gradient = HERO_GRADIENTS[episode.number] ?? HERO_GRADIENTS[1];
+  const epNumber = episode.number.toString().padStart(2, "0");
 
   const detailHref = `/studios/episodes/${episode.slug}`;
   const watchHref = `/studios/watch/${episode.slug}`;
@@ -46,19 +44,19 @@ export function StudiosEpisodeCard({
   return (
     <MotionLink
       href={ctaHref}
-      whileHover={reduce ? undefined : { y: -4, rotateZ: 0.5 }}
+      whileHover={reduce ? undefined : { y: -6, rotateZ: 0.6 }}
       whileTap={reduce ? undefined : { scale: 0.99 }}
       transition={STUDIOS_SPRING}
       className={cn(
-        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))] transition-[border-color,box-shadow] duration-300 hover:border-[rgb(var(--studios-accent))]/60 hover:shadow-[0_30px_70px_-30px_rgba(200,160,74,0.6)]",
+        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-surface))] transition-[border-color,box-shadow] duration-300 hover:border-[rgb(var(--studios-accent))]/60 hover:shadow-[0_30px_70px_-30px_rgb(var(--studios-accent)/0.5)]",
         // Coming-soon cards sit back so the free episode reads as the hero.
-        !isAvailable && "opacity-90",
+        !isAvailable && "opacity-[0.92]",
         className,
       )}
     >
       <div
         className={cn(
-          "relative overflow-hidden bg-zinc-950",
+          "relative overflow-hidden bg-[rgb(var(--studios-bg))]",
           isHero || isWide
             ? "aspect-[16/9] md:aspect-auto md:h-full"
             : "aspect-video",
@@ -66,37 +64,41 @@ export function StudiosEpisodeCard({
       >
         <div
           className={cn(
-            "absolute inset-0 bg-gradient-to-br transition-transform duration-700 group-hover:scale-105",
-            isAvailable ? "opacity-90" : "opacity-60",
-            gradient,
+            "absolute inset-0 transition-transform duration-700 group-hover:scale-[1.06]",
+            isAvailable ? ART_AVAILABLE : ART_SOON,
           )}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,11,13,0.95)_0%,rgba(11,11,13,0.35)_55%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--studios-bg)/0.96)_0%,rgb(var(--studios-bg)/0.35)_55%,transparent_100%)]" />
 
         <span
           aria-hidden
-          className="font-display absolute right-4 top-4 text-7xl leading-none tracking-tighter text-white/10 md:text-9xl"
+          className={cn(
+            "font-display pointer-events-none absolute -top-2 right-2 leading-none tracking-tighter text-[rgb(var(--studios-text)/0.06)]",
+            isHero || isWide
+              ? "text-[7rem] md:text-[13rem]"
+              : "text-8xl md:text-9xl",
+          )}
         >
-          {episode.number.toString().padStart(2, "0")}
+          {epNumber}
         </span>
 
-        <div className="absolute left-5 top-5 flex items-center gap-2">
-          <span className="font-display rounded-full bg-[rgb(var(--studios-bg))]/80 px-3 py-1 text-[10px] uppercase tracking-[0.32em] text-[rgb(var(--studios-accent))] backdrop-blur-sm">
-            EP {episode.number.toString().padStart(2, "0")}
+        <div className="absolute left-5 top-5 z-10 flex items-center gap-2">
+          <span className="font-display rounded-full bg-[rgb(var(--studios-bg))]/80 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-[rgb(var(--studios-accent))] backdrop-blur-sm">
+            EP {epNumber}
           </span>
           {isFree ? (
-            <span className="font-display rounded-full bg-[rgb(var(--studios-accent))] px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-[rgb(11,11,13)]">
+            <span className="font-display rounded-full bg-[rgb(var(--studios-accent))] px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-[rgb(var(--studios-bg))]">
               Free
             </span>
           ) : null}
         </div>
 
-        <div className="absolute right-5 top-5">
+        <div className="absolute right-5 top-5 z-10">
           <span
             className={cn(
               "font-display rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.28em] backdrop-blur-sm",
               isAvailable
-                ? "bg-[rgb(var(--studios-accent))]/95 text-[rgb(11,11,13)]"
+                ? "bg-[rgb(var(--studios-accent))]/95 text-[rgb(var(--studios-bg))]"
                 : "bg-[rgb(var(--studios-bg))]/80 text-[rgb(var(--studios-text-muted))]",
             )}
           >
@@ -104,13 +106,13 @@ export function StudiosEpisodeCard({
           </span>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
           {isAvailable ? (
-            <span className="flex size-16 items-center justify-center rounded-full bg-[rgb(var(--studios-accent))]/95 text-[rgb(11,11,13)] opacity-90 shadow-lg shadow-black/40 transition-transform duration-300 group-hover:scale-110 md:size-20">
+            <span className="flex size-16 items-center justify-center rounded-full bg-[rgb(var(--studios-accent))]/95 text-[rgb(var(--studios-bg))] shadow-[0_10px_30px_rgb(var(--studios-bg)/0.45)] transition-transform duration-300 group-hover:scale-110 md:size-20">
               <Play className="size-6 fill-current md:size-8" aria-hidden />
             </span>
           ) : (
-            <span className="flex size-14 items-center justify-center rounded-full border border-[rgb(var(--studios-text-muted))]/40 bg-[rgb(var(--studios-bg))]/70 text-[rgb(var(--studios-text-muted))] backdrop-blur-sm md:size-16">
+            <span className="flex size-14 items-center justify-center rounded-full border border-[rgb(var(--studios-text-muted))]/40 bg-[rgb(var(--studios-bg))]/70 text-[rgb(var(--studios-text-muted))] backdrop-blur-sm transition-transform duration-300 group-hover:scale-105 md:size-16">
               <Lock className="size-5 md:size-6" aria-hidden />
             </span>
           )}

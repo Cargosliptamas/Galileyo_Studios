@@ -36,7 +36,11 @@ export function StudiosEpisodeRoadmap({
       <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
         <div className="mb-12 flex flex-col gap-4 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+            <p className="font-display inline-flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+              <span
+                aria-hidden
+                className="h-px w-10 bg-[rgb(var(--studios-accent)/0.55)]"
+              />
               The Roadmap
             </p>
             <h2 className="font-display mt-3 text-4xl text-[rgb(var(--studios-text))] md:text-6xl">
