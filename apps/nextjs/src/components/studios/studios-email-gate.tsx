@@ -112,7 +112,7 @@ export function StudiosEmailGate({
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Button
                 asChild
-                className="font-display h-11 min-w-[15rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
+                className="font-display h-11 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[15rem]"
               >
                 <Link href="/sign-up">
                   Create your free account
@@ -122,7 +122,7 @@ export function StudiosEmailGate({
               <Button
                 asChild
                 variant="outline"
-                className="font-display h-11 min-w-[12rem] rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10"
+                className="font-display h-11 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 sm:w-auto sm:min-w-[12rem]"
               >
                 <Link href="/studios/watch/episode-1">
                   <Play className="size-4 fill-current" aria-hidden />
@@ -178,7 +178,7 @@ export function StudiosEmailGate({
               <Button
                 type="submit"
                 disabled={state.kind === "submitting"}
-                className="font-display h-12 min-w-[10rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70"
+                className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70 sm:w-auto sm:min-w-[10rem]"
               >
                 {state.kind === "submitting" ? (
                   <Loader2 className="size-4 animate-spin" aria-hidden />

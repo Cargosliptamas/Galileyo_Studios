@@ -139,7 +139,7 @@ export default async function EpisodeDetailPage({
                 <Button
                   asChild
                   size="lg"
-                  className="font-display h-12 min-w-[16rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
+                  className="font-display h-12 w-full max-w-[20rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[16rem]"
                 >
                   <Link href={`/studios/watch/${episode.slug}`}>
                     <Play className="size-4 fill-current" aria-hidden />
@@ -173,7 +173,7 @@ export default async function EpisodeDetailPage({
                 <Button
                   asChild
                   size="lg"
-                  className="font-display h-12 min-w-[14rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
+                  className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[14rem]"
                 >
                   <Link href="/studios/producers">
                     Become a Producer
@@ -184,7 +184,7 @@ export default async function EpisodeDetailPage({
                   asChild
                   size="lg"
                   variant="outline"
-                  className="font-display h-12 min-w-[14rem] rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10"
+                  className="font-display h-12 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 sm:w-auto sm:min-w-[14rem]"
                 >
                   <Link href="/studios/membership">Get Bronze All-Access</Link>
                 </Button>
