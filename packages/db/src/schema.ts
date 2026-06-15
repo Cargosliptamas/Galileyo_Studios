@@ -2626,6 +2626,7 @@ export const studiosLead = mysqlTable(
   {
     id: bigint({ mode: "number" }).autoincrement().notNull(),
     email: varchar({ length: 320 }).notNull(),
+    name: varchar({ length: 200 }),
     source: varchar({ length: 40 }).notNull(),
     episodeSlug: varchar("episode_slug", { length: 80 }),
     promoCode: varchar("promo_code", { length: 40 }),

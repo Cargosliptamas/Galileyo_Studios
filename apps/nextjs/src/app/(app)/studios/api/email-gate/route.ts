@@ -13,6 +13,7 @@ export const runtime = "nodejs";
 
 const BodySchema = z.object({
   email: z.string().email().max(320),
+  name: z.string().trim().max(200).optional(),
   utmSource: z.string().max(120).optional(),
   utmMedium: z.string().max(120).optional(),
   utmCampaign: z.string().max(120).optional(),
@@ -34,22 +35,28 @@ export async function POST(req: Request) {
     );
   }
 
-  const { email, utmSource, utmMedium, utmCampaign } = parsed.data;
+  const { email, name, utmSource, utmMedium, utmCampaign } = parsed.data;
+  const leadName = name && name.length > 0 ? name : undefined;
 
   // Persist the lead. This is the highest-priority asset, but it must never
   // block a viewer: if the write fails we log and still unlock the episode.
+  // On a repeat email we backfill the name only when it is still missing, so a
+  // later submission without a name never erases one we already captured.
   try {
     await db
       .insert(studiosLead)
       .values({
         email,
+        name: leadName,
         source: "email_gate",
         episodeSlug: "episode-1",
         utmSource,
         utmMedium,
         utmCampaign,
       })
-      .onDuplicateKeyUpdate({ set: { email: sql`${studiosLead.email}` } });
+      .onDuplicateKeyUpdate({
+        set: { name: sql`COALESCE(${studiosLead.name}, ${leadName ?? null})` },
+      });
   } catch (error) {
     console.error("[studios] Failed to persist email-gate lead:", error);
   }
