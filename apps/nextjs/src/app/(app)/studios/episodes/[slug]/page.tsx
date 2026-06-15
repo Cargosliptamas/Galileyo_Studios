@@ -37,15 +37,12 @@ export async function generateMetadata({
   });
 }
 
-const HERO_GRADIENTS: Record<number, string> = {
-  1: "from-amber-500/40 via-zinc-900 to-zinc-950",
-  2: "from-rose-500/30 via-zinc-900 to-zinc-950",
-  3: "from-emerald-500/20 via-zinc-900 to-zinc-950",
-  4: "from-sky-500/30 via-zinc-900 to-zinc-950",
-  5: "from-violet-500/30 via-zinc-900 to-zinc-950",
-  6: "from-orange-500/30 via-zinc-900 to-zinc-950",
-  7: "from-teal-500/30 via-zinc-900 to-zinc-950",
-};
+// Token-pure scene gradients. Available episodes glow gold; everything else
+// (coming-soon heroes, placeholder tiles) sits on a neutral dark wash.
+const HERO_SCENE =
+  "bg-[linear-gradient(135deg,rgb(var(--studios-accent)/0.30)_0%,rgb(var(--studios-surface-hi))_45%,rgb(var(--studios-bg))_100%)]";
+const PLACEHOLDER_TILE =
+  "bg-[linear-gradient(135deg,rgb(var(--studios-surface-hi))_0%,rgb(var(--studios-surface))_50%,rgb(var(--studios-bg))_100%)]";
 
 function formatRuntime(runtime: number | undefined) {
   if (!runtime) return "Runtime TBD";
@@ -70,7 +67,7 @@ export default async function EpisodeDetailPage({
   const isEpisode1 = episode.number === 1;
   const isAvailable = episode.status === "available";
   const hasAccess = isEpisode1 ? await hasEpisode1Access() : false;
-  const gradient = HERO_GRADIENTS[episode.number] ?? HERO_GRADIENTS[1];
+  const gradient = isAvailable ? HERO_SCENE : PLACEHOLDER_TILE;
 
   const featuredProducts = AFFILIATE_OFFERS.filter((offer) =>
     FEATURED_PRODUCTS.includes(offer.id),
@@ -80,10 +77,7 @@ export default async function EpisodeDetailPage({
     <>
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div
-            className={cn("h-full w-full bg-gradient-to-br", gradient)}
-            aria-hidden
-          />
+          <div className={cn("h-full w-full", gradient)} aria-hidden />
         </div>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.5)_0%,rgb(var(--studios-bg)/0.85)_80%,rgb(var(--studios-bg))_100%)]" />
 
@@ -192,7 +186,11 @@ export default async function EpisodeDetailPage({
 
       <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-20 md:py-24">
         <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+          <p className="font-display inline-flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+            <span
+              aria-hidden
+              className="h-px w-10 bg-[rgb(var(--studios-accent)/0.55)]"
+            />
             {isEpisode1 ? "Voiceover Cast" : "Featured Cast"}
           </p>
           <h2 className="font-display mt-3 text-3xl text-[rgb(var(--studios-text))] md:text-4xl">
@@ -215,8 +213,16 @@ export default async function EpisodeDetailPage({
                   key={index}
                   className="flex flex-col rounded-2xl border border-[rgb(var(--studios-border))]/60 bg-[rgb(var(--studios-surface))]/60 p-3 text-center"
                 >
-                  <div className="mb-3 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950">
-                    <Camera className="size-7 text-white/30" aria-hidden />
+                  <div
+                    className={cn(
+                      "mb-3 flex aspect-square items-center justify-center overflow-hidden rounded-xl",
+                      PLACEHOLDER_TILE,
+                    )}
+                  >
+                    <Camera
+                      className="size-7 text-[rgb(var(--studios-text-muted))]/50"
+                      aria-hidden
+                    />
                   </div>
                   <p className="font-display text-sm text-[rgb(var(--studios-text))]">
                     Cast TBC
@@ -233,7 +239,11 @@ export default async function EpisodeDetailPage({
 
       <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-20 md:py-24">
         <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+          <p className="font-display inline-flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+            <span
+              aria-hidden
+              className="h-px w-10 bg-[rgb(var(--studios-accent)/0.55)]"
+            />
             Featured In This Episode
           </p>
           <h2 className="font-display mt-3 text-3xl text-[rgb(var(--studios-text))] md:text-4xl">
@@ -268,7 +278,11 @@ export default async function EpisodeDetailPage({
 
       <section className="border-t border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))] py-20 md:py-24">
         <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-          <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+          <p className="font-display inline-flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
+            <span
+              aria-hidden
+              className="h-px w-10 bg-[rgb(var(--studios-accent)/0.55)]"
+            />
             Behind the Scenes
           </p>
           <h2 className="font-display mt-3 text-3xl text-[rgb(var(--studios-text))] md:text-4xl">
@@ -279,11 +293,14 @@ export default async function EpisodeDetailPage({
               <div
                 key={index}
                 className={cn(
-                  "relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[rgb(var(--studios-border))]/60 bg-gradient-to-br via-zinc-900 to-zinc-950",
-                  HERO_GRADIENTS[(index % 7) + 1],
+                  "group relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[rgb(var(--studios-border))]/60 transition-all duration-300 hover:-translate-y-1 hover:border-[rgb(var(--studios-accent))]/50",
+                  PLACEHOLDER_TILE,
                 )}
               >
-                <Camera className="size-8 text-white/30" aria-hidden />
+                <Camera
+                  className="size-8 text-[rgb(var(--studios-text-muted))]/50"
+                  aria-hidden
+                />
                 <span className="font-display absolute bottom-3 right-3 rounded-full bg-[rgb(var(--studios-bg))]/80 px-2 py-0.5 text-[9px] uppercase tracking-[0.28em] text-[rgb(var(--studios-text-muted))] backdrop-blur-sm">
                   Still pending
                 </span>

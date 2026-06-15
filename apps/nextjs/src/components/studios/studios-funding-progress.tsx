@@ -87,7 +87,7 @@ export function StudiosFundingProgress({
             "absolute inset-y-0 left-0 w-full origin-left rounded-full",
             tone === "gold"
               ? "bg-gradient-to-r from-[rgb(var(--studios-accent))] to-[rgb(var(--studios-accent-hi))]"
-              : "bg-gradient-to-r from-amber-500 to-rose-400",
+              : "bg-gradient-to-r from-[rgb(var(--studios-danger))] to-[rgb(var(--studios-accent-hi))]",
           )}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: inView ? pct / 100 : 0 }}

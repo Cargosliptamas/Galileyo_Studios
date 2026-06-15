@@ -20,7 +20,7 @@ export default function AffiliatesPage() {
     <>
       <section className="relative isolate overflow-hidden">
         <div
-          className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/20 via-zinc-900 to-zinc-950"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgb(var(--studios-accent)/0.22)_0%,rgb(var(--studios-surface-hi))_45%,rgb(var(--studios-bg))_100%)]"
           aria-hidden
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.4)_0%,rgb(var(--studios-bg)/0.92)_85%,rgb(var(--studios-bg))_100%)]" />

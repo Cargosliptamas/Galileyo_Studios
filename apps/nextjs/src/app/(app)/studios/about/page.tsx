@@ -12,21 +12,15 @@ export const metadata: Metadata = {
     "The people behind Galileyo Studios. Why this series exists, where it goes, and who is in front of and behind the camera.",
 };
 
-const TONES = [
-  "from-amber-500/25",
-  "from-rose-500/20",
-  "from-emerald-500/15",
-  "from-sky-500/20",
-  "from-violet-500/20",
-  "from-orange-500/20",
-];
+const PLACEHOLDER_TILE =
+  "bg-[linear-gradient(135deg,rgb(var(--studios-surface-hi))_0%,rgb(var(--studios-surface))_50%,rgb(var(--studios-bg))_100%)]";
 
 export default function AboutPage() {
   return (
     <>
       <section className="relative isolate overflow-hidden">
         <div
-          className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-500/25 via-zinc-900 to-zinc-950"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgb(var(--studios-accent)/0.22)_0%,rgb(var(--studios-surface-hi))_45%,rgb(var(--studios-bg))_100%)]"
           aria-hidden
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.4)_0%,rgb(var(--studios-bg)/0.92)_85%,rgb(var(--studios-bg))_100%)]" />
@@ -110,8 +104,7 @@ export default function AboutPage() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            {CAST_FULL.map((member, index) => {
-              const tone = TONES[index % TONES.length];
+            {CAST_FULL.map((member) => {
               const confirmed = member.status === "confirmed";
               return (
                 <article
@@ -125,11 +118,14 @@ export default function AboutPage() {
                 >
                   <div
                     className={cn(
-                      "relative flex aspect-square w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br via-zinc-900 to-zinc-950 md:w-32",
-                      tone,
+                      "relative flex aspect-square w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl md:w-32",
+                      PLACEHOLDER_TILE,
                     )}
                   >
-                    <Camera className="size-7 text-white/30" aria-hidden />
+                    <Camera
+                      className="size-7 text-[rgb(var(--studios-text-muted))]/50"
+                      aria-hidden
+                    />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <div className="flex flex-wrap items-center gap-2">
@@ -238,9 +234,17 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[rgb(var(--studios-border))]/70 bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950">
+          <div
+            className={cn(
+              "flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[rgb(var(--studios-border))]/70",
+              PLACEHOLDER_TILE,
+            )}
+          >
             <div className="text-center">
-              <Camera className="mx-auto size-10 text-white/40" aria-hidden />
+              <Camera
+                className="mx-auto size-10 text-[rgb(var(--studios-text-muted))]/50"
+                aria-hidden
+              />
               <p className="font-display mt-3 text-xs uppercase tracking-[0.32em] text-[rgb(var(--studios-text-muted))]">
                 BTS reel coming with Episode 1
               </p>
