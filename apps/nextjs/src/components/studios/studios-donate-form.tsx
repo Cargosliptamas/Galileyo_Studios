@@ -234,7 +234,7 @@ export function StudiosDonateForm() {
       <Button
         type="submit"
         disabled={state.kind === "submitting"}
-        className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70"
+        className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] disabled:opacity-70"
       >
         {state.kind === "submitting" ? (
           <Loader2 className="size-4 animate-spin" aria-hidden />

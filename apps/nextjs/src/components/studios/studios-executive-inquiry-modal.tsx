@@ -184,7 +184,7 @@ export function StudiosExecutiveInquiryModal({
             <Button
               type="submit"
               disabled={status.kind === "submitting"}
-              className="font-display h-11 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+              className="font-display h-11 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
             >
               {status.kind === "submitting" ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />

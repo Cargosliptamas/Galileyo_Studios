@@ -23,7 +23,7 @@ export default function AffiliatesPage() {
           className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-500/20 via-zinc-900 to-zinc-950"
           aria-hidden
         />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(11,11,13,0.4)_0%,rgba(11,11,13,0.92)_85%,rgb(11,11,13)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.4)_0%,rgb(var(--studios-bg)/0.92)_85%,rgb(var(--studios-bg))_100%)]" />
         <div className="mx-auto flex min-h-[55vh] w-full max-w-6xl flex-col justify-end px-5 py-20 md:px-8 md:py-28">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Partner Deals

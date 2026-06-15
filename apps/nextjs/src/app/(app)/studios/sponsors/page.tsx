@@ -102,7 +102,7 @@ export default function SponsorsPage() {
           className="absolute inset-0 -z-10 bg-gradient-to-br from-rose-500/25 via-zinc-900 to-zinc-950"
           aria-hidden
         />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(11,11,13,0.4)_0%,rgba(11,11,13,0.92)_85%,rgb(11,11,13)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.4)_0%,rgb(var(--studios-bg)/0.92)_85%,rgb(var(--studios-bg))_100%)]" />
         <div className="mx-auto flex min-h-[55vh] w-full max-w-6xl flex-col justify-end px-5 py-20 md:px-8 md:py-28">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Sponsors
@@ -256,7 +256,7 @@ export default function SponsorsPage() {
             <div className="flex items-center justify-start md:justify-end">
               <Button
                 asChild
-                className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-7 text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-7 text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
               >
                 <a
                   href="/studios/galileyo-studios-media-kit.pdf"

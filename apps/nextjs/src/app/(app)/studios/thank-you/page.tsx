@@ -110,7 +110,7 @@ export default async function StudiosThankYouPage({
             <Button
               asChild
               size="lg"
-              className="font-display mt-8 h-12 min-w-[14rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+              className="font-display mt-8 h-12 min-w-[14rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
             >
               <Link href={confirmation.cta.href}>{confirmation.cta.label}</Link>
             </Button>

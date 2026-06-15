@@ -119,7 +119,7 @@ export function StudiosPostCreditsUpsell({
           <motion.div variants={actionItem}>
             <Button
               asChild
-              className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+              className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
             >
               <Link href="/studios/donate">
                 <Heart className="size-4" aria-hidden />

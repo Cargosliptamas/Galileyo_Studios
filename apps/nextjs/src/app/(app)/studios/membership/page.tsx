@@ -106,7 +106,7 @@ export default function MembershipPage() {
           className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-500/30 via-zinc-900 to-zinc-950"
           aria-hidden
         />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(11,11,13,0.4)_0%,rgba(11,11,13,0.92)_85%,rgb(11,11,13)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.4)_0%,rgb(var(--studios-bg)/0.92)_85%,rgb(var(--studios-bg))_100%)]" />
         <div className="mx-auto flex min-h-[55vh] w-full max-w-6xl flex-col justify-end px-5 py-20 md:px-8 md:py-28">
           <p className="font-display text-xs uppercase tracking-[0.4em] text-[rgb(var(--studios-accent))]">
             Bronze All-Access
@@ -151,7 +151,7 @@ export default function MembershipPage() {
                 )}
               >
                 {col.featured ? (
-                  <span className="font-display absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[rgb(var(--studios-accent))] px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-[rgb(11,11,13)]">
+                  <span className="font-display absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[rgb(var(--studios-accent))] px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-[rgb(var(--studios-bg))]">
                     Best value
                   </span>
                 ) : null}
@@ -229,7 +229,7 @@ export default function MembershipPage() {
                         className={cn(
                           "font-display h-12 w-full rounded-full text-xs uppercase tracking-[0.25em]",
                           col.cta.variant === "primary"
-                            ? "bg-[rgb(var(--studios-accent))] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                            ? "bg-[rgb(var(--studios-accent))] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
                             : "border border-[rgb(var(--studios-accent))]/70 bg-transparent text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10",
                         )}
                       >

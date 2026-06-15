@@ -85,7 +85,7 @@ export default async function EpisodeDetailPage({
             aria-hidden
           />
         </div>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(11,11,13,0.5)_0%,rgba(11,11,13,0.85)_80%,rgb(11,11,13)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(var(--studios-bg)/0.5)_0%,rgb(var(--studios-bg)/0.85)_80%,rgb(var(--studios-bg))_100%)]" />
 
         <div className="mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-5 py-20 md:px-8 md:py-28">
           <Link
@@ -102,7 +102,7 @@ export default async function EpisodeDetailPage({
               className={cn(
                 "font-display rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.28em] backdrop-blur-sm",
                 isAvailable
-                  ? "bg-[rgb(var(--studios-accent))]/95 text-[rgb(11,11,13)]"
+                  ? "bg-[rgb(var(--studios-accent))]/95 text-[rgb(var(--studios-bg))]"
                   : "bg-[rgb(var(--studios-bg))]/80 text-[rgb(var(--studios-text-muted))]",
               )}
             >
@@ -135,7 +135,7 @@ export default async function EpisodeDetailPage({
                 <Button
                   asChild
                   size="lg"
-                  className="font-display h-12 min-w-[16rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                  className="font-display h-12 min-w-[16rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
                 >
                   <Link href={`/studios/watch/${episode.slug}`}>
                     <Play className="size-4 fill-current" aria-hidden />
@@ -169,7 +169,7 @@ export default async function EpisodeDetailPage({
                 <Button
                   asChild
                   size="lg"
-                  className="font-display h-12 min-w-[14rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                  className="font-display h-12 min-w-[14rem] rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
                 >
                   <Link href="/studios/producers">
                     Become a Producer

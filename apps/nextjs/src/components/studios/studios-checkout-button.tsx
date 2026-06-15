@@ -32,7 +32,7 @@ type State = "idle" | "loading" | "soon" | "error";
 
 const VARIANT_CLASS: Record<"primary" | "outline", string> = {
   primary:
-    "bg-[rgb(var(--studios-accent))] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]",
+    "bg-[rgb(var(--studios-accent))] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]",
   outline:
     "border border-[rgb(var(--studios-accent))]/60 bg-transparent text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10",
 };

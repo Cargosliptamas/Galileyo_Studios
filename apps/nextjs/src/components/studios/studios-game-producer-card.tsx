@@ -52,7 +52,7 @@ export function StudiosGameProducerCard() {
             <div className="pt-2">
               <Button
                 asChild
-                className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-8 text-xs uppercase tracking-[0.25em] text-[rgb(11,11,13)] hover:bg-[rgb(var(--studios-accent-hi))]"
+                className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-8 text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
               >
                 <Link href="/studios/producers#game">
                   Back the game
