@@ -105,10 +105,7 @@ export function StudiosHero() {
           className="mt-11 flex w-full flex-col items-start gap-10 md:flex-row md:items-end md:gap-14"
         >
           <div className="flex flex-wrap gap-3.5">
-            <motion.div
-              whileTap={{ scale: 0.97 }}
-              transition={STUDIOS_SPRING}
-            >
+            <motion.div whileTap={{ scale: 0.97 }} transition={STUDIOS_SPRING}>
               <Button
                 asChild
                 size="lg"
@@ -120,10 +117,7 @@ export function StudiosHero() {
                 </Link>
               </Button>
             </motion.div>
-            <motion.div
-              whileTap={{ scale: 0.97 }}
-              transition={STUDIOS_SPRING}
-            >
+            <motion.div whileTap={{ scale: 0.97 }} transition={STUDIOS_SPRING}>
               <Button
                 asChild
                 size="lg"

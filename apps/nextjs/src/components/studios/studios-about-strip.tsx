@@ -28,8 +28,8 @@ export function StudiosAboutStrip() {
             </h2>
           </div>
           <p className="font-editorial max-w-md text-sm text-[rgb(var(--studios-text-muted))]">
-            Confirmed performers lending their voices to Episode 1. Headshots and
-            character names land as each is locked in writing.
+            Confirmed performers lending their voices to Episode 1. Headshots
+            and character names land as each is locked in writing.
           </p>
         </div>
 
