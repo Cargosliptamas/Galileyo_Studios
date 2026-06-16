@@ -44,8 +44,9 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Solidify and tighten the bar once the page scrolls, the way a film-site
-  // chrome settles after the hero.
+  // Settle the bar once the page scrolls: only the background opacity, border,
+  // and blur change. The height stays constant so content beneath the sticky
+  // header never reflows (no layout lurch).
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -56,18 +57,13 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 backdrop-blur-xl transition-[background-color,border-color] duration-300",
+        "sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300",
         scrolled
-          ? "border-b border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-bg))]/95"
-          : "border-b border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))]/70",
+          ? "border-[rgb(var(--studios-border))]/70 bg-[rgb(var(--studios-bg))]/95 backdrop-blur-xl"
+          : "border-[rgb(var(--studios-border))]/40 bg-[rgb(var(--studios-bg))]/70 backdrop-blur-md",
       )}
     >
-      <div
-        className={cn(
-          "mx-auto flex w-full max-w-7xl items-center justify-between px-5 transition-[height] duration-300 md:px-8",
-          scrolled ? "h-14 md:h-16" : "h-16 md:h-20",
-        )}
-      >
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:h-20 md:px-8">
         <Link
           href="/studios"
           className="shrink-0"
