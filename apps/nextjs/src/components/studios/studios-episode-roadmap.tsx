@@ -55,39 +55,37 @@ export function StudiosEpisodeRoadmap({
           </p>
         </div>
 
-        <Stagger
-          className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-5"
-          style={{
-            gridTemplateAreas: `
-              "ep1 ep1 ep2 ep3"
-              "ep1 ep1 ep4 ep5"
-              "ep6 ep6 ep7 ep7"
-            `,
-          }}
-        >
+        {/*
+          Single column on mobile so each card gets full width. The asymmetric
+          seven-up layout (hero spanning two columns and two rows, two wide cards
+          on the bottom row) is reapplied only from md up via span utilities.
+          Source order ep1..ep7 places into the same arrangement the old
+          grid-template-areas produced, without inline styles that ignore
+          breakpoints.
+        */}
+        <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-5">
           <StaggerItem
             index={0}
-            style={{ gridArea: "ep1" }}
-            className="min-h-[24rem] md:min-h-0"
+            className="min-h-[24rem] md:col-span-2 md:row-span-2 md:min-h-0"
           >
             <StudiosEpisodeCard episode={episode1} variant="hero" />
           </StaggerItem>
-          <StaggerItem index={1} style={{ gridArea: "ep2" }}>
+          <StaggerItem index={1}>
             <StudiosEpisodeCard episode={episode2} />
           </StaggerItem>
-          <StaggerItem index={2} style={{ gridArea: "ep3" }}>
+          <StaggerItem index={2}>
             <StudiosEpisodeCard episode={episode3} />
           </StaggerItem>
-          <StaggerItem index={3} style={{ gridArea: "ep4" }}>
+          <StaggerItem index={3}>
             <StudiosEpisodeCard episode={episode4} />
           </StaggerItem>
-          <StaggerItem index={4} style={{ gridArea: "ep5" }}>
+          <StaggerItem index={4}>
             <StudiosEpisodeCard episode={episode5} />
           </StaggerItem>
-          <StaggerItem index={5} style={{ gridArea: "ep6" }}>
+          <StaggerItem index={5} className="md:col-span-2">
             <StudiosEpisodeCard episode={episode6} variant="wide" />
           </StaggerItem>
-          <StaggerItem index={6} style={{ gridArea: "ep7" }}>
+          <StaggerItem index={6} className="md:col-span-2">
             <StudiosEpisodeCard episode={episode7} variant="wide" />
           </StaggerItem>
         </Stagger>
