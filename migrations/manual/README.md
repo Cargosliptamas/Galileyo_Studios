@@ -18,6 +18,20 @@ insert, so **a lead is never lost even if this script has not run yet** — but
 run it so that names are actually captured. Non-destructive and reversible:
 `ALTER TABLE studios_lead DROP COLUMN name;`.
 
+## `003_studios_tables_create.sql` (REQUIRED for launch, the table-creation step)
+
+Creates the six Studios tables (`studios_lead`, `studios_sponsor_inquiry`,
+`studios_episode`, `studios_setting`, `studios_entitlement`,
+`studios_producer_credit`) with targeted `CREATE TABLE IF NOT EXISTS`
+statements, so launch does not depend on a full `db:push`. None of the six have
+foreign keys, so they sidestep the `api_key -> user` drift entirely.
+Idempotent and non-destructive (no DROP, ALTER, or data writes).
+
+Important: this script creates `studios_lead` with the `name` column already
+included, so if you run 003 you do NOT also run 001 (its ALTER would fail with a
+duplicate-column error). Run 001 only in the alternate case where `studios_lead`
+already exists without `name`. Verify with `SHOW TABLES LIKE 'studios\_%';`.
+
 ## `002_api_key_fk_drift.sql` — OPTIONAL, do later
 
 **Not needed for launch.** It only matters so a full `drizzle-kit db:push` can

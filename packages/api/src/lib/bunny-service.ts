@@ -320,7 +320,11 @@ export async function uploadBunnyVideoHttp(
         Accept: "application/json",
         AccessKey: config.apiKey,
       },
-      body: videoData,
+      // Buffer and ReadableStream are both valid fetch bodies at runtime. The
+      // assertion only narrows Buffer's element generic (Uint8Array<ArrayBufferLike>)
+      // to the Uint8Array<ArrayBuffer> that the fetch body type expects; recent TS
+      // lib types made these distinct. No runtime change, no copy.
+      body: videoData as Uint8Array<ArrayBuffer> | ReadableStream<Uint8Array>,
     },
   );
 
