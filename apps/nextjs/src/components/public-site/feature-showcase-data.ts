@@ -6,6 +6,9 @@ import type {
 } from "@galileyo/validators/feed";
 
 import type { VideoListItem } from "~/types/video";
+import { env } from "~/env/client";
+
+const GALILEYO_MOBILE_VIDEO_URL = env.NEXT_PUBLIC_GALILEYO_MOBILE_VIDEO_URL;
 
 export type FeatureShowcaseBeatId =
   | "alerts-feed"
@@ -468,7 +471,7 @@ export const showcaseVideos: VideoListItem[] = [
     userId: 81,
     caption:
       "Crews are closing the upper ridge road now. Smoke is moving east and checkpoints are active. #wildfire #fieldupdate",
-    playbackUrl: "/galileyo-mobile-video.mp4",
+    playbackUrl: GALILEYO_MOBILE_VIDEO_URL,
     thumbnailUrl: "/galileyo-mobile-poster.jpg",
     likeCount: 12430,
     commentCount: 328,
@@ -498,7 +501,7 @@ export const showcaseVideos: VideoListItem[] = [
     userId: 82,
     caption:
       "Visibility downtown is improving, but response teams are still moving equipment toward the foothills. #live #report",
-    playbackUrl: "/galileyo-mobile-video.mp4",
+    playbackUrl: GALILEYO_MOBILE_VIDEO_URL,
     thumbnailUrl: "/instant-alert.jpg",
     likeCount: 9820,
     commentCount: 214,
@@ -528,7 +531,7 @@ export const showcaseVideos: VideoListItem[] = [
     userId: 83,
     caption:
       "Volunteer check-ins are moving into private coordination threads while public alerts stay visible in the main feed. #response",
-    playbackUrl: "/galileyo-mobile-video.mp4",
+    playbackUrl: GALILEYO_MOBILE_VIDEO_URL,
     thumbnailUrl: "/why3c.jpg",
     likeCount: 7560,
     commentCount: 161,

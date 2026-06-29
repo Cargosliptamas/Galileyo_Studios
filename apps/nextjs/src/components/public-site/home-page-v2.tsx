@@ -23,6 +23,7 @@ import { getSession } from "~/auth/server";
 import { getEmergencyAlerts, getPricingPlans } from "~/lib/server/home";
 import { PhoneMockup } from "../phone-mockup";
 import PromoBanner from "../ui/promo-banner";
+import { CloudflareMobileVideo } from "./cloudflare-mobile-video";
 import { HomeBackground } from "./home-backround";
 import {
   Alerts,
@@ -234,19 +235,7 @@ export async function HomePageV2() {
                 <div className="absolute inset-0 -z-10 scale-110 rounded-full bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 blur-3xl" />
 
                 <PhoneMockup>
-                  <video
-                    className="max-w-full rounded-xl shadow-lg"
-                    src="/galileyo-mobile-video.mp4"
-                    poster="/galileyo-mobile-poster.jpg"
-                    width={272}
-                    height={504}
-                    playsInline
-                    muted
-                    autoPlay
-                    loop
-                    controls={false}
-                    preload="metadata"
-                  />
+                  <CloudflareMobileVideo />
                 </PhoneMockup>
 
                 {/* Floating Card - Emergency Alerts */}

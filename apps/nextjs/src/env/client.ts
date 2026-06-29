@@ -67,6 +67,7 @@ export function clientEnv() {
         .default("true")
         .transform((val) => val === "true"),
       NEXT_PUBLIC_EPISODE_1_TRAILER_URL: z.string().default(""),
+      NEXT_PUBLIC_GALILEYO_MOBILE_VIDEO_URL: z.string().default(""),
       NEXT_PUBLIC_NEXT_EPISODE_DATE: z.string().default(""),
       NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT: z.coerce.number().default(0),
       NEXT_PUBLIC_STUDIOS_FUNDING_FILM_TARGET: z.coerce
@@ -114,6 +115,8 @@ export function clientEnv() {
         process.env.NEXT_PUBLIC_VIDEO_PROXY_ENABLED,
       NEXT_PUBLIC_EPISODE_1_TRAILER_URL:
         process.env.NEXT_PUBLIC_EPISODE_1_TRAILER_URL,
+      NEXT_PUBLIC_GALILEYO_MOBILE_VIDEO_URL:
+        process.env.NEXT_PUBLIC_GALILEYO_MOBILE_VIDEO_URL,
       NEXT_PUBLIC_NEXT_EPISODE_DATE: process.env.NEXT_PUBLIC_NEXT_EPISODE_DATE,
       NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT:
         process.env.NEXT_PUBLIC_STUDIOS_FUNDING_FILM_CURRENT,
