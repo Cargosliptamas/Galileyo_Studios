@@ -86,8 +86,6 @@ export async function POST(req: Request) {
     }
   }
 
-  void sendStudiosWelcomeEmail(email, "https://galileyostudios.com/watch/episode-1");
-
   const token = signUnlockToken({
     email,
     episode: "episode-1",

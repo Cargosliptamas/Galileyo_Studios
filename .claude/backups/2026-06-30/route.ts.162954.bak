@@ -105,13 +105,6 @@ async function handleCheckoutCompleted(
     });
   }
 
-  void sendStudiosReceiptEmail(email, kind, amountCents ?? 0, episodeSlug);
-  if (kind === "bronze" || kind === "bronze_annual") {
-    void sendStudiosBronzeWelcomeEmail(email);
-  } else if (isProducerKind(kind)) {
-    void sendStudiosProducerWelcomeEmail(email, kind);
-  }
-
   const ph = posthogServer();
   if (ph) {
     ph.capture({

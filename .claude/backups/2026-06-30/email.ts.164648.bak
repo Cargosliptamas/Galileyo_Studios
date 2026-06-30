@@ -1,0 +1,185 @@
+import { sendEmail } from "@galileyo/emails";
+
+import { env } from "~/env/server";
+
+const BASE_URL = "https://galileyostudios.com";
+
+function baseHtml(subject: string, body: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0A0A0A;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0A0A0A;">
+    <tr>
+      <td align="center" style="padding:40px 20px;">
+        <table width="100%" style="max-width:560px;">
+          <tr>
+            <td style="padding-bottom:28px;border-bottom:1px solid #222;">
+              <p style="margin:0;font-family:Georgia,serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#C9A96E;">GALILEYO STUDIOS</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 0 28px;">
+              ${body}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top:28px;border-top:1px solid #222;">
+              <p style="margin:0;font-size:11px;color:#444;font-family:Georgia,serif;">
+                Galileyo Studios. Designed and Developed by BOLD Studios.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function heading(text: string): string {
+  return `<h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;font-weight:normal;color:#E5E5E5;line-height:1.3;">${text}</h1>`;
+}
+
+function para(text: string): string {
+  return `<p style="margin:0 0 18px;font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#999;">${text}</p>`;
+}
+
+function cta(text: string, url: string): string {
+  return `<a href="${url}" style="display:inline-block;margin-top:8px;padding:14px 28px;background:#C9A96E;color:#0A0A0A;font-family:Georgia,serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">${text}</a>`;
+}
+
+function formatUsd(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function receiptKindLabel(kind: string): string {
+  const labels: Record<string, string> = {
+    episode_unlock: "Episode Unlock",
+    bronze: "Season Pass (Bronze)",
+    bronze_annual: "Season Pass (Bronze Annual)",
+    ad_free: "Ad-Free Upgrade",
+    producer_associate: "Associate Producer",
+    producer_contributing: "Contributing Producer",
+    producer_game: "Game Producer",
+    donation: "Supporter Contribution",
+  };
+  return labels[kind] ?? kind;
+}
+
+// ---- Email builders ----
+
+function buildWelcomeEmail(watchUrl: string): { subject: string; html: string } {
+  const subject = "You're in. Episode 1 is ready.";
+  const body = [
+    heading("You're in."),
+    para("Episode 1 of Seekin Destroys is unlocked and ready to watch. No sign-in required, just click below."),
+    cta("Watch Episode 1", watchUrl),
+    para("If you ever lose your link, you can always return to galileyostudios.com and enter your email again."),
+  ].join("\n");
+  return { subject, html: baseHtml(subject, body) };
+}
+
+function buildReceiptEmail(kind: string, email: string, amountCents: number, episodeSlug?: string | null): { subject: string; html: string } {
+  const label = receiptKindLabel(kind);
+  const subject = `Your order is confirmed: ${label}`;
+  const watchUrl = episodeSlug
+    ? `${BASE_URL}/watch/${episodeSlug}`
+    : `${BASE_URL}/show`;
+  const body = [
+    heading("Order confirmed."),
+    para(`Thank you, ${email}. Your order for <strong style="color:#E5E5E5;">${label}</strong> has been received and is now active.`),
+    para(`Amount: <strong style="color:#E5E5E5;">${formatUsd(amountCents)}</strong>`),
+    cta("Go to the show", watchUrl),
+    para("Questions? Reply to this email and we will get back to you."),
+  ].join("\n");
+  return { subject, html: baseHtml(subject, body) };
+}
+
+function buildBronzeWelcomeEmail(email: string): { subject: string; html: string } {
+  const subject = "Welcome to the season.";
+  const body = [
+    heading("Welcome to the season."),
+    para(`${email}, your Bronze Season Pass is active. Every episode in the season is now unlocked, with no ads and no interruptions.`),
+    para("New episodes drop when they are ready. You will hear from us first."),
+    cta("Watch the show", `${BASE_URL}/show`),
+  ].join("\n");
+  return { subject, html: baseHtml(subject, body) };
+}
+
+function buildProducerWelcomeEmail(tier: string, email: string): { subject: string; html: string } {
+  const tierLabels: Record<string, string> = {
+    producer_associate: "Associate Producer",
+    producer_contributing: "Contributing Producer",
+    producer_game: "Game Producer",
+  };
+  const tierLabel = tierLabels[tier] ?? "Producer";
+
+  const tierCopy: Record<string, string> = {
+    producer_associate: "Your name will appear in the credits. You are part of what makes this show possible.",
+    producer_contributing: "Your contribution puts you in the producing credits and gives you a real voice in this project.",
+    producer_game: "You are backing both the film and the game. Your credit appears in both productions.",
+  };
+  const copy = tierCopy[tier] ?? "You are now listed as a producer on this project.";
+
+  const subject = `You are a ${tierLabel}.`;
+  const body = [
+    heading(`You are a ${tierLabel}.`),
+    para(`${email}, thank you. ${copy}`),
+    para("We will be in touch about your credit details. In the meantime, the full show is available whenever you are ready."),
+    cta("Watch the show", `${BASE_URL}/show`),
+  ].join("\n");
+  return { subject, html: baseHtml(subject, body) };
+}
+
+// ---- Dispatcher ----
+
+export async function sendStudiosWelcomeEmail(to: string, watchUrl: string): Promise<void> {
+  if (!env.RESEND_API_KEY) return;
+  const { subject, html } = buildWelcomeEmail(watchUrl);
+  try {
+    await sendEmail({ to, subject, html, transport: "resend" });
+  } catch (err) {
+    console.error("[studios-email] welcome send failed:", err);
+  }
+}
+
+export async function sendStudiosReceiptEmail(
+  to: string,
+  kind: string,
+  amountCents: number,
+  episodeSlug?: string | null,
+): Promise<void> {
+  if (!env.RESEND_API_KEY) return;
+  const { subject, html } = buildReceiptEmail(kind, to, amountCents, episodeSlug);
+  try {
+    await sendEmail({ to, subject, html, transport: "resend" });
+  } catch (err) {
+    console.error("[studios-email] receipt send failed:", err);
+  }
+}
+
+export async function sendStudiosBronzeWelcomeEmail(to: string): Promise<void> {
+  if (!env.RESEND_API_KEY) return;
+  const { subject, html } = buildBronzeWelcomeEmail(to);
+  try {
+    await sendEmail({ to, subject, html, transport: "resend" });
+  } catch (err) {
+    console.error("[studios-email] bronze-welcome send failed:", err);
+  }
+}
+
+export async function sendStudiosProducerWelcomeEmail(to: string, tier: string): Promise<void> {
+  if (!env.RESEND_API_KEY) return;
+  const { subject, html } = buildProducerWelcomeEmail(tier, to);
+  try {
+    await sendEmail({ to, subject, html, transport: "resend" });
+  } catch (err) {
+    console.error("[studios-email] producer-welcome send failed:", err);
+  }
+}
