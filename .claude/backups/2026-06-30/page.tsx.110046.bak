@@ -1,0 +1,19 @@
+import { redirect } from "next/navigation";
+
+import { getSession } from "~/auth/server";
+import { isNativeUserAgent } from "~/lib/server/headers";
+
+export default async function RootPage() {
+  const session = await getSession();
+  const isNativeUA = await isNativeUserAgent();
+
+  if (isNativeUA) {
+    return redirect("/login");
+  }
+
+  if (session) {
+    return redirect("/dashboard");
+  }
+
+  return redirect("/");
+}

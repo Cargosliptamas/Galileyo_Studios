@@ -37,8 +37,8 @@ export function StudiosEpisodeCard({
   const isFree = episode.isFree === true;
   const epNumber = episode.number.toString().padStart(2, "0");
 
-  const detailHref = `/studios/episodes/${episode.slug}`;
-  const watchHref = `/studios/watch/${episode.slug}`;
+  const detailHref = `/show/${episode.slug}`;
+  const watchHref = `/watch/${episode.slug}`;
   const ctaHref = isAvailable ? watchHref : detailHref;
 
   return (

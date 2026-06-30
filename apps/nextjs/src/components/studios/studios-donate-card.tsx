@@ -36,7 +36,7 @@ export function StudiosDonateCard() {
             size="lg"
             className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[14rem]"
           >
-            <Link href="/studios/donate">
+            <Link href="/donate">
               Donate Now
               <ArrowRight className="size-4" aria-hidden />
             </Link>

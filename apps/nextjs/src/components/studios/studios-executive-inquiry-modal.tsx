@@ -49,7 +49,7 @@ export function StudiosExecutiveInquiryModal({
     setStatus({ kind: "submitting" });
 
     try {
-      const res = await fetch("/studios/api/sponsor-inquiry", {
+      const res = await fetch("/api/sponsor-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

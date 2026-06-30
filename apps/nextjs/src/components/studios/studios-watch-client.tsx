@@ -49,7 +49,7 @@ export function StudiosWatchClient({
         transition={{ duration: 0.3, ease: STUDIOS_EASE }}
       >
         <Link
-          href={`/studios/episodes/${episode.slug}`}
+          href={`/show/${episode.slug}`}
           className="font-display inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.28em] text-white backdrop-blur transition hover:bg-white/20"
         >
           <ArrowLeft className="size-3.5" aria-hidden />

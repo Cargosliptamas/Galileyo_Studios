@@ -45,6 +45,7 @@ export function serverEnv() {
         .string()
         .min(8)
         .default("phase1-dev-secret-replace-me"),
+      STUDIOS_SPONSOR_INQUIRY_TO: z.string().default("brett@galileyo.com"),
       CLOUDFLARE_ACCOUNT_ID: z.string().default(""),
       CLOUDFLARE_STREAM_API_TOKEN: z.string().default(""),
       CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN: z.string().default(""),

@@ -54,7 +54,7 @@ export function StudiosGameProducerCard() {
                 asChild
                 className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-8 text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
               >
-                <Link href="/studios/producers#game">
+                <Link href="/pricing#game">
                   Back the game
                   <ArrowRight className="size-4" aria-hidden />
                 </Link>

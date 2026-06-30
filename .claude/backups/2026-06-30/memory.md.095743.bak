@@ -1,0 +1,50 @@
+# Memory — Galileyo Studios
+
+## Now
+- Active branch: `main` (studios work lands here; `development` is stale per branch audit)
+- Studios routes and DB seed are in place; recent commits show nav polish, mobile layout fixes, episode roadmap grid, and lead-capture hardening
+- Next likely focus: Phase 3 backend wiring (Stripe, Cloudflare Stream signed URLs, email automation) or Phase 4+ per `docs/studios-v2/`
+
+## Project
+- **Name**: Galileyo Studios (sub-brand inside Galileyo)
+- **What it is**: A satellite-delivered information distribution platform (Galileyo) with a new Studios vertical for original short-form films. Studios lets users watch Episode 1 free after email signup, purchase Episodes 2-7 ($7 each) or unlock all via Bronze membership ($24/year), and become film/game producers ($50-$250K tiers). The Studios section lives inside the main Next.js app at `/studios/*` and uses a cinematic dark gold theme layered on top of the main app's cyan/blue design tokens.
+- **Stack**: Next.js 15 (App Router, turbopack), React 19, TypeScript strict, tRPC v11, Drizzle ORM + MySQL, Better Auth, Tailwind, shadcn/ui (`@galileyo/ui`), Expo SDK 53 (React Native + NativeWind), Redis pub/sub, PM2 (4 processes in prod), Turborepo + pnpm workspaces, PostHog analytics, `motion@^12` for animation
+- **Repo / Production**: `main` branch is the integration target; staging at `next.galileyo` (confirm exact deploy mechanism with Brett Miller)
+
+## Key Paths
+- `apps/nextjs/src/app/(app)/studios/` — all Studios route pages (layout, page, episodes/[slug], watch/[slug], producers, membership, sponsors, affiliates, about, donate, thank-you)
+- `apps/nextjs/src/components/studios/` — Studios-specific components (StudiosShell, EpisodeCard, WatchPlayer, etc.)
+- `packages/api/src/router/studios.ts` — Studios tRPC router (PLURAL; `studio.ts` singular is the creator analytics router — DO NOT confuse them)
+- `packages/db/src/schema/` — Drizzle schema; Studios tables: `studios_episode`, `studios_email_signup`, `studios_access_grant`, `studios_bronze_subscription`, `studios_producer`, `studios_lead`
+- `apps/nextjs/src/components/video/video-player.tsx` — existing HLS player (851 lines); Studios uses a dedicated `StudiosFilmPlayer` wrapping hls.js, not this shared component
+- `apps/nextjs/src/server/trpc-ws.ts` — WebSocket server (separate PM2 process from Next.js)
+- `apps/nextjs/src/env/` — env validation via `@t3-oss/env`; new vars must also be added to `turbo.json` globalEnv array
+- `packages/api/src/router/` — all tRPC routers; `root.ts` composes `appRouter`
+- `packages/db/src/schema.ts` — main schema file; no migrations folder (uses `db:push` workflow)
+- `docs/studios-v2/GALILEYO_STUDIOS_V2_MASTER_BLUEPRINT.md` — authoritative Studios spec (read before any Studios work)
+
+## Goals & Current Work
+- Studios feature on branch `main` (`feat/studios-foundation` was the original branch name per blueprint; current state is on `main`)
+- Phase 1 (UI shell, landing, episode pages, email gate) and Phase 2 (watch player, producer/membership/sponsor pages) appear complete based on route existence and commit log
+- Phase 3 (Stripe integration, Cloudflare Stream signed URLs, email automation via Resend or existing infra) is the likely next phase
+- Key open questions: branch deploy target confirmation with Brett Miller, Episode 1 final Cloudflare HLS URL, Stripe account setup, cast confirmations for public listing
+- `node:crypto` for signed tokens (jose is NOT installed); Stripe not yet installed; add via `pnpm add stripe @stripe/stripe-js` in `apps/nextjs`
+- Naming constraint: `packages/api/src/router/studios.ts` (plural) vs `studio.ts` (singular, creator analytics) -- never mix them
+
+## Recommended Skills (global, in ~/.claude/skills)
+- `implement` — primary skill for building out Phase 3 tRPC routers, Stripe routes, and email templates
+- `tdd` — engine-layer logic (access grants, token signing) should be unit-tested before wiring to routes
+- `review` — before any Stripe or access-check code ships; security-sensitive flows deserve a dedicated review pass
+- `prototype` — useful for mocking Studios checkout UI before Stripe credentials arrive from Brett Miller
+- `email` — Studios requires 4 new React Email templates (welcome, purchase receipt, Bronze welcome, producer welcome)
+- `scaffold-exercises` — generating typed stubs for the remaining Studios tRPC procedures and Drizzle queries
+- `diagnosing-bugs` — resilient lead-insert and nav-lurch commits suggest prod edge cases still surfacing
+
+## Patterns Noticed
+- No migrations folder: schema changes go via `pnpm db:push` (Drizzle push workflow), not generate/migrate
+- Every app wraps scripts with `with-env` (dotenv from root `.env`); new env vars need registration in `turbo.json` globalEnv
+- `timingMiddleware` injects 100-500ms artificial delay in dev to surface waterfalls; do not mistake for real latency
+- Studios theme scoped via `.studios-theme` CSS class on the layout wrapper, not global; leaves the rest of the app untouched
+- Import aliases: `~/` for app-local paths, `@galileyo/*` for monorepo packages
+- No em dashes anywhere in copy or code comments (house rule; use commas, parens, or separate sentences)
+- All paid/gated routes require server-side auth checks in server components; client-only gating is not acceptable

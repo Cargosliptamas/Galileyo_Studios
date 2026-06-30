@@ -281,13 +281,21 @@ function ShowcaseVideoCard({
     <div className="relative h-full w-full overflow-hidden rounded-[30px] border border-white/10 bg-slate-950 shadow-[0_40px_100px_rgba(3,7,18,0.5)]">
       <ShowcaseVideoHeader />
 
-      <VideoPlayer
-        src={video.playbackUrl ?? ""}
-        poster={video.thumbnailUrl ?? undefined}
-        isActive={isActive}
-        isMuted={true}
-        className="h-full w-full"
-      />
+      {video.playbackUrl ? (
+        <VideoPlayer
+          src={video.playbackUrl}
+          poster={video.thumbnailUrl ?? undefined}
+          isActive={isActive}
+          isMuted={true}
+          className="h-full w-full"
+        />
+      ) : (
+        <img
+          src={video.thumbnailUrl ?? "/galileyo-mobile-poster.jpg"}
+          alt=""
+          className="h-full w-full object-cover"
+        />
+      )}
 
       <div
         className="pointer-events-none absolute inset-0"

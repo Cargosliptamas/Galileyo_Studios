@@ -6,7 +6,7 @@ import type { User } from "~/auth/client";
 import AuthNavbar from "./layout/auth-navbar";
 import PublicNavbar from "./layout/public-navbar";
 
-const DISABLED_PATHS = ["/feature-showcase", "/studios"];
+const DISABLED_PATHS = ["/feature-showcase", "/"];
 
 export function SiteHeader({
   user,

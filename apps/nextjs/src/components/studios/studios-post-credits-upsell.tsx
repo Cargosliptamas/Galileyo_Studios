@@ -121,7 +121,7 @@ export function StudiosPostCreditsUpsell({
               asChild
               className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
             >
-              <Link href="/studios/donate">
+              <Link href="/donate">
                 <Heart className="size-4" aria-hidden />
                 Donate to fund the next episode
               </Link>

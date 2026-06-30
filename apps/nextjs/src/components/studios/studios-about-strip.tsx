@@ -29,7 +29,7 @@ export function StudiosAboutStrip() {
 
         <div className="mt-12 flex justify-center">
           <Link
-            href="/studios/about"
+            href="/about"
             className="font-display inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-[rgb(var(--studios-accent))] transition-colors hover:text-[rgb(var(--studios-accent-hi))]"
           >
             Meet the team

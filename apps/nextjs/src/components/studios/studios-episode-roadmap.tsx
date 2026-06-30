@@ -95,7 +95,7 @@ export function StudiosEpisodeRoadmap({
             Each episode is funded by you. Become a producer to make it happen.
           </p>
           <Link
-            href="/studios/producers"
+            href="/pricing"
             className="font-display inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-[rgb(var(--studios-accent))] transition-colors hover:text-[rgb(var(--studios-accent-hi))]"
           >
             See the producer tiers

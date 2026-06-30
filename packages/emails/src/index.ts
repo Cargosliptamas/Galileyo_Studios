@@ -10,9 +10,10 @@ let nodemailerTransport: nodemailer.Transporter | null = null;
 type NodemailerConfig = Record<string, any>;
 
 export interface SendEmailProps {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
+  replyTo?: string | string[];
   transport?: "nodemailer" | "resend";
 }
 
@@ -49,7 +50,12 @@ function getNodemailerTransport() {
   return nodemailerTransport;
 }
 
-async function sendEmailWithNodemailer({ to, subject, html }: SendEmailProps) {
+async function sendEmailWithNodemailer({
+  to,
+  subject,
+  html,
+  replyTo,
+}: SendEmailProps) {
   const transporter = getNodemailerTransport();
 
   const options = {
@@ -57,17 +63,24 @@ async function sendEmailWithNodemailer({ to, subject, html }: SendEmailProps) {
     to,
     subject,
     html,
+    replyTo,
   };
 
   await transporter.sendMail(options);
 }
 
-async function sendEmailWithResend({ to, subject, html }: SendEmailProps) {
+async function sendEmailWithResend({
+  to,
+  subject,
+  html,
+  replyTo,
+}: SendEmailProps) {
   const { data, error } = await getResendClient().emails.send({
     from: env.EMAIL_FROM,
     to,
     subject,
     html,
+    replyTo,
   });
 
   if (error) {
@@ -81,6 +94,7 @@ export async function sendEmail({
   to,
   subject,
   html,
+  replyTo,
   transport,
 }: SendEmailProps) {
   const resendApiKey = env.RESEND_API_KEY;
@@ -90,10 +104,10 @@ export async function sendEmail({
 
   switch (sendFunction) {
     case "nodemailer":
-      await sendEmailWithNodemailer({ to, subject, html });
+      await sendEmailWithNodemailer({ to, subject, html, replyTo });
       break;
     case "resend":
-      await sendEmailWithResend({ to, subject, html });
+      await sendEmailWithResend({ to, subject, html, replyTo });
       break;
   }
 }
