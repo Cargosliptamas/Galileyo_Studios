@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
   const { kind, episodeSlug, amountCents, email, cancelPath } = parsed.data;
   const base = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
-  const cancelUrl = `${base}${cancelPath?.startsWith("/") ? cancelPath : "/studios"}`;
+  const cancelUrl = `${base}${cancelPath?.startsWith("/") ? cancelPath : "/"}`;
   const mode: Stripe.Checkout.SessionCreateParams.Mode =
     kind === "bronze" ? "subscription" : "payment";
 
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
       mode,
       line_items: lineItems,
       allow_promotion_codes: true,
-      success_url: `${base}/studios/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${base}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
       ...(email ? { customer_email: email } : {}),
       metadata,

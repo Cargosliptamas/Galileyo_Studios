@@ -32,33 +32,33 @@ function confirmationFor(
       return {
         heading: "Thank you for funding independent film.",
         body: "Your donation keeps Episode 1 free and brings the next six to life. You just became part of how this gets made.",
-        cta: { href: "/studios", label: "Back to Studios" },
+        cta: { href: "/", label: "Back to Studios" },
       };
     case "episode":
       return {
         heading: "Unlocked. Enjoy the episode.",
         body: "Your access is ready. Press play whenever you are.",
         cta: episodeSlug
-          ? { href: `/studios/watch/${episodeSlug}`, label: "Watch Now" }
-          : { href: "/studios/episodes", label: "Browse Episodes" },
+          ? { href: `/watch/${episodeSlug}`, label: "Watch Now" }
+          : { href: "/show", label: "Browse Episodes" },
       };
     case "bronze":
       return {
         heading: "Welcome to the season.",
         body: "Bronze All-Access is active. Every released episode is yours for the year.",
-        cta: { href: "/studios/episodes", label: "Start Watching" },
+        cta: { href: "/show", label: "Start Watching" },
       };
     case "ad_free":
       return {
         heading: "Ad-free, on.",
         body: "Thanks for supporting the films. Your viewing is now commercial-free.",
-        cta: { href: "/studios/episodes", label: "Back to Episodes" },
+        cta: { href: "/show", label: "Back to Episodes" },
       };
     default:
       return {
         heading: "Thank you.",
         body: "Your purchase is confirmed. Welcome to Galileyo Studios.",
-        cta: { href: "/studios", label: "Back to Studios" },
+        cta: { href: "/", label: "Back to Studios" },
       };
   }
 }

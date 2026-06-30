@@ -32,7 +32,7 @@ const TIERS: Tier[] = [
     ],
     cta: {
       kind: "link",
-      href: "/studios/producers#associate",
+      href: "/pricing#associate",
       label: "Back this tier",
     },
   },
@@ -48,7 +48,7 @@ const TIERS: Tier[] = [
     ],
     cta: {
       kind: "link",
-      href: "/studios/producers#contributing",
+      href: "/pricing#contributing",
       label: "Back this tier",
     },
     highlight: true,

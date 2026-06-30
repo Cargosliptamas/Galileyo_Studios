@@ -14,7 +14,7 @@ import { CAST_PREVIEW } from "~/lib/studios/cast";
 import {
   getEpisodeBySlugDb,
   getPublishedEpisodes,
-} from "~/lib/studios/episodes-db";
+} from "~/lib/show-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 
@@ -36,7 +36,7 @@ export async function generateMetadata({
     description: isEpisode1
       ? `Watch Episode 1 free. ${episode.synopsis} An AI-made series from Galileyo Studios.`
       : episode.synopsis,
-    path: `/studios/episodes/${episode.slug}`,
+    path: `/show/${episode.slug}`,
     heroImageId: episode.heroImageId,
   });
 }
@@ -93,7 +93,7 @@ export default async function EpisodeDetailPage({
 
         <div className="mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-5 py-20 md:px-8 md:py-28">
           <Link
-            href="/studios"
+            href="/"
             className="font-display mb-8 text-xs uppercase tracking-[0.3em] text-[rgb(var(--studios-text-muted))] transition-colors hover:text-[rgb(var(--studios-accent))]"
           >
             ← Studios
@@ -141,7 +141,7 @@ export default async function EpisodeDetailPage({
                   size="lg"
                   className="font-display h-12 w-full max-w-[20rem] rounded-full bg-[rgb(var(--studios-accent))] text-sm uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[16rem]"
                 >
-                  <Link href={`/studios/watch/${episode.slug}`}>
+                  <Link href={`/watch/${episode.slug}`}>
                     <Play className="size-4 fill-current" aria-hidden />
                     Watch Now
                   </Link>
@@ -175,7 +175,7 @@ export default async function EpisodeDetailPage({
                   size="lg"
                   className="font-display h-12 w-full rounded-full bg-[rgb(var(--studios-accent))] text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))] sm:w-auto sm:min-w-[14rem]"
                 >
-                  <Link href="/studios/producers">
+                  <Link href="/pricing">
                     Become a Producer
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>
@@ -186,7 +186,7 @@ export default async function EpisodeDetailPage({
                   variant="outline"
                   className="font-display h-12 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 sm:w-auto sm:min-w-[14rem]"
                 >
-                  <Link href="/studios/membership">Get Bronze All-Access</Link>
+                  <Link href="/pricing">Get Bronze All-Access</Link>
                 </Button>
               </div>
             </div>

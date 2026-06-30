@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     siteName: "Galileyo Studios",
     type: "website",
-    url: "/studios",
+    url: "/",
     images: [{ url: DEFAULT_SHARE_IMAGE }],
   },
   twitter: {

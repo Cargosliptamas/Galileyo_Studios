@@ -14,13 +14,13 @@ import { STUDIOS_EASE } from "./motion";
 import { StudiosBrand } from "./studios-brand";
 
 const NAV_LINKS = [
-  { href: "/studios/episodes", label: "Episodes" },
-  { href: "/studios/producers", label: "Producers" },
-  { href: "/studios/membership", label: "Bronze" },
-  { href: "/studios/sponsors", label: "Sponsors" },
-  { href: "/studios/affiliates", label: "Affiliates" },
-  { href: "/studios/donate", label: "Donate" },
-  { href: "/studios/about", label: "About" },
+  { href: "/show", label: "Episodes" },
+  { href: "/pricing", label: "Producers" },
+  { href: "/pricing", label: "Bronze" },
+  { href: "/ads", label: "Sponsors" },
+  { href: "/affiliates", label: "Affiliates" },
+  { href: "/donate", label: "Donate" },
+  { href: "/about", label: "About" },
 ] as const;
 
 interface NavUser {
@@ -34,7 +34,7 @@ interface StudiosNavContentProps {
 }
 
 function isLinkActive(pathname: string, href: string) {
-  if (href === "/studios") return pathname === "/studios";
+  if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -65,7 +65,7 @@ export function StudiosNavContent({ user }: StudiosNavContentProps) {
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:h-20 md:px-8">
         <Link
-          href="/studios"
+          href="/"
           className="shrink-0"
           aria-label="Galileyo Studios"
         >

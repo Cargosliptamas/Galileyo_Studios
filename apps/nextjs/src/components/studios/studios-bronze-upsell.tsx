@@ -53,7 +53,7 @@ export function StudiosBronzeUpsell() {
                   asChild
                   className="font-display h-12 rounded-full bg-[rgb(var(--studios-accent))] px-8 text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-bg))] hover:bg-[rgb(var(--studios-accent-hi))]"
                 >
-                  <Link href="/studios/membership">
+                  <Link href="/pricing">
                     Get Bronze All-Access
                     <ArrowRight className="size-4" aria-hidden />
                   </Link>

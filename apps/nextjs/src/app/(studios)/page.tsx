@@ -11,14 +11,14 @@ import { StudiosHero } from "~/components/studios/studios-hero";
 import { StudiosProducerTiersPreview } from "~/components/studios/studios-producer-tiers-preview";
 import { StudiosSeriesIntro } from "~/components/studios/studios-series-intro";
 import { StudiosSponsorStrip } from "~/components/studios/studios-sponsor-strip";
-import { getPublishedEpisodes } from "~/lib/studios/episodes-db";
+import { getPublishedEpisodes } from "~/lib/show-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 
 export const metadata: Metadata = buildStudiosMetadata({
   title: "Watch Episode 1 Free, an AI-Made Series",
   description:
     "An original AI-made film series from Galileyo Studios. Episode 1 is free to stream. Drop your email and watch now.",
-  path: "/studios",
+  path: "/",
 });
 
 export default async function StudiosLandingPage() {

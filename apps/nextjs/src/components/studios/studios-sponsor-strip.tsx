@@ -51,7 +51,7 @@ export function StudiosSponsorStrip() {
             Want to sponsor? Reach the people the rest of media can&apos;t.
           </p>
           <Link
-            href="/studios/sponsors"
+            href="/ads"
             className="font-display inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-[rgb(var(--studios-accent))] transition-colors hover:text-[rgb(var(--studios-accent-hi))]"
           >
             See sponsor inventory

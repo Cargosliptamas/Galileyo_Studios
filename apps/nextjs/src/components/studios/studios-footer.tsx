@@ -6,23 +6,23 @@ const FOOTER_LINKS = [
   {
     heading: "Watch",
     links: [
-      { href: "/studios", label: "Studios Home" },
-      { href: "/studios/episodes", label: "All Episodes" },
-      { href: "/studios/membership", label: "Bronze Membership" },
+      { href: "/", label: "Studios Home" },
+      { href: "/show", label: "All Episodes" },
+      { href: "/pricing", label: "Bronze Membership" },
     ],
   },
   {
     heading: "Get Involved",
     links: [
-      { href: "/studios/producers", label: "Become a Producer" },
-      { href: "/studios/sponsors", label: "Sponsor Inquiry" },
-      { href: "/studios/affiliates", label: "Affiliate Marketplace" },
+      { href: "/pricing", label: "Become a Producer" },
+      { href: "/ads", label: "Sponsor Inquiry" },
+      { href: "/affiliates", label: "Affiliate Marketplace" },
     ],
   },
   {
     heading: "About",
     links: [
-      { href: "/studios/about", label: "The Project" },
+      { href: "/about", label: "The Project" },
       { href: "/contact", label: "Contact" },
       { href: "/terms-of-service", label: "Terms" },
       { href: "/privacy-policy", label: "Privacy" },

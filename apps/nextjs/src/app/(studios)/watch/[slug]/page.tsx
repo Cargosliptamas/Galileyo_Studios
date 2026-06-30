@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import type { Episode } from "~/lib/studios/episodes";
+import type { Episode } from "~/lib/show";
 import { StudiosWatchClient } from "~/components/studios/studios-watch-client";
 import { env } from "~/env/client";
 import { getViewerEmail, hasEpisodeAccess } from "~/lib/studios/access";
-import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
+import { getEpisodeBySlugDb } from "~/lib/show-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { getPublicHlsUrl, getSignedHlsUrl } from "~/lib/studios/stream";
 
@@ -25,7 +25,7 @@ export async function generateMetadata({
   return buildStudiosMetadata({
     title: `Watch Episode ${episode.number}: ${episode.title}`,
     description: episode.synopsis,
-    path: `/studios/watch/${episode.slug}`,
+    path: `/watch/${episode.slug}`,
     heroImageId: episode.heroImageId,
   });
 }
@@ -59,7 +59,7 @@ export default async function WatchPage({
   // viewer's email.
   const viewerEmail = await getViewerEmail();
   const hasAccess = await hasEpisodeAccess(slug, viewerEmail);
-  if (!hasAccess) redirect(`/studios/episodes/${slug}`);
+  if (!hasAccess) redirect(`/show/${slug}`);
 
   // Plays from Cloudflare Stream when a streamUid is set on the episode,
   // otherwise falls back to NEXT_PUBLIC_EPISODE_1_HLS_URL for the current
@@ -81,7 +81,7 @@ export default async function WatchPage({
             ready.
           </p>
           <Link
-            href={`/studios/episodes/${episode.slug}`}
+            href={`/show/${episode.slug}`}
             className="font-display mt-8 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs uppercase tracking-[0.28em] text-white backdrop-blur transition hover:bg-white/20"
           >
             Back to Episode {episode.number}

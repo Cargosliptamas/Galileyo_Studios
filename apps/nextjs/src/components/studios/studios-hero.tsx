@@ -111,7 +111,7 @@ export function StudiosHero() {
                 size="lg"
                 className="font-display h-[54px] rounded-full bg-[rgb(var(--studios-accent))] px-7 text-[15px] uppercase tracking-[0.22em] text-[rgb(var(--studios-bg))] shadow-[0_18px_50px_-16px_rgb(var(--studios-accent)/0.8)] hover:bg-[rgb(var(--studios-accent-hi))]"
               >
-                <Link href="/studios/watch/episode-1">
+                <Link href="/watch/episode-1">
                   <Play className="size-4" aria-hidden />
                   Watch Episode 1 Free
                 </Link>
@@ -124,7 +124,7 @@ export function StudiosHero() {
                 variant="outline"
                 className="font-display h-[54px] rounded-full border border-[rgb(var(--studios-accent)/0.45)] bg-transparent px-7 text-[15px] uppercase tracking-[0.22em] text-[rgb(var(--studios-text))] hover:border-[rgb(var(--studios-accent))] hover:bg-[rgb(var(--studios-accent)/0.08)] hover:text-[rgb(var(--studios-accent-hi))]"
               >
-                <Link href="/studios/producers">
+                <Link href="/pricing">
                   Become a Producer
                   <ArrowRight className="size-4" aria-hidden />
                 </Link>

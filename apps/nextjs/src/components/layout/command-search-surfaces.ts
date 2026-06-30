@@ -123,7 +123,7 @@ export const SURFACE_CATALOG: SurfaceItem[] = [
     key: "page-studios",
     label: "Studios",
     description: "Original short-form films from Galileyo Studios",
-    href: "/studios",
+    href: "/",
     icon: Clapperboard,
     kind: "page",
     keywords: ["studios", "films", "episodes", "watch", "cinema"],

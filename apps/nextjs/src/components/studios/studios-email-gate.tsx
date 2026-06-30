@@ -45,7 +45,7 @@ export function StudiosEmailGate({
     setState({ kind: "submitting" });
     try {
       const search = new URLSearchParams(window.location.search);
-      const res = await fetch("/studios/api/email-gate", {
+      const res = await fetch("/api/email-gate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -124,7 +124,7 @@ export function StudiosEmailGate({
                 variant="outline"
                 className="font-display h-11 w-full rounded-full border-[rgb(var(--studios-accent))]/60 bg-transparent text-xs uppercase tracking-[0.25em] text-[rgb(var(--studios-text))] hover:bg-[rgb(var(--studios-accent))]/10 sm:w-auto sm:min-w-[12rem]"
               >
-                <Link href="/studios/watch/episode-1">
+                <Link href="/watch/episode-1">
                   <Play className="size-4 fill-current" aria-hidden />
                   Watch now
                 </Link>

@@ -7,7 +7,7 @@ export const metadata: Metadata = buildStudiosMetadata({
   title: "Donate",
   description:
     "Fund independent AI filmmaking. Every dollar puts the next episode on screen, free for anyone to watch.",
-  path: "/studios/donate",
+  path: "/donate",
 });
 
 export default function StudiosDonatePage() {

@@ -54,7 +54,7 @@ const COLUMNS: PlanColumn[] = [
     ],
     cta: {
       label: "Buy per episode",
-      href: "/studios/episodes",
+      href: "/show",
       variant: "ghost",
     },
   },
@@ -94,7 +94,7 @@ const COLUMNS: PlanColumn[] = [
       { label: "Affiliate discounts", included: false },
       { label: "Community access", included: false },
     ],
-    cta: { label: "Watch Episode 1 free", href: "/studios", variant: "ghost" },
+    cta: { label: "Watch Episode 1 free", href: "/", variant: "ghost" },
   },
 ];
 

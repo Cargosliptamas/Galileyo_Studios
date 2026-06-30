@@ -71,7 +71,7 @@ export function StudiosDonateForm() {
       // When Stripe is live, send donors straight to hosted Checkout. Until
       // then, fall back to capturing the email and intended amount as a lead.
       if (env.NEXT_PUBLIC_STRIPE_ENABLED) {
-        const res = await fetch("/studios/api/checkout", {
+        const res = await fetch("/api/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -100,7 +100,7 @@ export function StudiosDonateForm() {
         return;
       }
 
-      const res = await fetch("/studios/api/donate", {
+      const res = await fetch("/api/donate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, amount, ...utm }),

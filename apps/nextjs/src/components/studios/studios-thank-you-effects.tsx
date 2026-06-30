@@ -23,7 +23,7 @@ export function StudiosThankYouEffects({
 
   useEffect(() => {
     if (paid) {
-      void fetch("/studios/api/viewer-session", {
+      void fetch("/api/viewer-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
