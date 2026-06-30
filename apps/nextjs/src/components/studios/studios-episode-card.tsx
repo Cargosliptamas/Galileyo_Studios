@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { cn } from "@galileyo/ui";
 
-import type { Episode } from "~/lib/show";
+import type { Episode } from "~/lib/studios/episodes";
 import { STUDIOS_SPRING } from "./motion";
 
 interface StudiosEpisodeCardProps {

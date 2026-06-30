@@ -1,5 +1,5 @@
 import { StudiosEpisodeCard } from "~/components/studios/studios-episode-card";
-import { getPublishedEpisodes } from "~/lib/show-db";
+import { getPublishedEpisodes } from "~/lib/studios/episodes-db";
 
 export const metadata = { title: "Episodes" };
 

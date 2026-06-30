@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import type { Episode } from "~/lib/show";
+import type { Episode } from "~/lib/studios/episodes";
 import { StudiosWatchClient } from "~/components/studios/studios-watch-client";
 import { env } from "~/env/client";
 import { getViewerEmail, hasEpisodeAccess } from "~/lib/studios/access";
-import { getEpisodeBySlugDb } from "~/lib/show-db";
+import { getEpisodeBySlugDb } from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { getPublicHlsUrl, getSignedHlsUrl } from "~/lib/studios/stream";
 

@@ -14,7 +14,7 @@ import { CAST_PREVIEW } from "~/lib/studios/cast";
 import {
   getEpisodeBySlugDb,
   getPublishedEpisodes,
-} from "~/lib/show-db";
+} from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 import { AFFILIATE_OFFERS } from "~/lib/studios/partners";
 

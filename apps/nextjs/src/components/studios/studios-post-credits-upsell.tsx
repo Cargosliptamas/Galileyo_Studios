@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@galileyo/ui/dialog";
 
-import type { Episode } from "~/lib/show";
+import type { Episode } from "~/lib/studios/episodes";
 import { STUDIOS_EASE } from "./motion";
 import { StudiosCheckoutButton } from "./studios-checkout-button";
 import { StudiosPartnershipCta } from "./studios-partnership-cta";

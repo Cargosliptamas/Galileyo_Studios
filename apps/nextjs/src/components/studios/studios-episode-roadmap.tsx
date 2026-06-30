@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import type { Episode } from "~/lib/show";
-import { EPISODES } from "~/lib/show";
+import type { Episode } from "~/lib/studios/episodes";
+import { EPISODES } from "~/lib/studios/episodes";
 import { Stagger, StaggerItem } from "./motion";
 import { StudiosEpisodeCard } from "./studios-episode-card";
 

@@ -11,7 +11,7 @@ import { StudiosHero } from "~/components/studios/studios-hero";
 import { StudiosProducerTiersPreview } from "~/components/studios/studios-producer-tiers-preview";
 import { StudiosSeriesIntro } from "~/components/studios/studios-series-intro";
 import { StudiosSponsorStrip } from "~/components/studios/studios-sponsor-strip";
-import { getPublishedEpisodes } from "~/lib/show-db";
+import { getPublishedEpisodes } from "~/lib/studios/episodes-db";
 import { buildStudiosMetadata } from "~/lib/studios/metadata";
 
 export const metadata: Metadata = buildStudiosMetadata({

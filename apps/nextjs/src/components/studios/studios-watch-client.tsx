@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import posthog from "posthog-js";
 
-import type { Episode } from "~/lib/show";
+import type { Episode } from "~/lib/studios/episodes";
 import { STUDIOS_EASE } from "~/components/studios/motion";
 import { StudiosPostCreditsUpsell } from "~/components/studios/studios-post-credits-upsell";
 import { VideoPlayer } from "~/components/video/video-player";
